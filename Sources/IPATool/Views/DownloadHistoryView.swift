@@ -10,30 +10,50 @@ struct DownloadHistoryView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 20) {
             // 下载目录设置
-            SectionCard(title: "下载目录", subtitle: "IPA 文件将保存在此目录") {
-                HStack(spacing: 10) {
-                    Text(service.downloadDirectory.path)
-                        .font(.system(size: 13, weight: .medium))
-                        .foregroundStyle(.secondary)
-                        .lineLimit(1)
-                        .truncationMode(.middle)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .padding(.horizontal, 12)
-                        .padding(.vertical, 10)
-                        .background(
-                            RoundedRectangle(cornerRadius: 10, style: .continuous)
-                                .fill(Color.primary.opacity(0.04))
+            SectionCard(title: "下载目录", subtitle: "IPA 文件将保存在此目录。") {
+                if let dir = service.downloadDirectory {
+                    HStack(spacing: 10) {
+                        Image(systemName: "folder.fill")
+                            .font(.system(size: 14))
+                            .foregroundStyle(Color.appAccent)
+
+                        Text(dir.path)
+                            .font(.system(size: 13, weight: .medium))
+                            .foregroundStyle(.secondary)
+                            .lineLimit(1)
+                            .truncationMode(.middle)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .padding(.horizontal, 12)
+                            .padding(.vertical, 10)
+                            .background(
+                                RoundedRectangle(cornerRadius: 10, style: .continuous)
+                                    .fill(Color.primary.opacity(0.04))
+                            )
+
+                        Button("更改目录") {
+                            service.selectDownloadDirectory()
+                        }
+                        .buttonStyle(SecondaryActionButtonStyle())
+                    }
+                } else {
+                    VStack(spacing: 12) {
+                        ContentUnavailableView(
+                            "未选择下载目录",
+                            systemImage: "folder.badge.questionmark",
+                            description: Text("请选择一个目录来保存下载的 IPA 文件。")
                         )
+                        .frame(maxWidth: .infinity)
 
-                    Button("选择目录") {
-                        selectDownloadDirectory()
+                        Button {
+                            service.selectDownloadDirectory()
+                        } label: {
+                            HStack(spacing: 6) {
+                                Image(systemName: "folder.badge.plus")
+                                Text("选择下载目录")
+                            }
+                        }
+                        .buttonStyle(PrimaryActionButtonStyle())
                     }
-                    .buttonStyle(SecondaryActionButtonStyle())
-
-                    Button("重置") {
-                        service.downloadDirectory = FileManager.default.homeDirectoryForCurrentUser.appendingPathComponent("IPATool/downloads")
-                    }
-                    .buttonStyle(SecondaryActionButtonStyle())
                 }
             }
             
@@ -72,21 +92,6 @@ struct DownloadHistoryView: View {
                     }
                 }
             }
-        }
-    }
-
-    private func selectDownloadDirectory() {
-        let panel = NSOpenPanel()
-        panel.canChooseDirectories = true
-        panel.canChooseFiles = false
-        panel.canCreateDirectories = true
-        panel.title = "选择下载目录"
-        panel.message = "选择 IPA 文件的保存位置"
-        panel.prompt = "选择"
-
-        if panel.runModal() == .OK, let url = panel.url {
-            service.downloadDirectory = url
-            service.log("下载目录已切换: \(url.path)", type: .info)
         }
     }
 }

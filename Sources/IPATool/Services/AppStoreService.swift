@@ -1,3 +1,4 @@
+import AppKit
 import Foundation
 
 // MARK: - 防止自动跟随重定向的 Session 代理
@@ -21,7 +22,7 @@ final class AppStoreService: ObservableObject {
     @Published var logMessages: [LogEntry] = []
     @Published var downloadResults: [DownloadResult] = []
     @Published var downloadQueue: [DownloadQueueItem] = []
-    @Published var downloadDirectory: URL = FileManager.default.homeDirectoryForCurrentUser.appendingPathComponent("IPATool/downloads")
+    @Published var downloadDirectory: URL? = nil
 
     var configuredRegions: [RegionOption] {
         let codes = Set(accounts.map(\.region))
@@ -63,6 +64,17 @@ final class AppStoreService: ObservableObject {
 
     private let defaultAuthURL = "https://buy.itunes.apple.com/WebObjects/MZFinance.woa/wa/authenticate"
     private let userAgent = "Configurator/2.17 (Macintosh; OS X 15.2; 24C5089c) AppleWebKit/0620.1.16.11.6"
+
+    /// 规范化 bag 返回的认证端点。
+    /// Apple 当前的 native fast 端点在缺少尾部 `/` 时会出现额外重定向甚至认证失败；
+    /// Go 版已做兼容，这里保持一致。
+    private func normalizedAuthEndpoint(_ endpoint: String) -> String {
+        guard !endpoint.isEmpty else { return endpoint }
+        if endpoint.contains("/native/"), !endpoint.hasSuffix("/") {
+            return endpoint + "/"
+        }
+        return endpoint
+    }
 
     /// 从非标准 XML 中提取 <plist>...</plist> 片段
     /// Bag 响应格式: <Document><Protocol><plist>...</plist></Protocol></Document>
@@ -108,6 +120,48 @@ final class AppStoreService: ObservableObject {
 
     init() {
         Task { await loadAccounts() }
+        restoreDownloadDirectoryBookmark()
+    }
+
+    // MARK: - 下载目录管理
+
+    func selectDownloadDirectory() {
+        let panel = NSOpenPanel()
+        panel.canChooseDirectories = true
+        panel.canChooseFiles = false
+        panel.canCreateDirectories = true
+        panel.title = "选择下载目录"
+        panel.message = "选择 IPA 文件的保存位置"
+        panel.prompt = "选择"
+
+        if panel.runModal() == .OK, let url = panel.url {
+            downloadDirectory = url
+            saveDownloadDirectoryBookmark(url: url)
+            log("下载目录已切换: \(url.path)", type: .info)
+        }
+    }
+
+    private func saveDownloadDirectoryBookmark(url: URL) {
+        do {
+            let bookmarkData = try url.bookmarkData(options: .withSecurityScope, includingResourceValuesForKeys: nil, relativeTo: nil)
+            UserDefaults.standard.set(bookmarkData, forKey: "downloadDirectoryBookmark")
+        } catch {
+            log("保存目录书签失败: \(error.localizedDescription)", type: .error)
+        }
+    }
+
+    private func restoreDownloadDirectoryBookmark() {
+        guard let bookmarkData = UserDefaults.standard.data(forKey: "downloadDirectoryBookmark") else { return }
+        do {
+            var isStale = false
+            let url = try URL(resolvingBookmarkData: bookmarkData, options: .withSecurityScope, relativeTo: nil, bookmarkDataIsStale: &isStale)
+            downloadDirectory = url
+            if isStale {
+                saveDownloadDirectoryBookmark(url: url)
+            }
+        } catch {
+            UserDefaults.standard.removeObject(forKey: "downloadDirectoryBookmark")
+        }
     }
 
     // MARK: - 账号管理
@@ -315,22 +369,24 @@ final class AppStoreService: ObservableObject {
         do {
             let (data, resp) = try await session.data(for: request)
             guard let httpResp = resp as? HTTPURLResponse, httpResp.statusCode == 200 else {
-                log("Bag 状态码异常，使用默认端点", type: .warning)
-                return defaultAuthURL
+                let fallback = normalizedAuthEndpoint(defaultAuthURL)
+                log("Bag 状态码异常，使用默认端点: \(fallback)", type: .warning)
+                return fallback
             }
 
             let dict: [String: Any]? = try parsePlist(from: data)
             if let urlBag = dict?["urlBag"] as? [String: Any],
                let auth = urlBag["authenticateAccount"] as? String,
                !auth.isEmpty {
-                return auth
+                return normalizedAuthEndpoint(auth)
             }
         } catch {
             // ignore
         }
 
-        log("Bag 解析失败，使用默认端点", type: .warning)
-        return defaultAuthURL
+        let fallback = normalizedAuthEndpoint(defaultAuthURL)
+        log("Bag 解析失败，使用默认端点: \(fallback)", type: .warning)
+        return fallback
     }
 
     // MARK: - Login attempt
@@ -339,7 +395,8 @@ final class AppStoreService: ObservableObject {
         email: String, password: String, authCode: String, guid: String,
         endpoint: String, attempt: Int
     ) async throws -> (Account?, String?, AppStoreError?) {
-        guard let url = URL(string: endpoint) else { return (nil, nil, .invalidURL) }
+        let authEndpoint = normalizedAuthEndpoint(endpoint)
+        guard let url = URL(string: authEndpoint) else { return (nil, nil, .invalidURL) }
 
         let fullPassword = password + authCode.replacingOccurrences(of: " ", with: "")
 
@@ -651,7 +708,9 @@ final class AppStoreService: ObservableObject {
         let metadata = item["metadata"] as? [String: Any] ?? [:]
         let version = (metadata["bundleShortVersionString"] as? String) ?? "unknown"
 
-        let destDir = outputDirectory ?? FileManager.default.urls(for: .downloadsDirectory, in: .userDomainMask).first!
+        guard let destDir = outputDirectory else {
+            throw AppStoreError.unknownError("未指定下载目录")
+        }
         let fileName = "\(app.bundleID)_\(app.id)_\(version).ipa"
         let destPath = destDir.appendingPathComponent(fileName)
         let tmpPath = destDir.appendingPathComponent("\(fileName).tmp")
@@ -730,6 +789,10 @@ final class AppStoreService: ObservableObject {
             log("请先选择一个账号", type: .error)
             return
         }
+        if downloadDirectory == nil {
+            selectDownloadDirectory()
+        }
+        guard downloadDirectory != nil else { return }
         // 检查是否已在队列中
         guard !downloadQueue.contains(where: { $0.app.id == app.id && ($0.status == .waiting || $0.status == .purchasing || $0.status == .downloading || $0.status == .processing || $0.status == .completed) }) else {
             log("\"\(app.name)\" 已在下载队列中", type: .warning)
@@ -797,6 +860,21 @@ final class AppStoreService: ObservableObject {
 
         let item = downloadQueue[index]
 
+        guard let dlDir = downloadDirectory else {
+            downloadQueue[index].status = .failed
+            downloadQueue[index].error = "未选择下载目录"
+            log("下载失败: 未选择下载目录，请先在「下载」页面设置", type: .error)
+            Task { @MainActor [weak self] in self?.processQueue() }
+            return
+        }
+
+        let didStartAccessing = dlDir.startAccessingSecurityScopedResource()
+        defer {
+            if didStartAccessing {
+                dlDir.stopAccessingSecurityScopedResource()
+            }
+        }
+
         // 确保目录存在
         ensureDownloadDirExists()
 
@@ -856,9 +934,10 @@ final class AppStoreService: ObservableObject {
     }
 
     private func ensureDownloadDirExists() {
+        guard let dir = downloadDirectory else { return }
         let fm = FileManager.default
-        if !fm.fileExists(atPath: downloadDirectory.path) {
-            try? fm.createDirectory(at: downloadDirectory, withIntermediateDirectories: true)
+        if !fm.fileExists(atPath: dir.path) {
+            try? fm.createDirectory(at: dir, withIntermediateDirectories: true)
         }
     }
 }
