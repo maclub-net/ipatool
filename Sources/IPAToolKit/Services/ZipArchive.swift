@@ -1,15 +1,15 @@
 import Foundation
 
 /// 简化的 ZIP 归档读取/写入工具
-enum ZipArchive {
+public enum ZipArchive {
 
-    struct Entry {
-        let name: String
-        let data: Data
-        let compressionMethod: UInt16
+    public struct Entry {
+        public let name: String
+        public let data: Data
+        public let compressionMethod: UInt16
     }
 
-    static func readEntries(from data: Data) throws -> [Entry] {
+    public static func readEntries(from data: Data) throws -> [Entry] {
         var entries: [Entry] = []
         var offset = 0
 
@@ -58,7 +58,7 @@ enum ZipArchive {
         return entries
     }
 
-    static func createZip(entries: [(name: String, data: Data)]) throws -> Data {
+    public static func createZip(entries: [(name: String, data: Data)]) throws -> Data {
         var result = Data()
         var centralDirectory = Data()
         var localHeaderOffset: UInt32 = 0
@@ -142,7 +142,7 @@ enum ZipArchive {
 
 // MARK: - CRC32
 
-enum CRC32 {
+public enum CRC32 {
     private static let table: [UInt32] = {
         var table = [UInt32](repeating: 0, count: 256)
         for i in 0..<256 {
@@ -159,7 +159,7 @@ enum CRC32 {
         return table
     }()
 
-    static func compute(_ data: Data) -> UInt32 {
+    public static func compute(_ data: Data) -> UInt32 {
         var crc: UInt32 = 0xFFFFFFFF
         for byte in data {
             let index = Int((crc ^ UInt32(byte)) & 0xFF)
@@ -171,7 +171,7 @@ enum CRC32 {
 
 // MARK: - Data helpers
 
-extension Data {
+public extension Data {
     func readUInt16(at offset: Int) -> UInt16 {
         self.withUnsafeBytes { $0.loadUnaligned(fromByteOffset: offset, as: UInt16.self).littleEndian }
     }

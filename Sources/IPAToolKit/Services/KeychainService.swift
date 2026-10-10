@@ -4,12 +4,12 @@ import Security
 // MARK: - KeychainError
 
 /// Keychain 操作错误
-enum KeychainError: LocalizedError {
+public enum KeychainError: LocalizedError {
     case unableToSave(OSStatus)
     case unableToRead(OSStatus)
     case unableToDelete(OSStatus)
 
-    var errorDescription: String? {
+    public var errorDescription: String? {
         switch self {
         case .unableToSave(let s): "Keychain 保存失败 (OSStatus: \(s))"
         case .unableToRead(let s): "Keychain 读取失败 (OSStatus: \(s))"
@@ -19,25 +19,25 @@ enum KeychainError: LocalizedError {
 }
 
 /// Keychain 服务，安全存储多个 App Store 账号
-final class KeychainService {
-    nonisolated(unsafe) static let shared = KeychainService()
+public final class KeychainService {
+    public nonisolated(unsafe) static let shared = KeychainService()
     private let service = "cn.ipatool.account"
 
     private init() {}
 
     // MARK: - 多账号存取
 
-    func saveAccount(_ account: Account) throws {
+    public func saveAccount(_ account: Account) throws {
         let data = try JSONEncoder().encode(account)
         try save(key: account.id, data: data)
     }
 
-    func loadAccount(id: String) throws -> Account? {
+    public func loadAccount(id: String) throws -> Account? {
         guard let data = try load(key: id) else { return nil }
         return try JSONDecoder().decode(Account.self, from: data)
     }
 
-    func loadAllAccounts() throws -> [Account] {
+    public func loadAllAccounts() throws -> [Account] {
         // 先获取所有账号的 key，再逐个加载，避免 kSecMatchLimitAll + kSecReturnData 的兼容问题
         let attrQuery: [String: Any] = [
             kSecClass as String: kSecClassGenericPassword,
@@ -63,17 +63,17 @@ final class KeychainService {
         }
     }
 
-    func loadAllSummaries() throws -> [AccountSummary] {
+    public func loadAllSummaries() throws -> [AccountSummary] {
         try loadAllAccounts().map { acc in
             AccountSummary(email: acc.email, name: acc.name, region: acc.region)
         }
     }
 
-    func deleteAccount(id: String) throws {
+    public func deleteAccount(id: String) throws {
         try delete(key: id)
     }
 
-    func deleteAll() throws {
+    public func deleteAll() throws {
         let query: [String: Any] = [
             kSecClass as String: kSecClassGenericPassword,
             kSecAttrService as String: service,

@@ -1,4 +1,7 @@
 import SwiftUI
+#if SWIFT_PACKAGE
+import IPAToolKit
+#endif
 
 struct LogView: View {
     @ObservedObject var service: AppStoreService

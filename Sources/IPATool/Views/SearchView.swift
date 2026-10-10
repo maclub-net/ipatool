@@ -1,4 +1,7 @@
 import SwiftUI
+#if SWIFT_PACKAGE
+import IPAToolKit
+#endif
 
 struct SearchView: View {
     @ObservedObject var service: AppStoreService
@@ -6,6 +9,7 @@ struct SearchView: View {
     @State private var searchResults: [AppInfo] = []
     @State private var isSearching = false
     @State private var selectedApp: AppInfo? = nil
+    @State private var selectedPlatform: Platform? = nil
 
     var body: some View {
         VStack(alignment: .leading, spacing: 20) {
@@ -47,10 +51,12 @@ struct SearchView: View {
             }
 
             // 搜索
-            SectionCard(title: "搜索应用", subtitle: "输入应用名称或 Bundle ID") {
+            SectionCard(title: "搜索应用", subtitle: "输入应用名称或 Bundle ID，选择平台后搜索") {
                 HStack(spacing: 10) {
                     AppTextField("请输入 App 名称 / Bundle ID", text: $searchTerm)
                         .onSubmit { performSearch() }
+
+                    platformSelector
 
                     Button {
                         performSearch()
@@ -96,13 +102,34 @@ struct SearchView: View {
         }
     }
 
+    private var platformSelector: some View {
+        Menu {
+            Button("全部平台") { selectedPlatform = nil }
+            ForEach(Platform.allCases, id: \.self) { p in
+                Button(p.displayName) { selectedPlatform = p }
+            }
+        } label: {
+            HStack {
+                Image(systemName: selectedPlatform?.systemImage ?? "square.grid.2x2")
+                    .font(.caption)
+                Text(selectedPlatform?.displayName ?? "全部平台")
+                Image(systemName: "chevron.up.chevron.down").font(.caption)
+            }
+        }
+        .buttonStyle(.plain)
+        .padding(.horizontal, 12)
+        .padding(.vertical, 10)
+        .background(RoundedRectangle(cornerRadius: 12).fill(Color.primary.opacity(0.035)))
+        .overlay(RoundedRectangle(cornerRadius: 12).strokeBorder(Color.primary.opacity(0.08), lineWidth: 1))
+    }
+
     private func performSearch() {
         let term = searchTerm.trimmingCharacters(in: .whitespaces)
         guard !term.isEmpty else { return }
         Task {
             isSearching = true
             do {
-                searchResults = try await service.search(term: term)
+                searchResults = try await service.search(term: term, platform: selectedPlatform)
             } catch {
                 service.log("搜索失败: \(error.localizedDescription)", type: .error)
             }
@@ -147,9 +174,12 @@ fileprivate struct AppResultCard: View {
                         .lineLimit(1)
                 }
 
-                HStack(spacing: 8) {
+                HStack(spacing: 6) {
                     SectionBadge(text: app.formattedPrice, tint: app.isFree ? .green : .orange)
                     SectionBadge(text: "v\(app.version)", tint: .appAccent)
+                    ForEach(app.platforms.prefix(3), id: \.self) { p in
+                        SectionBadge(text: p.displayName, tint: .blue)
+                    }
                 }
             }
             .frame(maxWidth: .infinity, alignment: .leading)
@@ -238,11 +268,14 @@ struct AppDetailSheetView: View {
                             .font(.caption)
                             .foregroundStyle(.secondary)
                     }
-                    HStack(spacing: 8) {
+                    HStack(spacing: 6) {
                         SectionBadge(text: app.formattedPrice, tint: app.isFree ? .green : .orange)
                         SectionBadge(text: "v\(app.version)", tint: .appAccent)
                         if let rating = detail?.averageUserRating, rating > 0 {
                             SectionBadge(text: String(format: "%.1f ★", rating), tint: .yellow)
+                        }
+                        ForEach(app.platforms.prefix(4), id: \.self) { p in
+                            SectionBadge(text: p.displayName, tint: .blue)
                         }
                     }
                 }

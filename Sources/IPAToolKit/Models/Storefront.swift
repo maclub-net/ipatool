@@ -1,6 +1,6 @@
 /// App Store 地区代码映射
-enum Storefront {
-    static let mappings: [String: String] = [
+public enum Storefront {
+    public static let mappings: [String: String] = [
         "AE": "143481", "AG": "143540", "AI": "143538", "AL": "143575",
         "AM": "143524", "AO": "143564", "AR": "143505", "AT": "143445",
         "AU": "143460", "AZ": "143568", "BB": "143541", "BD": "143490",
@@ -38,7 +38,7 @@ enum Storefront {
     ]
 
     /// 根据 StoreFront ID 获取国家代码
-    static func countryCode(for storeFront: String) -> String? {
+    public static func countryCode(for storeFront: String) -> String? {
         let parts = storeFront.split(separator: "-")
         guard let first = parts.first else { return nil }
         let prefix = String(first)
@@ -46,7 +46,7 @@ enum Storefront {
     }
 
     /// 根据国家代码获取 StoreFront ID
-    static func storeFrontID(for countryCode: String) -> String? {
+    public static func storeFrontID(for countryCode: String) -> String? {
         mappings[countryCode]
     }
 }

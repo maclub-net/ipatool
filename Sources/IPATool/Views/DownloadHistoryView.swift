@@ -1,10 +1,13 @@
 import SwiftUI
+#if SWIFT_PACKAGE
+import IPAToolKit
+#endif
 
 struct DownloadHistoryView: View {
     @ObservedObject var service: AppStoreService
 
     private var activeCount: Int {
-        service.downloadQueue.filter { $0.status == .waiting || $0.status == .purchasing || $0.status == .downloading || $0.status == .processing || $0.status == .failed }.count
+        service.downloadQueue.filter { $0.status == .waiting || $0.status == .purchasing || $0.status == .downloading || $0.status == .processing || $0.status == .failed || $0.status == .paused }.count
     }
 
     var body: some View {
@@ -143,7 +146,7 @@ private struct QueueItemRow: View {
                             .foregroundStyle(.secondary)
                     }
 
-                    if item.status == .downloading || item.status == .processing {
+                    if item.status == .downloading || item.status == .processing || item.status == .paused {
                         GeometryReader { geo in
                             ZStack(alignment: .leading) {
                                 RoundedRectangle(cornerRadius: 3)
@@ -169,7 +172,47 @@ private struct QueueItemRow: View {
 
                 // 操作按钮
                 HStack(spacing: 4) {
-                    if item.status == .waiting || item.status == .purchasing || item.status == .downloading || item.status == .processing {
+                    if item.status == .downloading {
+                        Button {
+                            service.pauseDownload(item)
+                        } label: {
+                            Image(systemName: "pause.fill")
+                                .font(.system(size: 11, weight: .semibold))
+                        }
+                        .buttonStyle(.borderless)
+                        .help("暂停")
+
+                        Button {
+                            service.cancelDownload(item)
+                        } label: {
+                            Image(systemName: "xmark")
+                                .font(.system(size: 11, weight: .semibold))
+                        }
+                        .buttonStyle(.borderless)
+                        .help("取消任务")
+                    }
+
+                    if item.status == .waiting || item.status == .purchasing || item.status == .processing {
+                        Button {
+                            service.cancelDownload(item)
+                        } label: {
+                            Image(systemName: "xmark")
+                                .font(.system(size: 11, weight: .semibold))
+                        }
+                        .buttonStyle(.borderless)
+                        .help("取消任务")
+                    }
+
+                    if item.status == .paused {
+                        Button {
+                            service.resumeDownload(item)
+                        } label: {
+                            Image(systemName: "play.fill")
+                                .font(.system(size: 12, weight: .semibold))
+                        }
+                        .buttonStyle(.borderless)
+                        .help("恢复")
+
                         Button {
                             service.cancelDownload(item)
                         } label: {
@@ -223,6 +266,7 @@ private struct QueueItemRow: View {
         case .completed: "checkmark.circle"
         case .failed: "xmark.circle"
         case .cancelled: "nosign"
+        case .paused: "pause.circle"
         }
     }
 
@@ -234,6 +278,7 @@ private struct QueueItemRow: View {
         case .completed: .green
         case .failed: .red
         case .cancelled: .gray
+        case .paused: .yellow
         }
     }
 }

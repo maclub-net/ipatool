@@ -1,5 +1,8 @@
 import AppKit
 import SwiftUI
+#if SWIFT_PACKAGE
+import IPAToolKit
+#endif
 
 extension Color {
     /// App 主题色 #F67F3B

@@ -1,4 +1,7 @@
 import SwiftUI
+#if SWIFT_PACKAGE
+import IPAToolKit
+#endif
 
 // MARK: - Section Card
 

@@ -1,10 +1,21 @@
 import SwiftUI
+#if SWIFT_PACKAGE
+import IPAToolKit
+#endif
 
 struct ContentView: View {
-    @StateObject private var service = AppStoreService()
+    @StateObject private var service: AppStoreService
     @State private var selectedSection: AppSection? = .search
     @State private var isAddAccountSheetPresented = false
     @State private var isLoginSheetPresented = false
+
+    init() {
+        let service = AppStoreService()
+        service.onDirectorySelectionNeeded = { [weak service] in
+            service?.selectDownloadDirectory()
+        }
+        _service = StateObject(wrappedValue: service)
+    }
 
     var body: some View {
         NavigationSplitView {
@@ -61,10 +72,14 @@ struct ContentView: View {
             SearchView(service: service)
         case .downloads:
             DownloadHistoryView(service: service)
+        case .purchases:
+            PurchasedAppsView(service: service)
         case .accounts:
             AccountListView(service: service, isLoginSheetPresented: $isLoginSheetPresented)
         case .logs:
             LogView(service: service)
+        case .cliMcp:
+            CLIMCPGuideView()
         case .crackedIpa:
             EmptyView()
         }
@@ -99,6 +114,10 @@ struct ContentView: View {
                 }
             }
             .buttonStyle(PrimaryActionButtonStyle())
+        case .purchases:
+            EmptyView()
+        case .cliMcp:
+            EmptyView()
         case .logs:
             Button {
                 service.logMessages.removeAll()

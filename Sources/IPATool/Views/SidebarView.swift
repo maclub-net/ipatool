@@ -1,5 +1,8 @@
 import AppKit
 import SwiftUI
+#if SWIFT_PACKAGE
+import IPAToolKit
+#endif
 
 struct SidebarView: View {
     @ObservedObject var service: AppStoreService

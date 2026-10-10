@@ -1,6 +1,6 @@
 import Foundation
 
-enum AppStoreError: LocalizedError {
+public enum AppStoreError: LocalizedError {
     case invalidURL
     case httpError(Int)
     case notLoggedIn
@@ -17,7 +17,7 @@ enum AppStoreError: LocalizedError {
     case licenseRequired
     case rateLimited
 
-    var errorDescription: String? {
+    public var errorDescription: String? {
         switch self {
         case .invalidURL: "无效的 URL"
         case .httpError(let code): "HTTP 错误: \(code)"

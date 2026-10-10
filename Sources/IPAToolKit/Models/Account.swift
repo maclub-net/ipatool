@@ -1,13 +1,13 @@
 import Foundation
 
 /// 地区选项
-struct RegionOption: Identifiable, Hashable {
-    let code: String
-    let displayName: String
+public struct RegionOption: Identifiable, Hashable, Sendable {
+    public let code: String
+    public let displayName: String
 
-    var id: String { code }
+    public var id: String { code }
 
-    static let all: [RegionOption] = [
+    public static let all: [RegionOption] = [
         .init(code: "AE", displayName: "阿联酋"),
         .init(code: "AG", displayName: "安提瓜和巴布达"),
         .init(code: "AI", displayName: "安圭拉"),
@@ -145,44 +145,44 @@ struct RegionOption: Identifiable, Hashable {
     ]
 
     /// 根据地区代码获取显示名
-    static func displayName(for code: String) -> String {
+    public static func displayName(for code: String) -> String {
         all.first(where: { $0.code == code })?.displayName ?? code
     }
 }
 
 /// App Store 账号信息
-struct Account: Codable, Identifiable, Sendable {
-    var id: String { email + "_" + region }
-    let email: String
-    let name: String
-    let region: String
-    var passwordToken: String
-    var directoryServicesID: String
-    var storeFront: String
-    var password: String
-    var pod: String
+public struct Account: Codable, Identifiable, Sendable {
+    public var id: String { email + "_" + region }
+    public let email: String
+    public let name: String
+    public let region: String
+    public var passwordToken: String
+    public var directoryServicesID: String
+    public var storeFront: String
+    public var password: String
+    public var pod: String
 
-    var regionDisplayName: String {
+    public var regionDisplayName: String {
         RegionOption.displayName(for: region)
     }
 
-    var countryCode: String? {
+    public var countryCode: String? {
         Storefront.countryCode(for: storeFront)
     }
 
-    var storeFrontID: String {
+    public var storeFrontID: String {
         storeFront.split(separator: "-").first.map(String.init) ?? "143465"
     }
 }
 
 /// 账号摘要（列表展示用）
-struct AccountSummary: Codable, Identifiable {
-    var id: String { email + "_" + region }
-    let email: String
-    let name: String
-    let region: String
+public struct AccountSummary: Codable, Identifiable {
+    public var id: String { email + "_" + region }
+    public let email: String
+    public let name: String
+    public let region: String
 
-    var regionDisplayName: String {
+    public var regionDisplayName: String {
         RegionOption.displayName(for: region)
     }
 }
