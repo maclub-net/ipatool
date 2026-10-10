@@ -14,3 +14,6 @@ build/
 *.ipa
 *.dSYM.zip
 *.dSYM
+
+# 内置 ipatool-go 二进制（从 ipatool-go 项目构建复制）
+Resources/bin/

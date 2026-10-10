@@ -74,12 +74,47 @@ public final class IPAToolGoBridge {
     // MARK: - Binary Location
 
     /// 查找 ipatool-go 二进制路径
-    /// 搜索顺序：UserDefaults 自定义路径 → PATH → 常见安装位置
+    /// 搜索顺序：App Bundle 内置 → UserDefaults 自定义路径 → 常见安装位置 → PATH
     public func locateBinary() throws -> String {
         if let cached = cachedBinaryPath, FileManager.default.isExecutableFile(atPath: cached) {
             return cached
         }
 
+        // 1. 优先从 App Bundle 内置二进制查找
+        if let bundleURL = Bundle.main.url(forResource: "ipatool-go", withExtension: nil, subdirectory: "bin") {
+            let path = bundleURL.path
+            if FileManager.default.isExecutableFile(atPath: path) {
+                cachedBinaryPath = path
+                return path
+            }
+            // Bundle 内存在但权限不足时，复制到可执行位置
+            let tempPath = NSTemporaryDirectory() + "ipatool-go"
+            if (try? FileManager.default.copyItem(atPath: path, toPath: tempPath)) != nil {
+                chmod(tempPath, 0o755)
+                if FileManager.default.isExecutableFile(atPath: tempPath) {
+                    cachedBinaryPath = tempPath
+                    return tempPath
+                }
+            }
+        }
+        // 也尝试不带 subdirectory 的查找
+        if let bundleURL = Bundle.main.url(forResource: "ipatool-go", withExtension: nil) {
+            let path = bundleURL.path
+            if FileManager.default.isExecutableFile(atPath: path) {
+                cachedBinaryPath = path
+                return path
+            }
+            let tempPath = NSTemporaryDirectory() + "ipatool-go"
+            if (try? FileManager.default.copyItem(atPath: path, toPath: tempPath)) != nil {
+                chmod(tempPath, 0o755)
+                if FileManager.default.isExecutableFile(atPath: tempPath) {
+                    cachedBinaryPath = tempPath
+                    return tempPath
+                }
+            }
+        }
+
+        // 2. UserDefaults 自定义路径 + 常见安装位置
         let candidates: [String] = [
             UserDefaults.standard.string(forKey: "ipatoolGoPath") ?? "",
             "/usr/local/bin/ipatool-go",
@@ -95,7 +130,7 @@ public final class IPAToolGoBridge {
             }
         }
 
-        // 尝试 `which ipatool-go`
+        // 3. 尝试 `which ipatool-go`
         let whichTask = Process()
         whichTask.launchPath = "/usr/bin/which"
         whichTask.arguments = ["ipatool-go"]
