@@ -39,6 +39,10 @@ final class AppStoreService: ObservableObject {
     private let keychain = KeychainService.shared
     private var isProcessingQueue = false
 
+    /// Bag 中的下载端点（redownload / updateProduct），首次 fetchBag 时填充
+    private var redownloadEndpoint: String?
+    private var updateProductEndpoint: String?
+
     /// 普通网络请求 session（允许重定向）
     private let session: URLSession = {
         let config = URLSessionConfiguration.default
@@ -63,6 +67,9 @@ final class AppStoreService: ObservableObject {
     private let iTunesPathLookup = "/lookup"
     private let privatePurchasePath = "/WebObjects/MZFinance.woa/wa/buyProduct"
     private let privateDownloadPath = "/WebObjects/MZFinance.woa/wa/volumeStoreDownloadProduct"
+    private let redownloadProductPath = "/r/redownload"
+    private let updateProductPath = "/up/updateProduct"
+    private let downloadDispatchDomain = "downloaddispatch.itunes.apple.com"
 
     private let defaultAuthURL = "https://buy.itunes.apple.com/WebObjects/MZFinance.woa/wa/authenticate"
     private let userAgent = "Configurator/2.17 (Macintosh; OS X 15.2; 24C5089c) AppleWebKit/0620.1.16.11.6"
@@ -248,6 +255,15 @@ final class AppStoreService: ObservableObject {
         if selectedAccount?.id == account.id {
             selectedAccount = accounts.first(where: { $0.id != account.id })
         }
+        Task { await loadAccounts() }
+    }
+
+    /// 撤销当前账号的凭证（与上游 revoke 一致：从 keychain 移除账号）。
+    func revoke() throws {
+        guard let acc = selectedAccount else { throw AppStoreError.notLoggedIn }
+        try keychain.deleteAccount(id: acc.id)
+        log("已撤销账号 \(acc.email) 的凭证", type: .success)
+        selectedAccount = accounts.first(where: { $0.id != acc.id })
         Task { await loadAccounts() }
     }
 
@@ -527,10 +543,14 @@ final class AppStoreService: ObservableObject {
             }
 
             let dict: [String: Any]? = try parsePlist(from: data)
-            if let urlBag = dict?["urlBag"] as? [String: Any],
-               let auth = urlBag["authenticateAccount"] as? String,
-               !auth.isEmpty {
-                return normalizedAuthEndpoint(auth)
+            if let urlBag = dict?["urlBag"] as? [String: Any] {
+                // 认证端点
+                if let auth = urlBag["authenticateAccount"] as? String, !auth.isEmpty {
+                    // 下载端点（redownload / updateProduct）
+                    redownloadEndpoint = urlBag["redownloadProduct"] as? String
+                    updateProductEndpoint = urlBag["updateProduct"] as? String
+                    return normalizedAuthEndpoint(auth)
+                }
             }
         } catch {
             // ignore
@@ -882,7 +902,7 @@ final class AppStoreService: ObservableObject {
 
     // MARK: - Download
 
-    func download(app: AppInfo, externalVersionID: String? = nil, outputDirectory: URL? = nil, onProgress: ((Double) -> Void)? = nil) async throws -> DownloadResult {
+    func download(app: AppInfo, externalVersionID: String? = nil, outputDirectory: URL? = nil, onProgress: (@Sendable (Double) -> Void)? = nil) async throws -> DownloadResult {
         guard var acc = selectedAccount else { throw AppStoreError.notLoggedIn }
         isDownloading = true
         downloadProgress = 0
@@ -904,18 +924,12 @@ final class AppStoreService: ObservableObject {
         }
     }
 
-    private func downloadCore(app: AppInfo, externalVersionID: String? = nil, account acc: Account, outputDirectory: URL?, onProgress: ((Double) -> Void)?) async throws -> DownloadResult {
+    private func downloadCore(app: AppInfo, externalVersionID: String? = nil, account acc: Account, outputDirectory: URL?, onProgress: (@Sendable (Double) -> Void)?) async throws -> DownloadResult {
 
         let guid = getGUID()
+        // 确保 bag 端点已获取（含 redownload / updateProduct 回退端点）
+        _ = await fetchBagEndpoint()
         log("正在获取 \(app.name) 的下载信息...")
-
-        // 按优先级尝试下载端点：账号 pod 优先，回退到通用 pod（与上游一致）
-        let preferredPod = acc.pod.isEmpty ? "25" : acc.pod
-        let fallbackPods = [preferredPod, "71", "70", "25"].filter { !$0.isEmpty }
-        // 去重保持顺序
-        var seen = Set<String>()
-        let endpoints = fallbackPods.filter { seen.insert($0).inserted }
-            .map { "p\($0)-buy.itunes.apple.com" }
 
         // appExtVrsId：iOS 默认为 0，其他平台/版本需指定外部版本 ID
         let appExtVrsId = externalVersionID ?? "0"
@@ -924,20 +938,25 @@ final class AppStoreService: ObservableObject {
             "creditDisplay": "", "guid": guid, "salableAdamId": app.id
         ]
 
+        // 策略 1：volumeStoreDownloadProduct（按 pod 回退）
         var dict: [String: Any]?
         var lastError: Error?
 
-        for host in endpoints {
+        let preferredPod = acc.pod.isEmpty ? "25" : acc.pod
+        let fallbackPods = [preferredPod, "71", "70", "25"].filter { !$0.isEmpty }
+        var seen = Set<String>()
+        let volumeHosts = fallbackPods.filter { seen.insert($0).inserted }
+            .map { "p\($0)-buy.itunes.apple.com" }
+
+        for host in volumeHosts {
             let urlString = "https://\(host)\(privateDownloadPath)"
             guard let url = URL(string: urlString) else { continue }
-
             var request = URLRequest(url: url)
             request.httpMethod = "POST"
             request.setValue("application/x-apple-plist", forHTTPHeaderField: "Content-Type")
             request.setValue(userAgent, forHTTPHeaderField: "User-Agent")
             request.setValue(acc.directoryServicesID, forHTTPHeaderField: "iCloud-DSID")
             request.setValue(acc.directoryServicesID, forHTTPHeaderField: "X-Dsid")
-
             do {
                 dict = try await sendPlistRequest(request, payload: payload)
                 log("下载端点可用: \(host)")
@@ -946,6 +965,46 @@ final class AppStoreService: ObservableObject {
                 lastError = error
                 log("端点 \(host) 失败，尝试下一个...", type: .warning)
                 continue
+            }
+        }
+
+        // 策略 2：redownloadProduct（downloaddispatch）
+        if dict == nil || (dict?["songList"] as? [[String: Any]])?.isEmpty != false {
+            if let redownload = redownloadEndpoint,
+               let url = URL(string: redownload + redownloadProductPath) {
+                log("volumeStore 无结果，尝试 redownload...", type: .info)
+                var request = URLRequest(url: url)
+                request.httpMethod = "POST"
+                request.setValue("application/x-apple-plist", forHTTPHeaderField: "Content-Type")
+                request.setValue(userAgent, forHTTPHeaderField: "User-Agent")
+                request.setValue(acc.directoryServicesID, forHTTPHeaderField: "iCloud-DSID")
+                request.setValue(acc.directoryServicesID, forHTTPHeaderField: "X-Dsid")
+                do {
+                    dict = try await sendPlistRequest(request, payload: payload)
+                    log("redownload 端点可用")
+                } catch {
+                    log("redownload 失败: \(error.localizedDescription)", type: .warning)
+                }
+            }
+        }
+
+        // 策略 3：updateProduct（仅当指定了版本 ID）
+        if (dict?["songList"] as? [[String: Any]])?.isEmpty != false,
+           externalVersionID != nil,
+           let update = updateProductEndpoint,
+           let url = URL(string: update + updateProductPath) {
+            log("尝试 updateProduct 端点...", type: .info)
+            var request = URLRequest(url: url)
+            request.httpMethod = "POST"
+            request.setValue("application/x-apple-plist", forHTTPHeaderField: "Content-Type")
+            request.setValue(userAgent, forHTTPHeaderField: "User-Agent")
+            request.setValue(acc.directoryServicesID, forHTTPHeaderField: "iCloud-DSID")
+            request.setValue(acc.directoryServicesID, forHTTPHeaderField: "X-Dsid")
+            do {
+                dict = try await sendPlistRequest(request, payload: payload)
+                log("updateProduct 端点可用")
+            } catch {
+                log("updateProduct 失败: \(error.localizedDescription)", type: .warning)
             }
         }
 
@@ -977,6 +1036,21 @@ final class AppStoreService: ObservableObject {
         let isMacOSPackage = kind.contains("mac") || downloadURL.pathExtension.lowercased() == "pkg"
         let fileExt = isMacOSPackage ? "pkg" : "ipa"
 
+        // 下载 artwork（用于嵌入 iTunesArtwork）
+        var artworkData: Data?
+        if !isMacOSPackage, let artworkURLString = item["artworkURL"] as? String,
+           let artworkURL = URL(string: artworkURLString) {
+            do {
+                let (artData, artResp) = try await session.data(from: artworkURL)
+                if let httpResp = artResp as? HTTPURLResponse, httpResp.statusCode == 200, !artData.isEmpty {
+                    artworkData = artData
+                    log("已下载应用图标")
+                }
+            } catch {
+                log("图标下载失败，跳过: \(error.localizedDescription)", type: .warning)
+            }
+        }
+
         guard let destDir = outputDirectory else {
             throw AppStoreError.unknownError("未指定下载目录")
         }
@@ -1000,7 +1074,7 @@ final class AppStoreService: ObservableObject {
             try FileManager.default.moveItem(at: tmpPath, to: destPath)
         } else {
             log("正在处理 IPA...")
-            try await processIPA(src: tmpPath, dst: destPath, metadata: metadata, account: acc)
+            try await processIPA(src: tmpPath, dst: destPath, metadata: metadata, artwork: artworkData, account: acc)
             try? FileManager.default.removeItem(at: tmpPath)
         }
 
@@ -1013,32 +1087,103 @@ final class AppStoreService: ObservableObject {
         return result
     }
 
-    private func downloadFile(from url: URL, to destination: URL, onProgress: @escaping (Double) -> Void) async throws {
-        let caller = DownloadCompletionHandler(destination: destination, onProgress: onProgress)
-        return try await withCheckedThrowingContinuation { continuation in
-            caller.continuation = continuation
-            let delegate = ProgressDelegate(onProgress: onProgress) { tmpURL, error in
-                caller.handle(tmpURL: tmpURL, error: error)
-            }
-            let session = URLSession(
-                configuration: .default,
-                delegate: DelegatingDownloader(delegate: delegate),
-                delegateQueue: nil
-            )
-            let task = session.downloadTask(with: url)
-            task.resume()
+    private func downloadFile(from url: URL, to destination: URL, onProgress: @escaping @Sendable (Double) -> Void) async throws {
+        let fm = FileManager.default
+
+        // 断点续传：检查已有临时文件大小，发送 Range 请求
+        var existingSize: Int64 = 0
+        if fm.fileExists(atPath: destination.path),
+           let attrs = try? fm.attributesOfItem(atPath: destination.path),
+           let size = attrs[.size] as? Int64 {
+            existingSize = size
         }
+
+        var request = URLRequest(url: url)
+        request.setValue(userAgent, forHTTPHeaderField: "User-Agent")
+        if existingSize > 0 {
+            request.setValue("bytes=\(existingSize)-", forHTTPHeaderField: "Range")
+            log("断点续传: 已下载 \(existingSize) 字节", type: .info)
+        }
+
+        // 使用 URLSession 异步字节流，支持 Range 续传
+        let (bytes, response) = try await session.bytes(for: request)
+        guard let httpResp = response as? HTTPURLResponse else {
+            throw AppStoreError.httpError(0)
+        }
+
+        let handle: FileHandle
+        var offset: Int64 = 0
+        var totalSize: Int64 = 0
+
+        switch httpResp.statusCode {
+        case 200:
+            // 服务器不支持 Range，从头开始
+            existingSize = 0
+            if fm.fileExists(atPath: destination.path) {
+                try? fm.removeItem(at: destination)
+            }
+            fm.createFile(atPath: destination.path, contents: nil)
+            handle = try FileHandle(forWritingTo: destination)
+            totalSize = Int64(httpResp.expectedContentLength)
+        case 206:
+            // 续传成功
+            guard let range = httpResp.value(forHTTPHeaderField: "Content-Range"),
+                  let totalStr = range.split(separator: "/").last,
+                  let total = Int64(totalStr) else {
+                throw AppStoreError.unknownError("无法解析 Content-Range")
+            }
+            totalSize = total
+            handle = try FileHandle(forWritingTo: destination)
+            try handle.seekToEnd()
+            offset = existingSize
+        case 416:
+            // Range 不可满足 — 可能已下载完整
+            if let range = httpResp.value(forHTTPHeaderField: "Content-Range"),
+               let totalStr = range.split(separator: "/").last,
+               let total = Int64(totalStr), total == existingSize {
+                log("文件已完整下载")
+                return
+            }
+            throw AppStoreError.unknownError("Range 请求不可满足")
+        default:
+            throw AppStoreError.httpError(httpResp.statusCode)
+        }
+
+        defer { try? handle.close() }
+
+        var downloaded = offset
+        var buffer = Data()
+        let chunkSize = 64 * 1024
+
+        for try await byte in bytes {
+            buffer.append(byte)
+            if buffer.count >= chunkSize {
+                try handle.write(contentsOf: buffer)
+                downloaded += Int64(buffer.count)
+                buffer.removeAll(keepingCapacity: true)
+                if totalSize > 0 {
+                    onProgress(Double(downloaded) / Double(totalSize))
+                }
+            }
+        }
+        if !buffer.isEmpty {
+            try handle.write(contentsOf: buffer)
+            downloaded += Int64(buffer.count)
+        }
+
+        onProgress(1.0)
     }
 
-    private func processIPA(src: URL, dst: URL, metadata: [String: Any], account: Account) async throws {
+    private func processIPA(src: URL, dst: URL, metadata: [String: Any], artwork: Data?, account: Account) async throws {
         let metaData = try PropertyListSerialization.data(fromPropertyList: metadata, format: .binary, options: 0)
         let accCopy = account
+        let artworkCopy = artwork
         try await Task.detached(priority: .userInitiated) {
-            try self.processIPASync(src: src, dst: dst, metadata: metaData, account: accCopy)
+            try self.processIPASync(src: src, dst: dst, metadata: metaData, artwork: artworkCopy, account: accCopy)
         }.value
     }
 
-    private nonisolated func processIPASync(src: URL, dst: URL, metadata metaData: Data, account: Account) throws {
+    private nonisolated func processIPASync(src: URL, dst: URL, metadata metaData: Data, artwork: Data?, account: Account) throws {
         let metadata = try PropertyListSerialization.propertyList(from: metaData, options: [], format: nil) as? [String: Any] ?? [:]
 
         let fm = FileManager.default
@@ -1046,6 +1191,11 @@ final class AppStoreService: ObservableObject {
         let entries = try ZipArchive.readEntries(from: srcData)
 
         var zipEntries: [(name: String, data: Data)] = entries.map { ($0.name, $0.data) }
+
+        // 嵌入应用图标（iTunesArtwork，无扩展名）
+        if let artwork, !artwork.isEmpty {
+            zipEntries.append(("iTunesArtwork", artwork))
+        }
 
         var metaWithAccount = metadata
         metaWithAccount["apple-id"] = account.email
@@ -1219,73 +1369,3 @@ final class AppStoreService: ObservableObject {
     }
 }
 
-// MARK: - 下载完成处理
-
-private final class DownloadCompletionHandler: @unchecked Sendable {
-    let destination: URL
-    let onProgress: (Double) -> Void
-    var continuation: CheckedContinuation<Void, Error>?
-    private var completed = false
-    private let lock = NSLock()
-
-    init(destination: URL, onProgress: @escaping (Double) -> Void) {
-        self.destination = destination
-        self.onProgress = onProgress
-    }
-
-    func handle(tmpURL: URL?, error: Error?) {
-        lock.lock()
-        defer { lock.unlock() }
-        guard !completed else { return }
-        completed = true
-
-        if let error {
-            continuation?.resume(throwing: error)
-        } else if let tmpURL {
-            do {
-                if FileManager.default.fileExists(atPath: destination.path) {
-                    try FileManager.default.removeItem(at: destination)
-                }
-                try FileManager.default.moveItem(at: tmpURL, to: destination)
-                DispatchQueue.main.async { [onProgress] in
-                    onProgress(1.0)
-                }
-                continuation?.resume()
-            } catch {
-                continuation?.resume(throwing: error)
-            }
-        }
-    }
-}
-
-// MARK: - 下载进度代理
-
-private final class ProgressDelegate: @unchecked Sendable {
-    let onProgress: (Double) -> Void
-    let onComplete: (URL?, Error?) -> Void
-
-    init(onProgress: @escaping (Double) -> Void, onComplete: @escaping (URL?, Error?) -> Void) {
-        self.onProgress = onProgress
-        self.onComplete = onComplete
-    }
-}
-
-private final class DelegatingDownloader: NSObject, URLSessionDownloadDelegate, @unchecked Sendable {
-    private let delegate: ProgressDelegate
-    init(delegate: ProgressDelegate) { self.delegate = delegate }
-
-    func urlSession(_ session: URLSession, downloadTask: URLSessionDownloadTask, didWriteData bytesWritten: Int64, totalBytesWritten: Int64, totalBytesExpectedToWrite: Int64) {
-        guard totalBytesExpectedToWrite > 0 else { return }
-        delegate.onProgress(Double(totalBytesWritten) / Double(totalBytesExpectedToWrite))
-    }
-
-    func urlSession(_ session: URLSession, downloadTask: URLSessionDownloadTask, didFinishDownloadingTo location: URL) {
-        delegate.onComplete(location, nil)
-    }
-
-    func urlSession(_ session: URLSession, task: URLSessionTask, didCompleteWithError error: Error?) {
-        if let error {
-            delegate.onComplete(nil, error)
-        }
-    }
-}
