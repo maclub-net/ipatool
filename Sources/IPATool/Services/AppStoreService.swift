@@ -201,8 +201,9 @@ final class AppStoreService: ObservableObject {
         var redirectURL: String?
         var redirectAttempt = 0
         var attempt = 0
+        let maxAttempts = 3
 
-        while attempt < 4 {
+        while attempt < maxAttempts {
             attempt += 1
             let (result, redirect, error, retryDelay) = try await attemptLogin(
                 email: email, password: password, authCode: authCode,
@@ -215,10 +216,11 @@ final class AppStoreService: ObservableObject {
                     throw AppStoreError.authCodeRequired
                 }
                 if case .rateLimited = error {
-                    let delay = retryDelay ?? 10
-                    log("请求被限流，等待 \(Int(delay)) 秒后重试...", type: .warning)
+                    // Retry-After 优先；否则指数退避：10s/20s/30s
+                    let exponentialDelay = min(10.0 * pow(2.0, Double(attempt - 1)), 30.0)
+                    let delay = retryDelay ?? exponentialDelay
+                    log("HTTP 可重试错误，等待 \(Int(delay)) 秒后重试 (attempt \(attempt)/\(maxAttempts))...", type: .warning)
                     try await Task.sleep(nanoseconds: UInt64(delay * 1_000_000_000))
-                    attempt -= 1  // 不计入 attempt 计数
                     continue
                 }
                 throw error
@@ -240,7 +242,7 @@ final class AppStoreService: ObservableObject {
             if let redirect = redirect {
                 redirectURL = redirect
                 redirectAttempt += 1
-                if redirectAttempt > 3 { throw AppStoreError.unknownError("重定向次数过多") }
+                if redirectAttempt > 4 { throw AppStoreError.unknownError("重定向次数过多") }
                 continue
             }
 
@@ -278,8 +280,9 @@ final class AppStoreService: ObservableObject {
         var redirectURL: String?
         var attempt = 0
         var redirectCount = 0
+        let maxAttempts = 3
 
-        while attempt < 4 {
+        while attempt < maxAttempts {
             attempt += 1
             let (result, redirect, error, retryDelay) = try await attemptLogin(
                 email: account.email, password: account.password, authCode: "",
@@ -288,10 +291,10 @@ final class AppStoreService: ObservableObject {
 
             if let error {
                 if case .rateLimited = error {
-                    let delay = retryDelay ?? 10
-                    log("重新登录被限流，等待 \(Int(delay)) 秒...", type: .warning)
+                    let exponentialDelay = min(10.0 * pow(2.0, Double(attempt - 1)), 30.0)
+                    let delay = retryDelay ?? exponentialDelay
+                    log("重新登录可重试错误，等待 \(Int(delay)) 秒 (attempt \(attempt)/\(maxAttempts))...", type: .warning)
                     try await Task.sleep(nanoseconds: UInt64(delay * 1_000_000_000))
-                    attempt -= 1
                     continue
                 }
                 throw error
@@ -597,17 +600,39 @@ final class AppStoreService: ObservableObject {
         }
         request.httpBody = bodyString.data(using: .utf8)
 
-        let (rawData, response) = try await authSession.data(for: request)
+        let rawData: Data
+        let response: URLResponse
+        do {
+            (rawData, response) = try await authSession.data(for: request)
+        } catch {
+            // 网络传输错误（超时、EOF、连接重置）视为可重试
+            log("网络错误: \(error.localizedDescription)，将重试", type: .warning)
+            return (nil, nil, .rateLimited, nil)
+        }
         guard let httpResponse = response as? HTTPURLResponse else {
             return (nil, nil, .httpError(0), nil)
         }
 
         log("认证响应: HTTP \(httpResponse.statusCode)")
 
-        // 429 限流 — 尊重 Retry-After 头
-        if httpResponse.statusCode == 429 {
-            let delay = retryAfterSeconds(headerValue: httpResponse.value(forHTTPHeaderField: "Retry-After")).map { TimeInterval($0) } ?? 10
-            return (nil, nil, .rateLimited, delay)
+        // 可重试状态码：204, 403, 404, 429, 5xx（与上游一致）
+        // 优先尊重 Retry-After 头；无则用指数退避（10s/20s/30s）
+        let status = httpResponse.statusCode
+        let isRetryable = status == 204 || status == 403 || status == 404 || status == 429 || (status >= 500 && status < 600)
+
+        if isRetryable {
+            // Retry-After 优先；若服务器要求等待超过 30s，直接失败
+            if let retryAfter = retryAfterSeconds(headerValue: httpResponse.value(forHTTPHeaderField: "Retry-After")) {
+                if retryAfter > 30 {
+                    return (nil, nil, .loginError("Apple 要求等待超过 30 秒，请稍后重试"), nil)
+                }
+                let delay = max(TimeInterval(retryAfter), 1.0)
+                log("HTTP \(status)，Retry-After \(retryAfter)s", type: .warning)
+                return (nil, nil, .rateLimited, delay)
+            }
+            // 无 Retry-After：由调用方按 attempt 指数退避
+            log("HTTP \(status)，将重试", type: .warning)
+            return (nil, nil, .rateLimited, nil)
         }
 
         // 认证重定向（301/302/307/308）— 手动跟随，仅更换目标 URL，
