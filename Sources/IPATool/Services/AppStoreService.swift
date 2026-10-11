@@ -1059,7 +1059,7 @@ final class AppStoreService: ObservableObject {
     // MARK: - 下载队列
 
     /// 将应用加入下载队列
-    func enqueueDownload(app: AppInfo) {
+    func enqueueDownload(app: AppInfo, externalVersionID: String? = nil) {
         guard let acc = selectedAccount else {
             log("请先选择一个账号", type: .error)
             return
@@ -1073,7 +1073,7 @@ final class AppStoreService: ObservableObject {
             log("\"\(app.name)\" 已在下载队列中", type: .warning)
             return
         }
-        let item = DownloadQueueItem(app: app, account: acc, addedAt: Date())
+        let item = DownloadQueueItem(app: app, account: acc, externalVersionID: externalVersionID, addedAt: Date())
         downloadQueue.append(item)
         log("\"\(app.name)\" 已加入下载队列", type: .success)
         processQueue()
@@ -1184,7 +1184,7 @@ final class AppStoreService: ObservableObject {
         // 下载
         downloadQueue[index].status = .downloading
         do {
-            let result = try await download(app: item.app, outputDirectory: downloadDirectory) { [weak self] p in
+            let result = try await download(app: item.app, externalVersionID: item.externalVersionID, outputDirectory: downloadDirectory) { [weak self] p in
                 Task { @MainActor [weak self] in
                     if let i = self?.downloadQueue.firstIndex(where: { $0.id == item.id }) {
                         self?.downloadQueue[i].progress = p

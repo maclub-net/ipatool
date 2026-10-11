@@ -6,6 +6,15 @@ struct SearchView: View {
     @State private var searchResults: [AppInfo] = []
     @State private var isSearching = false
     @State private var selectedApp: AppInfo? = nil
+    @State private var selectedPlatform: String? = nil
+    @State private var appIdInput = ""
+
+    private var appIdInt: Int64? { Int64(appIdInput.trimmingCharacters(in: .whitespaces)) }
+
+    private let platforms: [(label: String, value: String?)] = [
+        ("全部", nil), ("iOS", "iphone"), ("iPad", "ipad"),
+        ("Apple TV", "appletv"), ("macOS", "macos")
+    ]
 
     var body: some View {
         VStack(alignment: .leading, spacing: 20) {
@@ -48,22 +57,75 @@ struct SearchView: View {
 
             // 搜索
             SectionCard(title: "搜索应用", subtitle: "输入应用名称或 Bundle ID") {
+                VStack(spacing: 12) {
+                    HStack(spacing: 10) {
+                        AppTextField("请输入 App 名称 / Bundle ID", text: $searchTerm)
+                            .onSubmit { performSearch() }
+
+                        Button {
+                            performSearch()
+                        } label: {
+                            HStack(spacing: 6) {
+                                if isSearching {
+                                    ProgressView().scaleEffect(0.7)
+                                }
+                                Text("搜索")
+                            }
+                        }
+                        .buttonStyle(PrimaryActionButtonStyle())
+                        .disabled(isSearching || service.selectedAccount == nil || searchTerm.trimmingCharacters(in: .whitespaces).isEmpty)
+                    }
+
+                    // 平台选择
+                    HStack(spacing: 6) {
+                        ForEach(platforms, id: \.label) { platform in
+                            Button {
+                                selectedPlatform = platform.value
+                            } label: {
+                                Text(platform.label)
+                                    .font(.system(size: 12, weight: .medium))
+                                    .padding(.horizontal, 12)
+                                    .padding(.vertical, 6)
+                                    .background(
+                                        RoundedRectangle(cornerRadius: 8, style: .continuous)
+                                            .fill(selectedPlatform == platform.value ? Color.appAccent.opacity(0.18) : Color.primary.opacity(0.04))
+                                    )
+                                    .overlay(
+                                        RoundedRectangle(cornerRadius: 8, style: .continuous)
+                                            .strokeBorder(selectedPlatform == platform.value ? Color.appAccent.opacity(0.4) : Color.primary.opacity(0.08), lineWidth: 1)
+                                    )
+                                    .foregroundStyle(selectedPlatform == platform.value ? Color.appAccent : .secondary)
+                            }
+                            .buttonStyle(.plain)
+                        }
+                        Spacer()
+                    }
+                }
+            }
+
+            // 按 App ID 直接操作
+            SectionCard(title: "按 App ID 操作", subtitle: "已知 Apple ID 时可直接购买或下载") {
                 HStack(spacing: 10) {
-                    AppTextField("请输入 App 名称 / Bundle ID", text: $searchTerm)
-                        .onSubmit { performSearch() }
+                    AppTextField("输入 App ID（数字）", text: $appIdInput)
+                        .onSubmit { /* allow enter to focus buttons */ }
 
                     Button {
-                        performSearch()
+                        purchaseByAppID()
                     } label: {
-                        HStack(spacing: 6) {
-                            if isSearching {
-                                ProgressView().scaleEffect(0.7)
-                            }
-                            Text("搜索")
-                        }
+                        Image(systemName: "cart.badge.plus")
+                        Text("购买")
+                    }
+                    .buttonStyle(SecondaryActionButtonStyle())
+                    .disabled(appIdInt == nil || service.selectedAccount == nil)
+
+                    Button {
+                        downloadByAppID()
+                    } label: {
+                        Image(systemName: "arrow.down.to.line")
+                        Text("下载")
                     }
                     .buttonStyle(PrimaryActionButtonStyle())
-                    .disabled(isSearching || service.selectedAccount == nil || searchTerm.trimmingCharacters(in: .whitespaces).isEmpty)
+                    .disabled(appIdInt == nil || service.selectedAccount == nil)
                 }
             }
 
@@ -102,12 +164,34 @@ struct SearchView: View {
         Task {
             isSearching = true
             do {
-                searchResults = try await service.search(term: term)
+                searchResults = try await service.search(term: term, platform: selectedPlatform)
             } catch {
                 service.log("搜索失败: \(error.localizedDescription)", type: .error)
             }
             isSearching = false
         }
+    }
+
+    private func purchaseByAppID() {
+        guard let id = appIdInt else { return }
+        Task {
+            do {
+                try await service.purchaseByAppID(id)
+                service.log("App \(id) 许可证获取成功", type: .success)
+            } catch {
+                service.log("购买失败: \(error.localizedDescription)", type: .error)
+            }
+        }
+    }
+
+    private func downloadByAppID() {
+        guard let id = appIdInt else { return }
+        let app = AppInfo(
+            id: id, bundleID: "", name: "App \(id)", version: "",
+            price: 0, iconURL: nil, developer: nil, description: nil,
+            fileSizeBytes: nil, trackViewURL: nil
+        )
+        service.enqueueDownload(app: app)
     }
 }
 
@@ -216,6 +300,12 @@ struct AppDetailSheetView: View {
     @State private var detail: AppDetail?
     @State private var isLoadingDetail = true
     @State private var detailError: String?
+    @State private var isPurchasing = false
+    @State private var purchaseMessage: String?
+    @State private var versions: [String] = []
+    @State private var isLoadingVersions = false
+    @State private var versionsError: String?
+    @State private var selectedVersionID: String? = nil
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
@@ -312,10 +402,26 @@ struct AppDetailSheetView: View {
                     .buttonStyle(SecondaryActionButtonStyle())
                 }
 
+                Button {
+                    performPurchase()
+                } label: {
+                    HStack(spacing: 6) {
+                        if isPurchasing {
+                            ProgressView().scaleEffect(0.7)
+                        } else {
+                            Image(systemName: "cart.badge.plus")
+                        }
+                        Text(isPurchasing ? "购买中..." : "购买许可证")
+                    }
+                }
+                .buttonStyle(SecondaryActionButtonStyle())
+                .disabled(isPurchasing || !app.isFree)
+                .help(app.isFree ? "获取免费应用许可证" : "暂不支持付费应用")
+
                 Spacer()
 
                 Button {
-                    service.enqueueDownload(app: app)
+                    service.enqueueDownload(app: app, externalVersionID: selectedVersionID)
                 } label: {
                     HStack(spacing: 6) {
                         Image(systemName: "arrow.down.to.line")
@@ -326,6 +432,14 @@ struct AppDetailSheetView: View {
             }
             .padding(.horizontal, 24)
             .padding(.vertical, 16)
+
+            if let purchaseMessage {
+                Text(purchaseMessage)
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                    .padding(.horizontal, 24)
+                    .padding(.bottom, 12)
+            }
         }
         .frame(minWidth: 520, idealWidth: 560)
         .task {
@@ -420,6 +534,9 @@ struct AppDetailSheetView: View {
             }
         }
 
+        // 版本列表
+        versionsSection
+
         // 基本信息
         VStack(alignment: .leading, spacing: 8) {
             Label("基本信息", systemImage: "info.circle")
@@ -437,6 +554,89 @@ struct AppDetailSheetView: View {
                 InfoRow(label: "分级", value: rating)
             }
         }
+    }
+
+    @ViewBuilder
+    private var versionsSection: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            HStack {
+                Label("可用版本", systemImage: "list.number")
+                    .font(.system(size: 13, weight: .semibold))
+                    .foregroundStyle(.secondary)
+                Spacer()
+                Button {
+                    Task { await loadVersions() }
+                } label: {
+                    if isLoadingVersions {
+                        ProgressView().scaleEffect(0.6)
+                    } else {
+                        Image(systemName: "arrow.clockwise")
+                            .font(.system(size: 11))
+                    }
+                }
+                .buttonStyle(.plain)
+                .help("刷新版本列表")
+            }
+
+            if isLoadingVersions {
+                Text("加载中...")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            } else if let versionsError {
+                Text(versionsError)
+                    .font(.caption)
+                    .foregroundStyle(.orange)
+            } else if versions.isEmpty {
+                Text("点击刷新按钮获取可用版本")
+                    .font(.caption)
+                    .foregroundStyle(.tertiary)
+            } else {
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: 6) {
+                        Button {
+                            selectedVersionID = nil
+                        } label: {
+                            Text("最新")
+                                .font(.system(size: 11, weight: .medium))
+                                .padding(.horizontal, 10)
+                                .padding(.vertical, 5)
+                                .background(
+                                    RoundedRectangle(cornerRadius: 6, style: .continuous)
+                                        .fill(selectedVersionID == nil ? Color.appAccent.opacity(0.2) : Color.primary.opacity(0.05))
+                                )
+                                .foregroundStyle(selectedVersionID == nil ? Color.appAccent : .secondary)
+                        }
+                        .buttonStyle(.plain)
+
+                        ForEach(versions, id: \.self) { vid in
+                            Button {
+                                selectedVersionID = vid
+                            } label: {
+                                Text(vid)
+                                    .font(.system(size: 11, weight: .medium))
+                                    .padding(.horizontal, 10)
+                                    .padding(.vertical, 5)
+                                    .background(
+                                        RoundedRectangle(cornerRadius: 6, style: .continuous)
+                                            .fill(selectedVersionID == vid ? Color.appAccent.opacity(0.2) : Color.primary.opacity(0.05))
+                                    )
+                                    .foregroundStyle(selectedVersionID == vid ? Color.appAccent : .secondary)
+                            }
+                            .buttonStyle(.plain)
+                        }
+                    }
+                }
+                Text("选中版本后点击「加入下载队列」将下载该版本")
+                    .font(.caption2)
+                    .foregroundStyle(.tertiary)
+            }
+        }
+        .padding(12)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(
+            RoundedRectangle(cornerRadius: 10, style: .continuous)
+                .fill(Color.primary.opacity(0.03))
+        )
     }
 
     private func loadIcon() async {
@@ -469,6 +669,34 @@ struct AppDetailSheetView: View {
             return date.formatted(date: .abbreviated, time: .omitted)
         }
         return dateStr
+    }
+
+    private func performPurchase() {
+        Task {
+            isPurchasing = true
+            purchaseMessage = nil
+            do {
+                try await service.purchase(app: app)
+                purchaseMessage = "许可证获取成功，可以下载了"
+            } catch {
+                purchaseMessage = "购买失败: \(error.localizedDescription)"
+            }
+            isPurchasing = false
+        }
+    }
+
+    private func loadVersions() async {
+        isLoadingVersions = true
+        versionsError = nil
+        do {
+            versions = try await service.listVersions(appID: app.id)
+            if versions.isEmpty {
+                versionsError = "未找到可用版本"
+            }
+        } catch {
+            versionsError = "加载失败: \(error.localizedDescription)"
+        }
+        isLoadingVersions = false
     }
 }
 

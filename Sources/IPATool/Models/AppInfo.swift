@@ -101,10 +101,18 @@ struct DownloadQueueItem: Identifiable {
     let id = UUID()
     let app: AppInfo
     let account: Account
+    let externalVersionID: String?
     let addedAt: Date
     var status: DownloadStatus = .waiting
     var progress: Double = 0
     var error: String?
+
+    init(app: AppInfo, account: Account, externalVersionID: String? = nil, addedAt: Date) {
+        self.app = app
+        self.account = account
+        self.externalVersionID = externalVersionID
+        self.addedAt = addedAt
+    }
 
     enum DownloadStatus {
         case waiting
