@@ -1521,7 +1521,7 @@ struct SettingsView: View {
                     Button {
                         Task { await model.setupSAP() }
                     } label: {
-                        ActionButtonLabel(title: model.sapStatus == .loading ? "初始化中" : "初始化", systemImage: "bolt.fill")
+                        ActionButtonLabel(title: model.sapStatus == .loading ? "初始化中" : (model.sapStatus == .failed ? "重试" : "初始化"), systemImage: "bolt.fill")
                     }
                     .buttonStyle(PrimaryActionButtonStyle())
                     .disabled(model.sapStatus == .loading || model.sapStatus == .ready)

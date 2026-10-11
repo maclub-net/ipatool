@@ -699,9 +699,21 @@ final class AppModel: ObservableObject {
             sapStatus = .ready
             showMessage("SAP 签名引擎已就绪", success: true)
         } catch {
+            // 失败时清理，确保可以重试
+            signer = nil
             sapStatus = .failed
             showMessage("SAP 初始化失败：\(error.localizedDescription)", success: false)
         }
+    }
+
+    /// 重置 SAP 状态到未初始化，允许重新初始化
+    func resetSAP() {
+        signer?.close()
+        signer = nil
+        sapAssets = nil
+        sapConfig = nil
+        machineGUID = nil
+        sapStatus = .notReady
     }
 
     // MARK: - Popup
