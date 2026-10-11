@@ -4,34 +4,37 @@
 ![macOS](https://img.shields.io/badge/platform-macOS%2014%2B-blue)
 ![Swift](https://img.shields.io/badge/swift-5.9-orange)
 
-IPATool 是一款原生 macOS 桌面应用，用于搜索 App Store 中的应用、获取许可并下载 IPA 安装包到本地。支持多地区 Apple ID 管理、双重认证、已购应用浏览、历史版本下载，以及 iOS / iPadOS / tvOS / visionOS / macOS 全平台包下载。
+**Languages:** [English](README.md) · [简体中文](README.zh-Hans.md) · [繁體中文](README.zh-Hant.md) · [日本語](README.ja.md) · [한국어](README.ko.md)
 
-## 官网
+IPATool is a native macOS desktop app for searching apps on the App Store, obtaining licenses, and downloading IPA packages locally. It supports multi-region Apple ID management, two-factor authentication, purchased app browsing, historical version downloads, and package downloads for iOS / iPadOS / tvOS / visionOS / macOS.
+
+## Download
+
+- [App Store](https://apps.apple.com/cn/app/ipatool/id6774012874)
+- [GitHub Releases](https://github.com/maclub-net/ipatool/releases)
+
+## Website
 
 https://www.ipatool.cn
 
-## 下载
+## Features
 
-前往 [GitHub Releases](https://github.com/maclub-net/ipatool/releases) 下载最新版本。
+- **App Search**: Search the App Store by keyword, with platform filters for iPhone, iPad, Apple TV, visionOS, and macOS. Search runs automatically after you stop typing.
+- **Multi-Account Management**: Add multiple Apple IDs from different regions and switch between them with one click. Account credentials are encrypted and stored in the macOS Keychain.
+- **Two-Factor Authentication**: When 2FA is required, a dedicated 6-digit code input screen appears; submission is automatic once all digits are entered.
+- **Automatic Token Renewal**: Your password is stored encrypted alongside the account. When credentials expire, the app automatically re-logs in to refresh the token. If 2FA is triggered, the account is marked as requiring re-login.
+- **Purchased Apps**: Browse the purchased app list of the current account, filter by platform, and tap an app to view its details.
+- **App Details**: View app icon, developer, price, description, screenshots, and a list of downloadable historical versions.
+- **Download Manager**: Asynchronous download queue with real-time progress. Pause, cancel, remove, or reveal in Finder.
+- **macOS Package Decryption**: macOS apps are automatically decrypted via the StoreAgent engine after download, producing an installable `.ipa` package.
+- **File Naming**: Downloaded files follow the `AppName_Version(VersionID fallback)_Account.ipa` convention.
 
-## 功能特性
+## Requirements
 
-- **应用搜索**：按关键词搜索 App Store，支持 iPhone、iPad、Apple TV、visionOS、macOS 平台筛选，输入后自动搜索。
-- **多账号管理**：支持添加多个不同地区的 Apple ID，一键切换；账号凭据加密存储于 macOS Keychain。
-- **双重认证**：登录时若账号开启 2FA，弹出独立的 6 位验证码输入界面，输入完成自动提交。
-- **Token 自动续期**：密码随账号加密保存，当登录凭据失效时自动用密码重新登录刷新 token；若触发 2FA 则标记账号需重新登录。
-- **已购应用**：浏览当前账号的已购应用列表，支持平台筛选，点击查看应用详情。
-- **应用详情**：展示应用图标、开发者、价格、简介、截图，以及可下载的历史版本列表。
-- **下载管理**：异步下载队列，实时进度，支持暂停/取消/移除/在 Finder 中打开。
-- **macOS 包解密**：macOS 应用下载后通过 StoreAgent 引擎自动解密，输出可直接安装的 `.ipa` 包。
-- **文件命名**：下载文件按 `应用名_版本号(版本序号兜底)_下载账号.ipa` 规则命名。
+- macOS 14.0 (Sonoma) or later
+- Xcode 15 or later (for building from source)
 
-## 系统要求
-
-- macOS 14.0 (Sonoma) 及以上
-- Xcode 15 及以上（自行构建时）
-
-## 自行构建
+## Building from Source
 
 ```bash
 git clone https://github.com/maclub-net/ipatool.git
@@ -39,28 +42,28 @@ cd ipatool
 xcodebuild -project IPATool.xcodeproj -scheme IPATool -configuration Release build
 ```
 
-构建产物位于 `DerivedData/IPATool/Build/Products/Release/IPATool.app`。
+The built app is located at `DerivedData/IPATool/Build/Products/Release/IPATool.app`.
 
-## 项目结构
+## Project Structure
 
 ```
 Sources/
-├── CSAP/          # C 层 SAP/StoreAgent 引擎（签名、macOS 包解密）
-├── IPAToolCore/   # 核心逻辑：App Store API 客户端、SAP 签名器
-├── IPAToolGUI/    # SwiftUI 界面与应用状态管理
-└── IPAToolCLI/    # 命令行入口
+├── CSAP/          # C-layer SAP/StoreAgent engine (signing, macOS package decryption)
+├── IPAToolCore/   # Core logic: App Store API client, SAP signer
+├── IPAToolGUI/    # SwiftUI interface and app state management
+└── IPAToolCLI/    # Command-line entry point
 ```
 
-## 社区
+## Community
 
-- [QQ 群](https://qm.qq.com/q/VPxUSjKUma)
-- [QQ 频道](https://pd.qq.com/s/foo260n5q)
+- [QQ Group](https://qm.qq.com/q/VPxUSjKUma)
+- [QQ Channel](https://pd.qq.com/s/foo260n5q)
 - [GitHub Issues](https://github.com/maclub-net/ipatool/issues)
 
-## 致谢
+## Credits
 
-本项目的协议与解密逻辑参考自 [ipatool](https://github.com/majd/ipatool)。
+The protocol and decryption logic are based on [ipatool](https://github.com/majd/ipatool).
 
-## 许可证
+## License
 
 [GNU General Public License v3.0](https://www.gnu.org/licenses/gpl-3.0.html)
