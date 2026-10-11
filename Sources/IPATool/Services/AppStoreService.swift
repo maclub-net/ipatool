@@ -74,16 +74,13 @@ final class AppStoreService: ObservableObject {
     private let defaultAuthURL = "https://buy.itunes.apple.com/WebObjects/MZFinance.woa/wa/authenticate"
     private let userAgent = "Configurator/2.17 (Macintosh; OS X 15.2; 24C5089c) AppleWebKit/0620.1.16.11.6"
 
-    /// 规范化 bag 返回的认证端点。
-    /// Apple 当前的 native fast 端点在缺少尾部 `/` 时会出现额外重定向甚至认证失败；
-    /// Go 版已做兼容，这里保持一致。
+    /// 规范化认证端点：强制 path 为上游约定的 authenticate 路径。
+    /// 与上游 f9aa653 一致：bag 返回的 path 可能不可用（甚至 301 无 Location），
+    /// 因此只保留 host/query，path 统一替换为 /WebObjects/MZFinance.woa/wa/authenticate/
     private func normalizedAuthEndpoint(_ endpoint: String) -> String {
-        guard !endpoint.isEmpty else { return endpoint }
-        // 与上游一致：认证路径必须以 / 结尾，否则 Apple 返回 301 Moved Permanently
-        if !endpoint.hasSuffix("/") {
-            return endpoint + "/"
-        }
-        return endpoint
+        guard !endpoint.isEmpty, var comps = URLComponents(string: endpoint) else { return endpoint }
+        comps.path = "/WebObjects/MZFinance.woa/wa/authenticate/"
+        return comps.string ?? endpoint
     }
 
     /// 从非标准 XML 中提取 <plist>...</plist> 片段
