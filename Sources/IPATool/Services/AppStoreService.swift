@@ -1,5 +1,7 @@
 import AppKit
 import Foundation
+import IOKit
+import IOKit.network
 
 // MARK: - 防止自动跟随重定向的 Session 代理
 
@@ -194,7 +196,7 @@ final class AppStoreService: ObservableObject {
 
         while attempt < 4 {
             attempt += 1
-            let (result, redirect, error) = try await attemptLogin(
+            let (result, redirect, error, retryDelay) = try await attemptLogin(
                 email: email, password: password, authCode: authCode,
                 guid: guid, endpoint: redirectURL ?? authEndpoint, attempt: attempt
             )
@@ -205,8 +207,9 @@ final class AppStoreService: ObservableObject {
                     throw AppStoreError.authCodeRequired
                 }
                 if case .rateLimited = error {
-                    log("请求被限流，等待 10 秒后重试...", type: .warning)
-                    try await Task.sleep(nanoseconds: 10_000_000_000)
+                    let delay = retryDelay ?? 10
+                    log("请求被限流，等待 \(Int(delay)) 秒后重试...", type: .warning)
+                    try await Task.sleep(nanoseconds: UInt64(delay * 1_000_000_000))
                     attempt -= 1  // 不计入 attempt 计数
                     continue
                 }
@@ -261,15 +264,16 @@ final class AppStoreService: ObservableObject {
 
         while attempt < 4 {
             attempt += 1
-            let (result, redirect, error) = try await attemptLogin(
+            let (result, redirect, error, retryDelay) = try await attemptLogin(
                 email: account.email, password: account.password, authCode: "",
                 guid: guid, endpoint: redirectURL ?? endpoint, attempt: attempt
             )
 
             if let error {
                 if case .rateLimited = error {
-                    log("重新登录被限流，等待 10 秒...", type: .warning)
-                    try await Task.sleep(nanoseconds: 10_000_000_000)
+                    let delay = retryDelay ?? 10
+                    log("重新登录被限流，等待 \(Int(delay)) 秒...", type: .warning)
+                    try await Task.sleep(nanoseconds: UInt64(delay * 1_000_000_000))
                     attempt -= 1
                     continue
                 }
@@ -327,32 +331,179 @@ final class AppStoreService: ObservableObject {
         return guid
     }
 
-    /// 使用 sysctl 获取 en0 的 MAC 地址（与 ApplePackage 的 DeviceIdentifier.system() 一致）
+    /// 使用 IOKit 获取稳定的硬件 MAC 地址（与上游一致）。
+    /// 在 macOS 27 上 sysctl 返回的 MAC 可能被红化为 02:00:00:00:00:00，
+    /// IOKit 的 IOMACAddress 属性能返回真实硬件地址。
+    /// 优先 en0，其次其他物理接口，最后回退到接口上报的 link-layer 地址。
     private func getMACAddress() -> String? {
-        let bsds = ["en0", "en1"]
-        for bsd in bsds {
-            let index = Int32(if_nametoindex(bsd))
-            guard index != 0 else { continue }
+        var selected: (address: [UInt8], priority: Int)?
 
-            var mib: [Int32] = [CTL_NET, AF_ROUTE, 0, AF_LINK, NET_RT_IFLIST, index]
-            var len: size_t = 0
-            guard sysctl(&mib, 6, nil, &len, nil, 0) >= 0, len > 0 else { continue }
+        var ifaddr: UnsafeMutablePointer<ifaddrs>?
+        guard getifaddrs(&ifaddr) == 0 else { return nil }
+        defer { freeifaddrs(ifaddr) }
 
-            var buffer = [UInt8](repeating: 0, count: len)
-            guard sysctl(&mib, 6, &buffer, &len, nil, 0) >= 0 else { continue }
+        var cursor = ifaddr
+        while let addr = cursor {
+            defer { cursor = addr.pointee.ifa_next }
 
-            let infoData = Data(buffer)
-            let bsdData = Data(bsd.utf8)
-            guard let bsdRange = infoData.range(of: bsdData) else { continue }
+            // 只关心 link-layer 接口，跳过 loopback / point-to-point
+            guard let name = addr.pointee.ifa_name.map({ String(cString: $0) }),
+                  addr.pointee.ifa_addr.pointee.sa_family == UInt8(AF_LINK),
+                  (addr.pointee.ifa_flags & UInt32(IFF_LOOPBACK)) == 0,
+                  (addr.pointee.ifa_flags & UInt32(IFF_POINTOPOINT)) == 0
+            else { continue }
 
-            let lower = bsdRange.upperBound
-            let upper = lower + 6
-            guard upper <= infoData.count else { continue }
+            let isPrimary = name == "en0"
+            var candidate: [UInt8]?
 
-            let mac = infoData[lower..<upper].map { String(format: "%02X", $0) }.joined()
-            if !mac.isEmpty { return mac }
+            // 1. 优先从 IOKit 读取真实硬件 MAC
+            if let hw = hardwareMACAddress(forBSDName: name) {
+                candidate = hw
+            } else if let link = linkLayerMAC(from: addr.pointee.ifa_addr) {
+                candidate = link
+            }
+
+            guard let mac = candidate, Self.isUsableMACAddress(mac) else { continue }
+
+            let priority = isPrimary ? 0 : 1
+            if selected == nil || priority < selected!.priority ||
+                (priority == selected!.priority && mac.lexicographicallyPrecedes(selected!.address)) {
+                selected = (mac, priority)
+            }
+        }
+
+        return selected?.address.map { String(format: "%02X", $0) }.joined()
+    }
+
+    /// 从 IOService 注册表读取接口的真实硬件 MAC 地址（IOMACAddress）。
+    private func hardwareMACAddress(forBSDName name: String) -> [UInt8]? {
+        let matching = IOServiceNameMatching(name)
+        var service: io_service_t = 0
+        defer { if service != 0 { IOObjectRelease(service) } }
+
+        // IOServiceGetMatchingService 会消耗 matching 字典
+        service = IOServiceGetMatchingService(kIOMainPortDefault, matching)
+        guard service != 0 else { return nil }
+
+        let key = "IOMACAddress" as CFString
+        guard let property = IORegistryEntrySearchCFProperty(
+            service,
+            kIOServicePlane,
+            key,
+            kCFAllocatorDefault,
+            IOOptionBits(kIORegistryIterateRecursively | kIORegistryIterateParents)
+        ) else { return nil }
+
+        // 确保是 CFData 且长度为 6 字节
+        guard CFGetTypeID(property) == CFDataGetTypeID(),
+              let data = property as? Data, data.count == 6
+        else { return nil }
+
+        return [UInt8](data)
+    }
+
+    /// 从 sockaddr_dl 提取 link-layer MAC 地址。
+    private func linkLayerMAC(from sa: UnsafePointer<sockaddr>) -> [UInt8]? {
+        return sa.withMemoryRebound(to: sockaddr_dl.self, capacity: 1) { dl in
+            let sdl = dl.pointee
+            guard sdl.sdl_alen == 6 else { return nil }
+            let offset = Int(sdl.sdl_nlen)
+            return withUnsafePointer(to: sdl.sdl_data) { ptr in
+                ptr.withMemoryRebound(to: UInt8.self, capacity: Int(sdl.sdl_nlen) + Int(sdl.sdl_alen)) { bytes in
+                    Array(UnsafeBufferPointer(start: bytes.advanced(by: offset), count: 6))
+                }
+            }
+        }
+    }
+
+    /// 校验 MAC 地址有效性：6 字节、非全零、非 02:00:00:00:00:00、非多播/广播。
+    private static func isUsableMACAddress(_ mac: [UInt8]) -> Bool {
+        guard mac.count == 6 else { return false }
+        let allZero = mac.allSatisfy { $0 == 0 }
+        let redacted = mac == [0x02, 0x00, 0x00, 0x00, 0x00, 0x00]
+        let multicast = (mac[0] & 0x01) != 0
+        return !allZero && !redacted && !multicast
+    }
+
+    // MARK: - Login helpers
+
+    /// 为中国大陆和印度的手机号 Apple ID 推导 Storefront 路由提示。
+    /// 与上游一致：只影响路由头，不改变发送给 Apple 的 Apple ID。
+    private func phoneNumberStorefront(_ appleID: String) -> String? {
+        var number = appleID.trimmingCharacters(in: .whitespaces)
+            .replacingOccurrences(of: " ", with: "")
+            .replacingOccurrences(of: "-", with: "")
+
+        var international = false
+        if number.hasPrefix("+") {
+            international = true
+            number.removeFirst()
+        } else if number.hasPrefix("00") {
+            international = true
+            number.removeFirst(2)
+        }
+
+        // 必须全是数字
+        guard number.allSatisfy({ $0.isNumber }) else { return nil }
+
+        switch (number.count, number.prefix(3)) {
+        case (13, "861"):
+            return Storefront.storeFrontID(for: "CN")
+        case (12, _) where number.hasPrefix("91"):
+            number.removeFirst(2)
+        case _ where international:
+            return nil
+        default:
+            break
+        }
+
+        if number.count == 11, number.first == "1" {
+            return Storefront.storeFrontID(for: "CN")
+        }
+
+        // 印度本地号码允许区号前缀 0
+        if !international, number.count == 11, number.first == "0" {
+            number.removeFirst()
+        }
+
+        if number.count == 10, let first = number.first, first >= "6", first <= "9" {
+            return Storefront.storeFrontID(for: "IN")
+        }
+
+        return nil
+    }
+
+    /// 规范化两步验证码：去除空白和 bracketed-paste 标记，要求恰好 6 位数字。
+    private func normalizeAuthCode(_ code: String) -> String? {
+        guard !code.isEmpty else { return "" }
+        var trimmed = code.trimmingCharacters(in: .whitespaces)
+        if trimmed.hasPrefix("\u{1B}[200~"), trimmed.hasSuffix("\u{1B}[201~") {
+            trimmed.removeFirst("\u{1B}[200~".count)
+            trimmed.removeLast("\u{1B}[201~".count)
+        }
+        let digits = trimmed.filter { $0.isNumber }
+        return digits.count == 6 ? digits : nil
+    }
+
+    /// 解析 Retry-After 头（秒数或 HTTP 日期），返回需要等待的秒数。
+    private func retryAfterSeconds(headerValue: String?) -> Int? {
+        guard let value = headerValue?.trimmingCharacters(in: .whitespaces), !value.isEmpty else { return nil }
+        if let seconds = Int(value) {
+            return min(seconds, 120) // 上限 120 秒
+        }
+        if let date = httpDateFormatter.date(from: value) {
+            let interval = Int(date.timeIntervalSinceNow)
+            return max(0, min(interval, 120))
         }
         return nil
+    }
+
+    private var httpDateFormatter: DateFormatter {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "EEE, dd MMM yyyy HH:mm:ss z"
+        formatter.locale = Locale(identifier: "en_US_POSIX")
+        formatter.timeZone = TimeZone(secondsFromGMT: 0)
+        return formatter
     }
 
     // MARK: - Bag
@@ -394,11 +545,14 @@ final class AppStoreService: ObservableObject {
     private func attemptLogin(
         email: String, password: String, authCode: String, guid: String,
         endpoint: String, attempt: Int
-    ) async throws -> (Account?, String?, AppStoreError?) {
+    ) async throws -> (Account?, String?, AppStoreError?, TimeInterval?) {
         let authEndpoint = normalizedAuthEndpoint(endpoint)
-        guard let url = URL(string: authEndpoint) else { return (nil, nil, .invalidURL) }
+        guard let url = URL(string: authEndpoint) else { return (nil, nil, .invalidURL, nil) }
 
-        let fullPassword = password + authCode.replacingOccurrences(of: " ", with: "")
+        guard let normalizedCode = normalizeAuthCode(authCode) else {
+            return (nil, nil, .loginError("两步验证码必须是 6 位数字"), nil)
+        }
+        let fullPassword = password + normalizedCode
 
         // 使用 application/x-www-form-urlencoded 格式（与 Go ipatool 一致）
         var components = URLComponents()
@@ -416,41 +570,46 @@ final class AppStoreService: ObservableObject {
         request.httpMethod = "POST"
         request.setValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Content-Type")
         request.setValue(userAgent, forHTTPHeaderField: "User-Agent")
+        // 手机号 Apple ID 需要 Storefront 路由提示
+        if let sf = phoneNumberStorefront(email) {
+            request.setValue(sf, forHTTPHeaderField: "X-Apple-Store-Front")
+        }
         request.httpBody = bodyString.data(using: .utf8)
 
         let (rawData, response) = try await authSession.data(for: request)
         guard let httpResponse = response as? HTTPURLResponse else {
-            return (nil, nil, .httpError(0))
+            return (nil, nil, .httpError(0), nil)
         }
 
         log("认证响应: HTTP \(httpResponse.statusCode)")
 
-        // 429 限流 — 需要等待后重试
+        // 429 限流 — 尊重 Retry-After 头
         if httpResponse.statusCode == 429 {
-            return (nil, nil, .rateLimited)
+            let delay = retryAfterSeconds(headerValue: httpResponse.value(forHTTPHeaderField: "Retry-After")).map { TimeInterval($0) } ?? 10
+            return (nil, nil, .rateLimited, delay)
         }
 
-        // 302 重定向 — 手动跟随（Go 版本仅处理 StatusFound）
+        // 302 重定向 — 手动跟随，仅更换目标 URL，请求体（含 attempt 值）保持不变
         if httpResponse.statusCode == 302 {
             if let location = httpResponse.value(forHTTPHeaderField: "Location") {
                 log("收到 302 重定向: \(location)")
-                return (nil, location, nil)
+                return (nil, location, nil, nil)
             }
-            return (nil, nil, .unknownError("302 但无 Location 头"))
+            return (nil, nil, .unknownError("302 但无 Location 头"), nil)
         }
 
         // 非 200 状态码
         if httpResponse.statusCode != 200 {
             let body = String(data: rawData, encoding: .utf8)?.prefix(300) ?? "(空)"
             log("认证失败 HTTP \(httpResponse.statusCode): \(body)", type: .error)
-            return (nil, nil, .loginError("服务器返回 HTTP \(httpResponse.statusCode)"))
+            return (nil, nil, .loginError("服务器返回 HTTP \(httpResponse.statusCode)"), nil)
         }
 
         // 解析响应体: 提取 XML 中的 plist 片段
         let data = extractPlistData(from: rawData)
         guard let dict = try parsePlist(from: data) as [String: Any]? else {
             log("认证响应原始内容前 500 字: \(String(data: rawData, encoding: .utf8)?.prefix(500) ?? "(非文本)")", type: .warning)
-            return (nil, nil, .parseError("无法解析登录响应"))
+            return (nil, nil, .parseError("无法解析登录响应"), nil)
         }
 
         let failureType = dict["failureType"] as? String
@@ -458,24 +617,24 @@ final class AppStoreService: ObservableObject {
 
         // 首次尝试时 failureType == "-5000" 需要重试（与 Go 一致）
         if attempt == 1, failureType == "-5000" {
-            return (nil, nil, nil) // 触发重试
+            return (nil, nil, nil, nil) // 触发重试
         }
 
         // 需要两步验证码
         if (failureType == nil || failureType?.isEmpty == true)
             && authCode.isEmpty
             && customerMessage == "MZFinance.BadLogin.Configurator_message" {
-            return (nil, nil, .authCodeRequired)
+            return (nil, nil, .authCodeRequired, nil)
         }
 
         // 账号已禁用
         if customerMessage == "Your account is disabled." {
-            return (nil, nil, .accountDisabled)
+            return (nil, nil, .accountDisabled, nil)
         }
 
         // 通用失败
         if let failureType, !failureType.isEmpty {
-            return (nil, nil, .loginError(customerMessage ?? failureType))
+            return (nil, nil, .loginError(customerMessage ?? failureType), nil)
         }
 
         // 提取账号信息
@@ -484,7 +643,7 @@ final class AppStoreService: ObservableObject {
               let passwordToken = dict["passwordToken"] as? String,
               let dsPersonId = dict["dsPersonId"] as? String else {
             let msg = customerMessage ?? "响应格式不完整"
-            return (nil, nil, .parseError(msg))
+            return (nil, nil, .parseError(msg), nil)
         }
 
         let address = accountInfo["address"] as? [String: Any] ?? [:]
@@ -501,19 +660,28 @@ final class AppStoreService: ObservableObject {
             passwordToken: passwordToken, directoryServicesID: dsPersonId,
             storeFront: storeFront, password: password, pod: pod
         )
-        return (acc, nil, nil)
+        return (acc, nil, nil, nil)
     }
 
     // MARK: - Search
 
-    func search(term: String, limit: Int = 25) async throws -> [AppInfo] {
+    func search(term: String, limit: Int = 25, platform: String? = nil) async throws -> [AppInfo] {
         guard let acc = selectedAccount else { throw AppStoreError.notLoggedIn }
         isSearching = true
         defer { isSearching = false }
 
         let country = acc.countryCode ?? "CN"
         let termEncoded = term.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? term
-        let urlString = "https://\(iTunesAPIDomain)\(iTunesPathSearch)?entity=software,iPadSoftware&limit=\(limit)&media=software&term=\(termEncoded)&country=\(country)"
+        // 默认搜索所有平台；可按 platform 过滤（iphone/ipad/appletv/macos）
+        let entity: String
+        switch platform {
+        case "iphone": entity = "software"
+        case "ipad": entity = "iPadSoftware"
+        case "appletv": entity = "tvSoftware"
+        case "macos": entity = "macSoftware"
+        default: entity = "software,iPadSoftware,tvSoftware,macSoftware"
+        }
+        let urlString = "https://\(iTunesAPIDomain)\(iTunesPathSearch)?entity=\(entity)&limit=\(limit)&media=software&term=\(termEncoded)&country=\(country)"
         guard let url = URL(string: urlString) else { throw AppStoreError.invalidURL }
 
         var request = URLRequest(url: url)
@@ -572,6 +740,16 @@ final class AppStoreService: ObservableObject {
                 throw error
             }
         }
+    }
+
+    /// 按 app ID 直接购买（无需先搜索），与上游 purchase --app-id 对齐
+    func purchaseByAppID(_ appID: Int64) async throws {
+        let app = AppInfo(
+            id: appID, bundleID: "", name: "App \(appID)", version: "",
+            price: 0, iconURL: nil, developer: nil, description: nil,
+            fileSizeBytes: nil, trackViewURL: nil
+        )
+        try await purchase(app: app)
     }
 
     private func purchaseCore(app: AppInfo, account acc: Account) async throws {
@@ -646,19 +824,16 @@ final class AppStoreService: ObservableObject {
         }
     }
 
-    // MARK: - Download
+    // MARK: - List Versions
 
-    func download(app: AppInfo, outputDirectory: URL? = nil, onProgress: ((Double) -> Void)? = nil) async throws -> DownloadResult {
+    /// 列出应用的所有可用版本外部 ID（与上游 list-versions 对齐）
+    func listVersions(appID: Int64) async throws -> [String] {
         guard var acc = selectedAccount else { throw AppStoreError.notLoggedIn }
-        isDownloading = true
-        downloadProgress = 0
-        defer { isDownloading = false }
 
         var maxRetries = 2
-
         while true {
             do {
-                return try await downloadCore(app: app, account: acc, outputDirectory: outputDirectory, onProgress: onProgress)
+                return try await listVersionsCore(appID: appID, account: acc)
             } catch let error as AppStoreError {
                 if case .passwordTokenExpired = error, maxRetries > 0 {
                     maxRetries -= 1
@@ -670,16 +845,13 @@ final class AppStoreService: ObservableObject {
         }
     }
 
-    private func downloadCore(app: AppInfo, account acc: Account, outputDirectory: URL?, onProgress: ((Double) -> Void)?) async throws -> DownloadResult {
-
+    private func listVersionsCore(appID: Int64, account acc: Account) async throws -> [String] {
         let guid = getGUID()
-        log("正在获取 \(app.name) 的下载信息...")
-
         let host = acc.pod.isEmpty ? "p25-buy.itunes.apple.com" : "p\(acc.pod)-buy.itunes.apple.com"
         let urlString = "https://\(host)\(privateDownloadPath)"
         guard let url = URL(string: urlString) else { throw AppStoreError.invalidURL }
 
-        let payload: [String: Any] = ["creditDisplay": "", "guid": guid, "salableAdamId": app.id]
+        let payload: [String: Any] = ["creditDisplay": "", "guid": guid, "salableAdamId": appID]
 
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
@@ -689,6 +861,96 @@ final class AppStoreService: ObservableObject {
         request.setValue(acc.directoryServicesID, forHTTPHeaderField: "X-Dsid")
 
         let dict = try await sendPlistRequest(request, payload: payload)
+
+        let failureType = dict["failureType"] as? String ?? ""
+        if failureType == "2034" || failureType == "2042" { throw AppStoreError.passwordTokenExpired }
+        if failureType == "9610" { throw AppStoreError.licenseRequired }
+        if !failureType.isEmpty { throw AppStoreError.unknownError(failureType) }
+
+        guard let songList = dict["songList"] as? [[String: Any]],
+              let item = songList.first,
+              let metadata = item["metadata"] as? [String: Any],
+              let identifiers = metadata["softwareVersionExternalIdentifiers"] as? [Any]
+        else {
+            throw AppStoreError.parseError("无法提取版本列表")
+        }
+
+        return identifiers.map { "\($0)" }
+    }
+
+    // MARK: - Download
+
+    func download(app: AppInfo, externalVersionID: String? = nil, outputDirectory: URL? = nil, onProgress: ((Double) -> Void)? = nil) async throws -> DownloadResult {
+        guard var acc = selectedAccount else { throw AppStoreError.notLoggedIn }
+        isDownloading = true
+        downloadProgress = 0
+        defer { isDownloading = false }
+
+        var maxRetries = 2
+
+        while true {
+            do {
+                return try await downloadCore(app: app, externalVersionID: externalVersionID, account: acc, outputDirectory: outputDirectory, onProgress: onProgress)
+            } catch let error as AppStoreError {
+                if case .passwordTokenExpired = error, maxRetries > 0 {
+                    maxRetries -= 1
+                    acc = try await relogin(account: acc)
+                    continue
+                }
+                throw error
+            }
+        }
+    }
+
+    private func downloadCore(app: AppInfo, externalVersionID: String? = nil, account acc: Account, outputDirectory: URL?, onProgress: ((Double) -> Void)?) async throws -> DownloadResult {
+
+        let guid = getGUID()
+        log("正在获取 \(app.name) 的下载信息...")
+
+        // 按优先级尝试下载端点：账号 pod 优先，回退到通用 pod（与上游一致）
+        let preferredPod = acc.pod.isEmpty ? "25" : acc.pod
+        let fallbackPods = [preferredPod, "71", "70", "25"].filter { !$0.isEmpty }
+        // 去重保持顺序
+        var seen = Set<String>()
+        let endpoints = fallbackPods.filter { seen.insert($0).inserted }
+            .map { "p\($0)-buy.itunes.apple.com" }
+
+        // appExtVrsId：iOS 默认为 0，其他平台/版本需指定外部版本 ID
+        let appExtVrsId = externalVersionID ?? "0"
+        let payload: [String: Any] = [
+            "appExtVrsId": appExtVrsId,
+            "creditDisplay": "", "guid": guid, "salableAdamId": app.id
+        ]
+
+        var dict: [String: Any]?
+        var lastError: Error?
+
+        for host in endpoints {
+            let urlString = "https://\(host)\(privateDownloadPath)"
+            guard let url = URL(string: urlString) else { continue }
+
+            var request = URLRequest(url: url)
+            request.httpMethod = "POST"
+            request.setValue("application/x-apple-plist", forHTTPHeaderField: "Content-Type")
+            request.setValue(userAgent, forHTTPHeaderField: "User-Agent")
+            request.setValue(acc.directoryServicesID, forHTTPHeaderField: "iCloud-DSID")
+            request.setValue(acc.directoryServicesID, forHTTPHeaderField: "X-Dsid")
+
+            do {
+                dict = try await sendPlistRequest(request, payload: payload)
+                log("下载端点可用: \(host)")
+                break
+            } catch {
+                lastError = error
+                log("端点 \(host) 失败，尝试下一个...", type: .warning)
+                continue
+            }
+        }
+
+        guard let dict = dict else {
+            if let lastError { throw lastError }
+            throw AppStoreError.invalidURL
+        }
 
         let failureType = dict["failureType"] as? String ?? ""
         let customerMessage = dict["customerMessage"] as? String ?? ""
@@ -708,14 +970,19 @@ final class AppStoreService: ObservableObject {
         let metadata = item["metadata"] as? [String: Any] ?? [:]
         let version = (metadata["bundleShortVersionString"] as? String) ?? "unknown"
 
+        // 判断是否为 macOS 安装包（.pkg），由 kind 字段或 URL 后缀判定
+        let kind = item["kind"] as? String ?? ""
+        let isMacOSPackage = kind.contains("mac") || downloadURL.pathExtension.lowercased() == "pkg"
+        let fileExt = isMacOSPackage ? "pkg" : "ipa"
+
         guard let destDir = outputDirectory else {
             throw AppStoreError.unknownError("未指定下载目录")
         }
-        let fileName = "\(app.bundleID)_\(app.id)_\(version).ipa"
+        let fileName = "\(app.bundleID)_\(app.id)_\(version).\(fileExt)"
         let destPath = destDir.appendingPathComponent(fileName)
         let tmpPath = destDir.appendingPathComponent("\(fileName).tmp")
 
-        log("正在下载 IPA (\(version))...")
+        log("正在下载 \(fileExt.uppercased()) (\(version))...")
         try await downloadFile(from: downloadURL, to: tmpPath) { [weak self] p in
             Task { @MainActor [weak self] in
                 self?.downloadProgress = p
@@ -723,9 +990,17 @@ final class AppStoreService: ObservableObject {
             }
         }
 
-        log("正在处理 IPA...")
-        try await processIPA(src: tmpPath, dst: destPath, metadata: metadata, account: acc)
-        try? FileManager.default.removeItem(at: tmpPath)
+        if isMacOSPackage {
+            // macOS .pkg 直接重命名，无需 IPA 处理
+            if FileManager.default.fileExists(atPath: destPath.path) {
+                try? FileManager.default.removeItem(at: destPath)
+            }
+            try FileManager.default.moveItem(at: tmpPath, to: destPath)
+        } else {
+            log("正在处理 IPA...")
+            try await processIPA(src: tmpPath, dst: destPath, metadata: metadata, account: acc)
+            try? FileManager.default.removeItem(at: tmpPath)
+        }
 
         let result = DownloadResult(
             app: app, destinationPath: destPath,
