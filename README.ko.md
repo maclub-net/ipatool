@@ -1,6 +1,6 @@
 # IPATool
 
-[![GPLv3 License](https://img.shields.io/badge/license-GPLv3-orange.svg)](https://www.gnu.org/licenses/gpl-3.0.html)
+[![License](https://img.shields.io/badge/license-Commercial-orange.svg)](LICENSE)
 ![macOS](https://img.shields.io/badge/platform-macOS%2014%2B-blue)
 ![Swift](https://img.shields.io/badge/swift-5.9-orange)
 
@@ -66,4 +66,8 @@ Sources/
 
 ## 라이선스
 
-[GNU General Public License v3.0](https://www.gnu.org/licenses/gpl-3.0.html)
+이 프로젝트는 사용자 정의 라이선스 하에 제공됩니다. **개인 학습, 교육 및 비상업적 사용은 무료입니다.** **상업적 사용은 상업 라이선스 취득이 필수입니다.**
+
+전체 조항은 [LICENSE](LICENSE)에서 확인할 수 있습니다.
+
+상업 라이선스 신청은 https://www.ipatool.cn 또는 contact@ipatool.cn으로 문의하세요.

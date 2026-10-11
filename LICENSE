@@ -1,0 +1,52 @@
+# IPATool License
+
+Copyright (c) 2026 maclub.net. All rights reserved.
+
+## 1. Grant of License
+
+Subject to the terms of this License, maclub.net (the "Licensor") grants you
+a limited, non-exclusive, non-transferable, non-sublicensable license to use,
+copy, and modify the IPATool software (the "Software") solely for your own
+personal, educational, and non-commercial purposes.
+
+## 2. Permitted Use
+
+You may freely use the Software for:
+
+- Personal study, research, and learning
+- Non-commercial personal projects
+- Evaluation and testing in a non-production environment
+
+## 3. Prohibited Use — Commercial Use Requires Authorization
+
+Any commercial use of the Software is strictly prohibited without prior written
+authorization from the Licensor. Commercial use includes, but is not limited to:
+
+- Selling, licensing, or distributing the Software or derivative works for a fee
+- Using the Software to provide paid services to third parties
+- Integrating the Software (in whole or in part) into any commercial product or
+  service
+- Using the Software in any business or revenue-generating context
+
+To obtain a commercial license, please contact the Licensor:
+
+- Website: https://www.ipatool.cn
+- Email: contact@ipatool.cn
+
+## 4. Redistributions
+
+- Redistributions of the source code must retain the above copyright notice,
+  this license, and the following disclaimer.
+- Redistributions in binary form must reproduce the above copyright notice,
+  this license, and the following disclaimer in the documentation and/or other
+  materials provided with the distribution.
+
+## 5. No Warranty
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.

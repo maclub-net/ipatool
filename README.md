@@ -1,6 +1,6 @@
 # IPATool
 
-[![GPLv3 License](https://img.shields.io/badge/license-GPLv3-orange.svg)](https://www.gnu.org/licenses/gpl-3.0.html)
+[![License](https://img.shields.io/badge/license-Commercial-orange.svg)](LICENSE)
 ![macOS](https://img.shields.io/badge/platform-macOS%2014%2B-blue)
 ![Swift](https://img.shields.io/badge/swift-5.9-orange)
 
@@ -66,4 +66,8 @@ The protocol and decryption logic are based on [ipatool](https://github.com/majd
 
 ## License
 
-[GNU General Public License v3.0](https://www.gnu.org/licenses/gpl-3.0.html)
+This project is licensed under a custom license. **Personal, educational, and non-commercial use is free of charge.** **Commercial use requires obtaining a commercial license** from the author.
+
+See [LICENSE](LICENSE) for the full terms.
+
+To apply for a commercial license, visit https://www.ipatool.cn or contact contact@ipatool.cn.

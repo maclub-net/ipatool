@@ -1,6 +1,6 @@
 # IPATool
 
-[![GPLv3 License](https://img.shields.io/badge/license-GPLv3-orange.svg)](https://www.gnu.org/licenses/gpl-3.0.html)
+[![License](https://img.shields.io/badge/license-Commercial-orange.svg)](LICENSE)
 ![macOS](https://img.shields.io/badge/platform-macOS%2014%2B-blue)
 ![Swift](https://img.shields.io/badge/swift-5.9-orange)
 
@@ -66,4 +66,8 @@ Sources/
 
 ## 授權
 
-[GNU General Public License v3.0](https://www.gnu.org/licenses/gpl-3.0.html)
+本專案採用自訂授權。**個人學習、教育及非商業用途免費授權。** **商業使用必須取得商業授權。**
+
+完整條款見 [LICENSE](LICENSE)。
+
+申請商業授權請造訪 https://www.ipatool.cn 或聯絡 contact@ipatool.cn。

@@ -1,6 +1,6 @@
 # IPATool
 
-[![GPLv3 License](https://img.shields.io/badge/license-GPLv3-orange.svg)](https://www.gnu.org/licenses/gpl-3.0.html)
+[![License](https://img.shields.io/badge/license-Commercial-orange.svg)](LICENSE)
 ![macOS](https://img.shields.io/badge/platform-macOS%2014%2B-blue)
 ![Swift](https://img.shields.io/badge/swift-5.9-orange)
 
@@ -66,4 +66,8 @@ Sources/
 
 ## ライセンス
 
-[GNU General Public License v3.0](https://www.gnu.org/licenses/gpl-3.0.html)
+本プロジェクトはカスタムライセンスの下で提供されています。**個人の学習、教育、非商用目的での使用は無料です。** **商用利用には商用ライセンスの取得が必要です。**
+
+詳細な条件は [LICENSE](LICENSE) をご覧ください。
+
+商用ライセンスの申請は https://www.ipatool.cn または contact@ipatool.cn までお問い合わせください。
