@@ -16,6 +16,7 @@ enum AppStoreError: LocalizedError {
     case licenseAlreadyExists
     case licenseRequired
     case rateLimited
+    case appNotFound
 
     var errorDescription: String? {
         switch self {
@@ -34,6 +35,7 @@ enum AppStoreError: LocalizedError {
         case .licenseAlreadyExists: "许可证已存在"
         case .licenseRequired: "需要先获取许可证"
         case .rateLimited: "请求太频繁，请稍后再试"
+        case .appNotFound: "未找到该应用"
         }
     }
 }

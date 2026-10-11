@@ -11,6 +11,7 @@
 		010000000000000000000002 /* AppInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 020000000000000000000002 /* AppInfo.swift */; };
 		010000000000000000000003 /* Storefront.swift in Sources */ = {isa = PBXBuildFile; fileRef = 020000000000000000000003 /* Storefront.swift */; };
 		010000000000000000000004 /* AppStoreService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 020000000000000000000004 /* AppStoreService.swift */; };
+			010000000000000000000015 /* IPAToolCLI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 020000000000000000000016 /* IPAToolCLI.swift */; };
 		010000000000000000000005 /* KeychainService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 020000000000000000000005 /* KeychainService.swift */; };
 		010000000000000000000006 /* ZipArchive.swift in Sources */ = {isa = PBXBuildFile; fileRef = 020000000000000000000006 /* ZipArchive.swift */; };
 		010000000000000000000007 /* AppSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 020000000000000000000007 /* AppSection.swift */; };
@@ -25,6 +26,7 @@
 		010000000000000000000010 /* AppStoreError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 020000000000000000000012 /* AppStoreError.swift */; };
 		010000000000000000000011 /* LogView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 020000000000000000000014 /* LogView.swift */; };
 		010000000000000000000012 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 020000000000000000000013 /* Assets.xcassets */; };
+			010000000000000000000014 /* ipatool in Resources */ = {isa = PBXBuildFile; fileRef = 020000000000000000000015 /* ipatool */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -32,6 +34,7 @@
 		020000000000000000000002 /* AppInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppInfo.swift; sourceTree = "<group>"; };
 		020000000000000000000003 /* Storefront.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Storefront.swift; sourceTree = "<group>"; };
 		020000000000000000000004 /* AppStoreService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppStoreService.swift; sourceTree = "<group>"; };
+		020000000000000000000016 /* IPAToolCLI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IPAToolCLI.swift; sourceTree = "<group>"; };
 		020000000000000000000005 /* KeychainService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainService.swift; sourceTree = "<group>"; };
 		020000000000000000000006 /* ZipArchive.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZipArchive.swift; sourceTree = "<group>"; };
 		020000000000000000000007 /* AppSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppSection.swift; sourceTree = "<group>"; };
@@ -47,6 +50,7 @@
 		020000000000000000000011 /* IPATool.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = IPATool.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		020000000000000000000012 /* AppStoreError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppStoreError.swift; sourceTree = "<group>"; };
 		020000000000000000000013 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		020000000000000000000015 /* ipatool */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = ipatool; sourceTree = "<group>"; };
 		020000000000000000000014 /* LogView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -84,6 +88,7 @@
 			children = (
 				020000000000000000000010 /* Info.plist */,
 				020000000000000000000013 /* Assets.xcassets */,
+				020000000000000000000015 /* ipatool */,
 			);
 			path = Resources;
 			sourceTree = "<group>";
@@ -103,6 +108,7 @@
 			isa = PBXGroup;
 			children = (
 				020000000000000000000004 /* AppStoreService.swift */,
+				020000000000000000000016 /* IPAToolCLI.swift */,
 				020000000000000000000005 /* KeychainService.swift */,
 				020000000000000000000006 /* ZipArchive.swift */,
 			);
@@ -192,6 +198,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				010000000000000000000012 /* Assets.xcassets in Resources */,
+				010000000000000000000014 /* ipatool in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -206,6 +213,7 @@
 				010000000000000000000002 /* AppInfo.swift in Sources */,
 				010000000000000000000003 /* Storefront.swift in Sources */,
 				010000000000000000000004 /* AppStoreService.swift in Sources */,
+				010000000000000000000015 /* IPAToolCLI.swift in Sources */,
 				010000000000000000000005 /* KeychainService.swift in Sources */,
 				010000000000000000000006 /* ZipArchive.swift in Sources */,
 				010000000000000000000007 /* AppSection.swift in Sources */,
