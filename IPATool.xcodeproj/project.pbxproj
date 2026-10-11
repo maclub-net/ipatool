@@ -21,6 +21,7 @@
 		A10000010000000000000040 /* IPAToolApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IPAToolApp.swift; sourceTree = "<group>"; };
 		A10000010000000000000041 /* IPAToolModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IPAToolModels.swift; sourceTree = "<group>"; };
 		A10000010000000000000042 /* IPAToolViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IPAToolViews.swift; sourceTree = "<group>"; };
+		A10000010000000000000043 /* IPATool.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = IPATool.entitlements; sourceTree = "<group>"; };
 		A10000010000000000000051 /* ipatool */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = ipatool; sourceTree = BUILT_PRODUCTS_DIR; };
 		A10000010000000000000052 /* IPATool.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = IPATool.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A100000100000000000000A3 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -60,6 +61,7 @@
 				A10000010000000000000040 /* IPAToolApp.swift */,
 				A10000010000000000000041 /* IPAToolModels.swift */,
 				A10000010000000000000042 /* IPAToolViews.swift */,
+				A10000010000000000000043 /* IPATool.entitlements */,
 				A100000100000000000000A3 /* Assets.xcassets */,
 			);
 			path = IPAToolGUI;
@@ -153,7 +155,7 @@
 			);
 			mainGroup = A10000010000000000000084 /* Sources */;
 			packageReferences = (
-				A100000100000000000000D0 /* XCLocalSwiftPackageReference "IPAToolKit" */,
+				A100000100000000000000D0 /* XCRemoteSwiftPackageReference "IPAToolKit" */,
 			);
 			productRefGroup = A10000010000000000000085 /* Products */;
 			projectDirPath = "";
@@ -363,11 +365,12 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_IDENTITY = "-";
-				CODE_SIGN_STYLE = Manual;
+				CODE_SIGN_ENTITLEMENTS = Sources/IPAToolGUI/IPATool.entitlements;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 26421;
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = AUX4734NLT;
 				ENABLE_HARDENED_RUNTIME = NO;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = IPATool;
@@ -377,9 +380,10 @@
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 14.0;
-				MARKETING_VERSION = 2.0;
+				MARKETING_VERSION = 2.0.0;
 				PRODUCT_BUNDLE_IDENTIFIER = cn.ipatool;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 			};
@@ -390,11 +394,12 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_IDENTITY = "-";
-				CODE_SIGN_STYLE = Manual;
+				CODE_SIGN_ENTITLEMENTS = Sources/IPAToolGUI/IPATool.entitlements;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 26421;
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = AUX4734NLT;
 				ENABLE_HARDENED_RUNTIME = NO;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = IPATool;
@@ -404,9 +409,10 @@
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 14.0;
-				MARKETING_VERSION = 2.0;
+				MARKETING_VERSION = 2.0.0;
 				PRODUCT_BUNDLE_IDENTIFIER = cn.ipatool;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 			};
