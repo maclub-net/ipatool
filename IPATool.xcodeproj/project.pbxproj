@@ -1,1086 +1,670 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-<plist version="1.0">
-<dict>
-	<key>archiveVersion</key>
-	<string>1</string>
-	<key>classes</key>
-	<dict/>
-	<key>objectVersion</key>
-	<string>60</string>
-	<key>objects</key>
-	<dict>
-		<key>010000000000000000000001</key>
-		<dict>
-			<key>fileRef</key>
-			<string>020000000000000000000001</string>
-			<key>isa</key>
-			<string>PBXBuildFile</string>
-		</dict>
-		<key>010000000000000000000002</key>
-		<dict>
-			<key>fileRef</key>
-			<string>020000000000000000000002</string>
-			<key>isa</key>
-			<string>PBXBuildFile</string>
-		</dict>
-		<key>010000000000000000000003</key>
-		<dict>
-			<key>fileRef</key>
-			<string>020000000000000000000003</string>
-			<key>isa</key>
-			<string>PBXBuildFile</string>
-		</dict>
-		<key>010000000000000000000004</key>
-		<dict>
-			<key>fileRef</key>
-			<string>020000000000000000000004</string>
-			<key>isa</key>
-			<string>PBXBuildFile</string>
-		</dict>
-		<key>010000000000000000000005</key>
-		<dict>
-			<key>fileRef</key>
-			<string>020000000000000000000005</string>
-			<key>isa</key>
-			<string>PBXBuildFile</string>
-		</dict>
-		<key>010000000000000000000006</key>
-		<dict>
-			<key>fileRef</key>
-			<string>020000000000000000000006</string>
-			<key>isa</key>
-			<string>PBXBuildFile</string>
-		</dict>
-		<key>010000000000000000000007</key>
-		<dict>
-			<key>fileRef</key>
-			<string>020000000000000000000007</string>
-			<key>isa</key>
-			<string>PBXBuildFile</string>
-		</dict>
-		<key>010000000000000000000008</key>
-		<dict>
-			<key>fileRef</key>
-			<string>020000000000000000000008</string>
-			<key>isa</key>
-			<string>PBXBuildFile</string>
-		</dict>
-		<key>010000000000000000000009</key>
-		<dict>
-			<key>fileRef</key>
-			<string>020000000000000000000009</string>
-			<key>isa</key>
-			<string>PBXBuildFile</string>
-		</dict>
-		<key>01000000000000000000000A</key>
-		<dict>
-			<key>fileRef</key>
-			<string>02000000000000000000000A</string>
-			<key>isa</key>
-			<string>PBXBuildFile</string>
-		</dict>
-		<key>01000000000000000000000B</key>
-		<dict>
-			<key>fileRef</key>
-			<string>02000000000000000000000B</string>
-			<key>isa</key>
-			<string>PBXBuildFile</string>
-		</dict>
-		<key>01000000000000000000000C</key>
-		<dict>
-			<key>fileRef</key>
-			<string>02000000000000000000000C</string>
-			<key>isa</key>
-			<string>PBXBuildFile</string>
-		</dict>
-		<key>01000000000000000000000D</key>
-		<dict>
-			<key>fileRef</key>
-			<string>02000000000000000000000D</string>
-			<key>isa</key>
-			<string>PBXBuildFile</string>
-		</dict>
-		<key>01000000000000000000000E</key>
-		<dict>
-			<key>fileRef</key>
-			<string>02000000000000000000000E</string>
-			<key>isa</key>
-			<string>PBXBuildFile</string>
-		</dict>
-		<key>01000000000000000000000F</key>
-		<dict>
-			<key>fileRef</key>
-			<string>02000000000000000000000F</string>
-			<key>isa</key>
-			<string>PBXBuildFile</string>
-		</dict>
-		<key>010000000000000000000010</key>
-		<dict>
-			<key>fileRef</key>
-			<string>020000000000000000000012</string>
-			<key>isa</key>
-			<string>PBXBuildFile</string>
-		</dict>
-		<key>010000000000000000000011</key>
-		<dict>
-			<key>fileRef</key>
-			<string>020000000000000000000014</string>
-			<key>isa</key>
-			<string>PBXBuildFile</string>
-		</dict>
-		<key>010000000000000000000012</key>
-		<dict>
-			<key>fileRef</key>
-			<string>020000000000000000000013</string>
-			<key>isa</key>
-			<string>PBXBuildFile</string>
-		</dict>
-		<key>010000000000000000000013</key>
-		<dict>
-			<key>fileRef</key>
-			<string>020000000000000000000015</string>
-			<key>isa</key>
-			<string>PBXBuildFile</string>
-		</dict>
-		<key>010000000000000000000014</key>
-		<dict>
-			<key>fileRef</key>
-			<string>020000000000000000000016</string>
-			<key>isa</key>
-			<string>PBXBuildFile</string>
-		</dict>
-		<key>010000000000000000000015</key>
-		<dict>
-			<key>fileRef</key>
-			<string>020000000000000000000017</string>
-			<key>isa</key>
-			<string>PBXBuildFile</string>
-		</dict>
-		<key>010000000000000000000016</key>
-		<dict>
-			<key>fileRef</key>
-			<string>020000000000000000000018</string>
-			<key>isa</key>
-			<string>PBXBuildFile</string>
-		</dict>
-		<key>010000000000000000000017</key>
-		<dict>
-			<key>fileRef</key>
-			<string>020000000000000000000019</string>
-			<key>isa</key>
-			<string>PBXBuildFile</string>
-		</dict>
-		<key>010000000000000000000020</key>
-		<dict>
-			<key>fileRef</key>
-			<string>020000000000000000000020</string>
-			<key>isa</key>
-			<string>PBXBuildFile</string>
-		</dict>
-		<key>020000000000000000000001</key>
-		<dict>
-			<key>isa</key>
-			<string>PBXFileReference</string>
-			<key>lastKnownFileType</key>
-			<string>sourcecode.swift</string>
-			<key>path</key>
-			<string>Account.swift</string>
-			<key>sourceTree</key>
-			<string>&lt;group&gt;</string>
-		</dict>
-		<key>020000000000000000000002</key>
-		<dict>
-			<key>isa</key>
-			<string>PBXFileReference</string>
-			<key>lastKnownFileType</key>
-			<string>sourcecode.swift</string>
-			<key>path</key>
-			<string>AppInfo.swift</string>
-			<key>sourceTree</key>
-			<string>&lt;group&gt;</string>
-		</dict>
-		<key>020000000000000000000003</key>
-		<dict>
-			<key>isa</key>
-			<string>PBXFileReference</string>
-			<key>lastKnownFileType</key>
-			<string>sourcecode.swift</string>
-			<key>path</key>
-			<string>Storefront.swift</string>
-			<key>sourceTree</key>
-			<string>&lt;group&gt;</string>
-		</dict>
-		<key>020000000000000000000004</key>
-		<dict>
-			<key>isa</key>
-			<string>PBXFileReference</string>
-			<key>lastKnownFileType</key>
-			<string>sourcecode.swift</string>
-			<key>path</key>
-			<string>AppStoreService.swift</string>
-			<key>sourceTree</key>
-			<string>&lt;group&gt;</string>
-		</dict>
-		<key>020000000000000000000005</key>
-		<dict>
-			<key>isa</key>
-			<string>PBXFileReference</string>
-			<key>lastKnownFileType</key>
-			<string>sourcecode.swift</string>
-			<key>path</key>
-			<string>KeychainService.swift</string>
-			<key>sourceTree</key>
-			<string>&lt;group&gt;</string>
-		</dict>
-		<key>020000000000000000000006</key>
-		<dict>
-			<key>isa</key>
-			<string>PBXFileReference</string>
-			<key>lastKnownFileType</key>
-			<string>sourcecode.swift</string>
-			<key>path</key>
-			<string>ZipArchive.swift</string>
-			<key>sourceTree</key>
-			<string>&lt;group&gt;</string>
-		</dict>
-		<key>020000000000000000000007</key>
-		<dict>
-			<key>isa</key>
-			<string>PBXFileReference</string>
-			<key>lastKnownFileType</key>
-			<string>sourcecode.swift</string>
-			<key>path</key>
-			<string>AppSection.swift</string>
-			<key>sourceTree</key>
-			<string>&lt;group&gt;</string>
-		</dict>
-		<key>020000000000000000000008</key>
-		<dict>
-			<key>isa</key>
-			<string>PBXFileReference</string>
-			<key>lastKnownFileType</key>
-			<string>sourcecode.swift</string>
-			<key>path</key>
-			<string>SharedComponents.swift</string>
-			<key>sourceTree</key>
-			<string>&lt;group&gt;</string>
-		</dict>
-		<key>020000000000000000000009</key>
-		<dict>
-			<key>isa</key>
-			<string>PBXFileReference</string>
-			<key>lastKnownFileType</key>
-			<string>sourcecode.swift</string>
-			<key>path</key>
-			<string>SidebarView.swift</string>
-			<key>sourceTree</key>
-			<string>&lt;group&gt;</string>
-		</dict>
-		<key>02000000000000000000000A</key>
-		<dict>
-			<key>isa</key>
-			<string>PBXFileReference</string>
-			<key>lastKnownFileType</key>
-			<string>sourcecode.swift</string>
-			<key>path</key>
-			<string>ContentView.swift</string>
-			<key>sourceTree</key>
-			<string>&lt;group&gt;</string>
-		</dict>
-		<key>02000000000000000000000B</key>
-		<dict>
-			<key>isa</key>
-			<string>PBXFileReference</string>
-			<key>lastKnownFileType</key>
-			<string>sourcecode.swift</string>
-			<key>path</key>
-			<string>SearchView.swift</string>
-			<key>sourceTree</key>
-			<string>&lt;group&gt;</string>
-		</dict>
-		<key>02000000000000000000000C</key>
-		<dict>
-			<key>isa</key>
-			<string>PBXFileReference</string>
-			<key>lastKnownFileType</key>
-			<string>sourcecode.swift</string>
-			<key>path</key>
-			<string>AccountListView.swift</string>
-			<key>sourceTree</key>
-			<string>&lt;group&gt;</string>
-		</dict>
-		<key>02000000000000000000000D</key>
-		<dict>
-			<key>isa</key>
-			<string>PBXFileReference</string>
-			<key>lastKnownFileType</key>
-			<string>sourcecode.swift</string>
-			<key>path</key>
-			<string>DownloadHistoryView.swift</string>
-			<key>sourceTree</key>
-			<string>&lt;group&gt;</string>
-		</dict>
-		<key>02000000000000000000000E</key>
-		<dict>
-			<key>isa</key>
-			<string>PBXFileReference</string>
-			<key>lastKnownFileType</key>
-			<string>sourcecode.swift</string>
-			<key>path</key>
-			<string>LoginSheetView.swift</string>
-			<key>sourceTree</key>
-			<string>&lt;group&gt;</string>
-		</dict>
-		<key>02000000000000000000000F</key>
-		<dict>
-			<key>isa</key>
-			<string>PBXFileReference</string>
-			<key>lastKnownFileType</key>
-			<string>sourcecode.swift</string>
-			<key>path</key>
-			<string>IPAToolApp.swift</string>
-			<key>sourceTree</key>
-			<string>&lt;group&gt;</string>
-		</dict>
-		<key>020000000000000000000010</key>
-		<dict>
-			<key>isa</key>
-			<string>PBXFileReference</string>
-			<key>lastKnownFileType</key>
-			<string>text.plist.xml</string>
-			<key>path</key>
-			<string>Info.plist</string>
-			<key>sourceTree</key>
-			<string>&lt;group&gt;</string>
-		</dict>
-		<key>020000000000000000000011</key>
-		<dict>
-			<key>explicitFileType</key>
-			<string>wrapper.application</string>
-			<key>includeInIndex</key>
-			<string>0</string>
-			<key>isa</key>
-			<string>PBXFileReference</string>
-			<key>path</key>
-			<string>IPATool.app</string>
-			<key>sourceTree</key>
-			<string>BUILT_PRODUCTS_DIR</string>
-		</dict>
-		<key>020000000000000000000012</key>
-		<dict>
-			<key>isa</key>
-			<string>PBXFileReference</string>
-			<key>lastKnownFileType</key>
-			<string>sourcecode.swift</string>
-			<key>path</key>
-			<string>AppStoreError.swift</string>
-			<key>sourceTree</key>
-			<string>&lt;group&gt;</string>
-		</dict>
-		<key>020000000000000000000013</key>
-		<dict>
-			<key>isa</key>
-			<string>PBXFileReference</string>
-			<key>lastKnownFileType</key>
-			<string>folder.assetcatalog</string>
-			<key>path</key>
-			<string>Assets.xcassets</string>
-			<key>sourceTree</key>
-			<string>&lt;group&gt;</string>
-		</dict>
-		<key>020000000000000000000014</key>
-		<dict>
-			<key>isa</key>
-			<string>PBXFileReference</string>
-			<key>lastKnownFileType</key>
-			<string>sourcecode.swift</string>
-			<key>path</key>
-			<string>LogView.swift</string>
-			<key>sourceTree</key>
-			<string>&lt;group&gt;</string>
-		</dict>
-		<key>020000000000000000000015</key>
-		<dict>
-			<key>isa</key>
-			<string>PBXFileReference</string>
-			<key>lastKnownFileType</key>
-			<string>sourcecode.swift</string>
-			<key>path</key>
-			<string>Platform.swift</string>
-			<key>sourceTree</key>
-			<string>&lt;group&gt;</string>
-		</dict>
-		<key>020000000000000000000016</key>
-		<dict>
-			<key>isa</key>
-			<string>PBXFileReference</string>
-			<key>lastKnownFileType</key>
-			<string>sourcecode.swift</string>
-			<key>path</key>
-			<string>IPAToolGoBridge.swift</string>
-			<key>sourceTree</key>
-			<string>&lt;group&gt;</string>
-		</dict>
-		<key>020000000000000000000017</key>
-		<dict>
-			<key>isa</key>
-			<string>PBXFileReference</string>
-			<key>lastKnownFileType</key>
-			<string>sourcecode.swift</string>
-			<key>path</key>
-			<string>AppStoreService+GUI.swift</string>
-			<key>sourceTree</key>
-			<string>&lt;group&gt;</string>
-		</dict>
-		<key>020000000000000000000018</key>
-		<dict>
-			<key>isa</key>
-			<string>PBXFileReference</string>
-			<key>lastKnownFileType</key>
-			<string>sourcecode.swift</string>
-			<key>path</key>
-			<string>PurchasedAppsView.swift</string>
-			<key>sourceTree</key>
-			<string>&lt;group&gt;</string>
-		</dict>
-		<key>020000000000000000000019</key>
-		<dict>
-			<key>isa</key>
-			<string>PBXFileReference</string>
-			<key>lastKnownFileType</key>
-			<string>sourcecode.swift</string>
-			<key>path</key>
-			<string>CLIMCPGuideView.swift</string>
-			<key>sourceTree</key>
-			<string>&lt;group&gt;</string>
-		</dict>
-		<key>020000000000000000000020</key>
-		<dict>
-			<key>isa</key>
-			<string>PBXFileReference</string>
-			<key>lastKnownFileType</key>
-			<string>text</string>
-			<key>path</key>
-			<string>bin/ipatool-go</string>
-			<key>sourceTree</key>
-			<string>&lt;group&gt;</string>
-		</dict>
-		<key>030000000000000000000001</key>
-		<dict>
-			<key>children</key>
-			<array>
-				<string>030000000000000000000002</string>
-				<string>030000000000000000000005</string>
-				<string>030000000000000000000009</string>
-			</array>
-			<key>isa</key>
-			<string>PBXGroup</string>
-			<key>sourceTree</key>
-			<string>&lt;group&gt;</string>
-		</dict>
-		<key>030000000000000000000002</key>
-		<dict>
-			<key>children</key>
-			<array>
-				<string>030000000000000000000003</string>
-				<string>03000000000000000000000A</string>
-			</array>
-			<key>isa</key>
-			<string>PBXGroup</string>
-			<key>path</key>
-			<string>Sources</string>
-			<key>sourceTree</key>
-			<string>&lt;group&gt;</string>
-		</dict>
-		<key>030000000000000000000003</key>
-		<dict>
-			<key>children</key>
-			<array>
-				<string>02000000000000000000000F</string>
-				<string>020000000000000000000017</string>
-				<string>030000000000000000000008</string>
-			</array>
-			<key>isa</key>
-			<string>PBXGroup</string>
-			<key>path</key>
-			<string>IPATool</string>
-			<key>sourceTree</key>
-			<string>&lt;group&gt;</string>
-		</dict>
-		<key>030000000000000000000005</key>
-		<dict>
-			<key>children</key>
-			<array>
-				<string>020000000000000000000010</string>
-				<string>020000000000000000000013</string>
-				<string>020000000000000000000020</string>
-			</array>
-			<key>isa</key>
-			<string>PBXGroup</string>
-			<key>path</key>
-			<string>Resources</string>
-			<key>sourceTree</key>
-			<string>&lt;group&gt;</string>
-		</dict>
-		<key>030000000000000000000006</key>
-		<dict>
-			<key>children</key>
-			<array>
-				<string>020000000000000000000001</string>
-				<string>020000000000000000000002</string>
-				<string>020000000000000000000003</string>
-				<string>020000000000000000000012</string>
-				<string>020000000000000000000015</string>
-			</array>
-			<key>isa</key>
-			<string>PBXGroup</string>
-			<key>path</key>
-			<string>Models</string>
-			<key>sourceTree</key>
-			<string>&lt;group&gt;</string>
-		</dict>
-		<key>030000000000000000000007</key>
-		<dict>
-			<key>children</key>
-			<array>
-				<string>020000000000000000000004</string>
-				<string>020000000000000000000005</string>
-				<string>020000000000000000000006</string>
-				<string>020000000000000000000016</string>
-			</array>
-			<key>isa</key>
-			<string>PBXGroup</string>
-			<key>path</key>
-			<string>Services</string>
-			<key>sourceTree</key>
-			<string>&lt;group&gt;</string>
-		</dict>
-		<key>030000000000000000000008</key>
-		<dict>
-			<key>children</key>
-			<array>
-				<string>020000000000000000000007</string>
-				<string>020000000000000000000008</string>
-				<string>020000000000000000000009</string>
-				<string>02000000000000000000000A</string>
-				<string>02000000000000000000000B</string>
-				<string>02000000000000000000000C</string>
-				<string>02000000000000000000000D</string>
-				<string>02000000000000000000000E</string>
-				<string>020000000000000000000014</string>
-				<string>020000000000000000000018</string>
-				<string>020000000000000000000019</string>
-			</array>
-			<key>isa</key>
-			<string>PBXGroup</string>
-			<key>path</key>
-			<string>Views</string>
-			<key>sourceTree</key>
-			<string>&lt;group&gt;</string>
-		</dict>
-		<key>030000000000000000000009</key>
-		<dict>
-			<key>children</key>
-			<array>
-				<string>020000000000000000000011</string>
-			</array>
-			<key>isa</key>
-			<string>PBXGroup</string>
-			<key>name</key>
-			<string>Products</string>
-			<key>sourceTree</key>
-			<string>&lt;group&gt;</string>
-		</dict>
-		<key>03000000000000000000000A</key>
-		<dict>
-			<key>children</key>
-			<array>
-				<string>030000000000000000000006</string>
-				<string>030000000000000000000007</string>
-			</array>
-			<key>isa</key>
-			<string>PBXGroup</string>
-			<key>path</key>
-			<string>IPAToolKit</string>
-			<key>sourceTree</key>
-			<string>&lt;group&gt;</string>
-		</dict>
-		<key>040000000000000000000001</key>
-		<dict>
-			<key>buildConfigurationList</key>
-			<string>090000000000000000000001</string>
-			<key>buildPhases</key>
-			<array>
-				<string>060000000000000000000001</string>
-				<string>070000000000000000000001</string>
-			</array>
-			<key>buildRules</key>
-			<array/>
-			<key>dependencies</key>
-			<array/>
-			<key>isa</key>
-			<string>PBXNativeTarget</string>
-			<key>name</key>
-			<string>IPATool</string>
-			<key>productName</key>
-			<string>IPATool</string>
-			<key>productReference</key>
-			<string>020000000000000000000011</string>
-			<key>productType</key>
-			<string>com.apple.product-type.application</string>
-		</dict>
-		<key>050000000000000000000001</key>
-		<dict>
-			<key>attributes</key>
-			<dict>
-				<key>BuildIndependentTargetsInParallel</key>
-				<string>1</string>
-				<key>LastSwiftUpdateCheck</key>
-				<string>1620</string>
-				<key>LastUpgradeCheck</key>
-				<string>2630</string>
-				<key>TargetAttributes</key>
-				<dict>
-					<key>040000000000000000000001</key>
-					<dict>
-						<key>CreatedOnToolsVersion</key>
-						<string>16.2</string>
-					</dict>
-				</dict>
-			</dict>
-			<key>buildConfigurationList</key>
-			<string>090000000000000000000002</string>
-			<key>compatibilityVersion</key>
-			<string>Xcode 15.0</string>
-			<key>developmentRegion</key>
-			<string>zh-Hans</string>
-			<key>hasScannedForEncodings</key>
-			<string>0</string>
-			<key>isa</key>
-			<string>PBXProject</string>
-			<key>knownRegions</key>
-			<array>
-				<string>en</string>
-				<string>Base</string>
-				<string>zh-Hans</string>
-			</array>
-			<key>mainGroup</key>
-			<string>030000000000000000000001</string>
-			<key>productRefGroup</key>
-			<string>030000000000000000000009</string>
-			<key>projectDirPath</key>
-			<string></string>
-			<key>projectRoot</key>
-			<string></string>
-			<key>targets</key>
-			<array>
-				<string>040000000000000000000001</string>
-			</array>
-		</dict>
-		<key>060000000000000000000001</key>
-		<dict>
-			<key>buildActionMask</key>
-			<string>2147483647</string>
-			<key>files</key>
-			<array>
-				<string>010000000000000000000001</string>
-				<string>010000000000000000000002</string>
-				<string>010000000000000000000003</string>
-				<string>010000000000000000000004</string>
-				<string>010000000000000000000005</string>
-				<string>010000000000000000000006</string>
-				<string>010000000000000000000007</string>
-				<string>010000000000000000000008</string>
-				<string>010000000000000000000009</string>
-				<string>01000000000000000000000A</string>
-				<string>01000000000000000000000B</string>
-				<string>01000000000000000000000C</string>
-				<string>01000000000000000000000D</string>
-				<string>01000000000000000000000E</string>
-				<string>01000000000000000000000F</string>
-				<string>010000000000000000000010</string>
-				<string>010000000000000000000011</string>
-				<string>010000000000000000000013</string>
-				<string>010000000000000000000014</string>
-				<string>010000000000000000000015</string>
-				<string>010000000000000000000016</string>
-				<string>010000000000000000000017</string>
-			</array>
-			<key>isa</key>
-			<string>PBXSourcesBuildPhase</string>
-			<key>runOnlyForDeploymentPostprocessing</key>
-			<string>0</string>
-		</dict>
-		<key>070000000000000000000001</key>
-		<dict>
-			<key>buildActionMask</key>
-			<string>2147483647</string>
-			<key>files</key>
-			<array>
-				<string>010000000000000000000012</string>
-				<string>010000000000000000000020</string>
-			</array>
-			<key>isa</key>
-			<string>PBXResourcesBuildPhase</string>
-			<key>runOnlyForDeploymentPostprocessing</key>
-			<string>0</string>
-		</dict>
-		<key>080000000000000000000001</key>
-		<dict>
-			<key>buildSettings</key>
-			<dict>
-				<key>ASSETCATALOG_COMPILER_APPICON_NAME</key>
-				<string>AppIcon</string>
-				<key>CODE_SIGN_ENTITLEMENTS</key>
-				<string>IPATool.entitlements</string>
-				<key>CODE_SIGN_IDENTITY</key>
-				<string>Apple Development</string>
-				<key>CODE_SIGN_STYLE</key>
-				<string>Automatic</string>
-				<key>COMBINE_HIDPI_IMAGES</key>
-				<string>YES</string>
-				<key>CURRENT_PROJECT_VERSION</key>
-				<string>26281</string>
-				<key>DEAD_CODE_STRIPPING</key>
-				<string>YES</string>
-				<key>DEVELOPMENT_TEAM</key>
-				<string>AUX4734NLT</string>
-				<key>ENABLE_HARDENED_RUNTIME</key>
-				<string>YES</string>
-				<key>ENABLE_PREVIEWS</key>
-				<string>YES</string>
-				<key>INFOPLIST_FILE</key>
-				<string>Resources/Info.plist</string>
-				<key>INFOPLIST_KEY_CFBundleDisplayName</key>
-				<string>IPATool</string>
-				<key>INFOPLIST_KEY_LSApplicationCategoryType</key>
-				<string>public.app-category.utilities</string>
-				<key>LD_RUNPATH_SEARCH_PATHS</key>
-				<array>
-					<string>$(inherited)</string>
-					<string>@executable_path/../Frameworks</string>
-				</array>
-				<key>MACOSX_DEPLOYMENT_TARGET</key>
-				<string>14</string>
-				<key>MARKETING_VERSION</key>
-				<string>1.0.1</string>
-				<key>PRODUCT_BUNDLE_IDENTIFIER</key>
-				<string>cn.ipatool</string>
-				<key>PRODUCT_NAME</key>
-				<string>$(TARGET_NAME)</string>
-				<key>PROVISIONING_PROFILE_SPECIFIER</key>
-				<string></string>
-				<key>SWIFT_EMIT_LOC_STRINGS</key>
-				<string>YES</string>
-				<key>SWIFT_VERSION</key>
-				<string>6.0</string>
-			</dict>
-			<key>isa</key>
-			<string>XCBuildConfiguration</string>
-			<key>name</key>
-			<string>Debug</string>
-		</dict>
-		<key>080000000000000000000002</key>
-		<dict>
-			<key>buildSettings</key>
-			<dict>
-				<key>ASSETCATALOG_COMPILER_APPICON_NAME</key>
-				<string>AppIcon</string>
-				<key>CODE_SIGN_ENTITLEMENTS</key>
-				<string>IPATool.entitlements</string>
-				<key>CODE_SIGN_IDENTITY</key>
-				<string>Apple Development</string>
-				<key>CODE_SIGN_STYLE</key>
-				<string>Automatic</string>
-				<key>COMBINE_HIDPI_IMAGES</key>
-				<string>YES</string>
-				<key>CURRENT_PROJECT_VERSION</key>
-				<string>26281</string>
-				<key>DEAD_CODE_STRIPPING</key>
-				<string>YES</string>
-				<key>DEVELOPMENT_TEAM</key>
-				<string>AUX4734NLT</string>
-				<key>ENABLE_HARDENED_RUNTIME</key>
-				<string>YES</string>
-				<key>ENABLE_PREVIEWS</key>
-				<string>YES</string>
-				<key>INFOPLIST_FILE</key>
-				<string>Resources/Info.plist</string>
-				<key>INFOPLIST_KEY_CFBundleDisplayName</key>
-				<string>IPATool</string>
-				<key>INFOPLIST_KEY_LSApplicationCategoryType</key>
-				<string>public.app-category.utilities</string>
-				<key>LD_RUNPATH_SEARCH_PATHS</key>
-				<array>
-					<string>$(inherited)</string>
-					<string>@executable_path/../Frameworks</string>
-				</array>
-				<key>MACOSX_DEPLOYMENT_TARGET</key>
-				<string>14</string>
-				<key>MARKETING_VERSION</key>
-				<string>1.0.1</string>
-				<key>PRODUCT_BUNDLE_IDENTIFIER</key>
-				<string>cn.ipatool</string>
-				<key>PRODUCT_NAME</key>
-				<string>$(TARGET_NAME)</string>
-				<key>PROVISIONING_PROFILE_SPECIFIER</key>
-				<string></string>
-				<key>SWIFT_EMIT_LOC_STRINGS</key>
-				<string>YES</string>
-				<key>SWIFT_VERSION</key>
-				<string>6.0</string>
-			</dict>
-			<key>isa</key>
-			<string>XCBuildConfiguration</string>
-			<key>name</key>
-			<string>Release</string>
-		</dict>
-		<key>080000000000000000000003</key>
-		<dict>
-			<key>buildSettings</key>
-			<dict>
-				<key>ALWAYS_SEARCH_USER_PATHS</key>
-				<string>NO</string>
-				<key>CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED</key>
-				<string>YES</string>
-				<key>CLANG_ANALYZER_NONNULL</key>
-				<string>YES</string>
-				<key>CLANG_CXX_LANGUAGE_STANDARD</key>
-				<string>gnu++20</string>
-				<key>CLANG_ENABLE_MODULES</key>
-				<string>YES</string>
-				<key>CLANG_ENABLE_OBJC_ARC</key>
-				<string>YES</string>
-				<key>CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING</key>
-				<string>YES</string>
-				<key>CLANG_WARN_BOOL_CONVERSION</key>
-				<string>YES</string>
-				<key>CLANG_WARN_COMMA</key>
-				<string>YES</string>
-				<key>CLANG_WARN_CONSTANT_CONVERSION</key>
-				<string>YES</string>
-				<key>CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS</key>
-				<string>YES</string>
-				<key>CLANG_WARN_EMPTY_BODY</key>
-				<string>YES</string>
-				<key>CLANG_WARN_ENUM_CONVERSION</key>
-				<string>YES</string>
-				<key>CLANG_WARN_INFINITE_RECURSION</key>
-				<string>YES</string>
-				<key>CLANG_WARN_INT_CONVERSION</key>
-				<string>YES</string>
-				<key>CLANG_WARN_NON_LITERAL_NULL_CONVERSION</key>
-				<string>YES</string>
-				<key>CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF</key>
-				<string>YES</string>
-				<key>CLANG_WARN_OBJC_LITERAL_CONVERSION</key>
-				<string>YES</string>
-				<key>CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER</key>
-				<string>YES</string>
-				<key>CLANG_WARN_RANGE_LOOP_ANALYSIS</key>
-				<string>YES</string>
-				<key>CLANG_WARN_STRICT_PROTOTYPES</key>
-				<string>YES</string>
-				<key>CLANG_WARN_SUSPICIOUS_MOVE</key>
-				<string>YES</string>
-				<key>CLANG_WARN_UNREACHABLE_CODE</key>
-				<string>YES</string>
-				<key>CLANG_WARN__DUPLICATE_METHOD_MATCH</key>
-				<string>YES</string>
-				<key>COPY_PHASE_STRIP</key>
-				<string>NO</string>
-				<key>DEAD_CODE_STRIPPING</key>
-				<string>YES</string>
-				<key>DEBUG_INFORMATION_FORMAT</key>
-				<string>dwarf</string>
-				<key>DEVELOPMENT_TEAM</key>
-				<string>AUX4734NLT</string>
-				<key>ENABLE_HARDENED_RUNTIME</key>
-				<string>YES</string>
-				<key>ENABLE_STRICT_OBJC_MSGSEND</key>
-				<string>YES</string>
-				<key>ENABLE_TESTABILITY</key>
-				<string>YES</string>
-				<key>ENABLE_USER_SCRIPT_SANDBOXING</key>
-				<string>YES</string>
-				<key>GCC_DYNAMIC_NO_PIC</key>
-				<string>NO</string>
-				<key>GCC_NO_COMMON_BLOCKS</key>
-				<string>YES</string>
-				<key>GCC_OPTIMIZATION_LEVEL</key>
-				<string>0</string>
-				<key>GCC_PREPROCESSOR_DEFINITIONS</key>
-				<array>
-					<string>DEBUG=1</string>
-					<string>$(inherited)</string>
-				</array>
-				<key>GCC_WARN_64_TO_32_BIT_CONVERSION</key>
-				<string>YES</string>
-				<key>GCC_WARN_ABOUT_RETURN_TYPE</key>
-				<string>YES</string>
-				<key>GCC_WARN_UNDECLARED_SELECTOR</key>
-				<string>YES</string>
-				<key>GCC_WARN_UNINITIALIZED_AUTOS</key>
-				<string>YES</string>
-				<key>GCC_WARN_UNUSED_FUNCTION</key>
-				<string>YES</string>
-				<key>GCC_WARN_UNUSED_VARIABLE</key>
-				<string>YES</string>
-				<key>IPHONEOS_DEPLOYMENT_TARGET</key>
-				<string>18.2</string>
-				<key>MTL_ENABLE_DEBUG_INFO</key>
-				<string>INCLUDE_SOURCE</string>
-				<key>ONLY_ACTIVE_ARCH</key>
-				<string>YES</string>
-				<key>SDKROOT</key>
-				<string>macosx</string>
-				<key>STRING_CATALOG_GENERATE_SYMBOLS</key>
-				<string>YES</string>
-				<key>SWIFT_ACTIVE_COMPILATION_CONDITIONS</key>
-				<string>DEBUG $(inherited)</string>
-				<key>SWIFT_OPTIMIZATION_LEVEL</key>
-				<string>-Onone</string>
-			</dict>
-			<key>isa</key>
-			<string>XCBuildConfiguration</string>
-			<key>name</key>
-			<string>Debug</string>
-		</dict>
-		<key>080000000000000000000004</key>
-		<dict>
-			<key>buildSettings</key>
-			<dict>
-				<key>ALWAYS_SEARCH_USER_PATHS</key>
-				<string>NO</string>
-				<key>CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED</key>
-				<string>YES</string>
-				<key>CLANG_ANALYZER_NONNULL</key>
-				<string>YES</string>
-				<key>CLANG_CXX_LANGUAGE_STANDARD</key>
-				<string>gnu++20</string>
-				<key>CLANG_ENABLE_MODULES</key>
-				<string>YES</string>
-				<key>CLANG_ENABLE_OBJC_ARC</key>
-				<string>YES</string>
-				<key>CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING</key>
-				<string>YES</string>
-				<key>CLANG_WARN_BOOL_CONVERSION</key>
-				<string>YES</string>
-				<key>CLANG_WARN_COMMA</key>
-				<string>YES</string>
-				<key>CLANG_WARN_CONSTANT_CONVERSION</key>
-				<string>YES</string>
-				<key>CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS</key>
-				<string>YES</string>
-				<key>CLANG_WARN_EMPTY_BODY</key>
-				<string>YES</string>
-				<key>CLANG_WARN_ENUM_CONVERSION</key>
-				<string>YES</string>
-				<key>CLANG_WARN_INFINITE_RECURSION</key>
-				<string>YES</string>
-				<key>CLANG_WARN_INT_CONVERSION</key>
-				<string>YES</string>
-				<key>CLANG_WARN_NON_LITERAL_NULL_CONVERSION</key>
-				<string>YES</string>
-				<key>CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF</key>
-				<string>YES</string>
-				<key>CLANG_WARN_OBJC_LITERAL_CONVERSION</key>
-				<string>YES</string>
-				<key>CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER</key>
-				<string>YES</string>
-				<key>CLANG_WARN_RANGE_LOOP_ANALYSIS</key>
-				<string>YES</string>
-				<key>CLANG_WARN_STRICT_PROTOTYPES</key>
-				<string>YES</string>
-				<key>CLANG_WARN_SUSPICIOUS_MOVE</key>
-				<string>YES</string>
-				<key>CLANG_WARN_UNREACHABLE_CODE</key>
-				<string>YES</string>
-				<key>CLANG_WARN__DUPLICATE_METHOD_MATCH</key>
-				<string>YES</string>
-				<key>COPY_PHASE_STRIP</key>
-				<string>NO</string>
-				<key>DEAD_CODE_STRIPPING</key>
-				<string>YES</string>
-				<key>DEBUG_INFORMATION_FORMAT</key>
-				<string>dwarf-with-dsym</string>
-				<key>DEVELOPMENT_TEAM</key>
-				<string>AUX4734NLT</string>
-				<key>ENABLE_HARDENED_RUNTIME</key>
-				<string>YES</string>
-				<key>ENABLE_NS_ASSERTIONS</key>
-				<string>NO</string>
-				<key>ENABLE_STRICT_OBJC_MSGSEND</key>
-				<string>YES</string>
-				<key>ENABLE_USER_SCRIPT_SANDBOXING</key>
-				<string>YES</string>
-				<key>GCC_NO_COMMON_BLOCKS</key>
-				<string>YES</string>
-				<key>GCC_OPTIMIZATION_LEVEL</key>
-				<string>s</string>
-				<key>GCC_WARN_64_TO_32_BIT_CONVERSION</key>
-				<string>YES</string>
-				<key>GCC_WARN_ABOUT_RETURN_TYPE</key>
-				<string>YES</string>
-				<key>GCC_WARN_UNDECLARED_SELECTOR</key>
-				<string>YES</string>
-				<key>GCC_WARN_UNINITIALIZED_AUTOS</key>
-				<string>YES</string>
-				<key>GCC_WARN_UNUSED_FUNCTION</key>
-				<string>YES</string>
-				<key>GCC_WARN_UNUSED_VARIABLE</key>
-				<string>YES</string>
-				<key>IPHONEOS_DEPLOYMENT_TARGET</key>
-				<string>18.2</string>
-				<key>MTL_ENABLE_DEBUG_INFO</key>
-				<string>NO</string>
-				<key>SDKROOT</key>
-				<string>macosx</string>
-				<key>STRING_CATALOG_GENERATE_SYMBOLS</key>
-				<string>YES</string>
-				<key>SWIFT_COMPILATION_MODE</key>
-				<string>wholemodule</string>
-				<key>SWIFT_OPTIMIZATION_LEVEL</key>
-				<string>-O</string>
-				<key>VALIDATE_PRODUCT</key>
-				<string>YES</string>
-			</dict>
-			<key>isa</key>
-			<string>XCBuildConfiguration</string>
-			<key>name</key>
-			<string>Release</string>
-		</dict>
-		<key>090000000000000000000001</key>
-		<dict>
-			<key>buildConfigurations</key>
-			<array>
-				<string>080000000000000000000001</string>
-				<string>080000000000000000000002</string>
-			</array>
-			<key>defaultConfigurationIsVisible</key>
-			<string>0</string>
-			<key>defaultConfigurationName</key>
-			<string>Release</string>
-			<key>isa</key>
-			<string>XCConfigurationList</string>
-		</dict>
-		<key>090000000000000000000002</key>
-		<dict>
-			<key>buildConfigurations</key>
-			<array>
-				<string>080000000000000000000003</string>
-				<string>080000000000000000000004</string>
-			</array>
-			<key>defaultConfigurationIsVisible</key>
-			<string>0</string>
-			<key>defaultConfigurationName</key>
-			<string>Release</string>
-			<key>isa</key>
-			<string>XCConfigurationList</string>
-		</dict>
-	</dict>
-	<key>rootObject</key>
-	<string>050000000000000000000001</string>
-</dict>
-</plist>
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 56;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		A10000010000000000000001 /* csap.c in Sources */ = {isa = PBXBuildFile; fileRef = A10000010000000000000010 /* csap.c */; };
+		A10000010000000000000002 /* IPAToolCore.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000010000000000000020 /* IPAToolCore.swift */; };
+		A10000010000000000000003 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000010000000000000030 /* main.swift */; };
+		A10000010000000000000004 /* IPAToolApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000010000000000000040 /* IPAToolApp.swift */; };
+		A10000010000000000000005 /* IPAToolCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A10000010000000000000050 /* IPAToolCore.framework */; };
+		A10000010000000000000006 /* IPAToolCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A10000010000000000000050 /* IPAToolCore.framework */; };
+		A10000010000000000000007 /* unicorn.c in Sources */ = {isa = PBXBuildFile; fileRef = A10000010000000000000013 /* unicorn.c */; };
+		A10000010000000000000008 /* machimage.c in Sources */ = {isa = PBXBuildFile; fileRef = A10000010000000000000015 /* machimage.c */; };
+		A10000010000000000000009 /* shims.c in Sources */ = {isa = PBXBuildFile; fileRef = A10000010000000000000017 /* shims.c */; };
+		A1000001000000000000000A /* shim_memory.c in Sources */ = {isa = PBXBuildFile; fileRef = A10000010000000000000019 /* shim_memory.c */; };
+		A1000001000000000000000B /* shim_platform.c in Sources */ = {isa = PBXBuildFile; fileRef = A1000001000000000000001B /* shim_platform.c */; };
+		A1000001000000000000000C /* machine.c in Sources */ = {isa = PBXBuildFile; fileRef = A1000001000000000000001D /* machine.c */; };
+		A1000001000000000000000D /* storeagent.c in Sources */ = {isa = PBXBuildFile; fileRef = A1000001000000000000001F /* storeagent.c */; };
+		A1000001000000000000000E /* SAPSigner.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000010000000000000021 /* SAPSigner.swift */; };
+		A1000001000000000000000F /* AppStoreClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000010000000000000022 /* AppStoreClient.swift */; };
+		A100000100000000000000A0 /* IPAToolModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000010000000000000041 /* IPAToolModels.swift */; };
+		A100000100000000000000A1 /* IPAToolViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000010000000000000042 /* IPAToolViews.swift */; };
+		A100000100000000000000A2 /* IPAToolCore.framework in Copy Frameworks */ = {isa = PBXBuildFile; fileRef = A10000010000000000000050 /* IPAToolCore.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		A100000100000000000000A4 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A100000100000000000000A3 /* Assets.xcassets */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		A10000010000000000000060 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A10000010000000000000100 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = A10000010000000000000200;
+			remoteInfo = IPAToolCore;
+		};
+		A10000010000000000000061 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A10000010000000000000100 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = A10000010000000000000200;
+			remoteInfo = IPAToolCore;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		A10000010000000000000093 /* Copy Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				A100000100000000000000A2 /* IPAToolCore.framework in Copy Frameworks */,
+			);
+			name = "Copy Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		A10000010000000000000010 /* csap.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = csap.c; sourceTree = "<group>"; };
+		A10000010000000000000011 /* csap.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = csap.h; sourceTree = "<group>"; };
+		A10000010000000000000012 /* unicorn.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = unicorn.h; sourceTree = "<group>"; };
+		A10000010000000000000013 /* unicorn.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = unicorn.c; sourceTree = "<group>"; };
+		A10000010000000000000014 /* machimage.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = machimage.h; sourceTree = "<group>"; };
+		A10000010000000000000015 /* machimage.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = machimage.c; sourceTree = "<group>"; };
+		A10000010000000000000016 /* shims.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = shims.h; sourceTree = "<group>"; };
+		A10000010000000000000017 /* shims.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = shims.c; sourceTree = "<group>"; };
+		A10000010000000000000019 /* shim_memory.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = shim_memory.c; sourceTree = "<group>"; };
+		A1000001000000000000001B /* shim_platform.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = shim_platform.c; sourceTree = "<group>"; };
+		A1000001000000000000001C /* machine.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = machine.h; sourceTree = "<group>"; };
+		A1000001000000000000001D /* machine.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = machine.c; sourceTree = "<group>"; };
+		A1000001000000000000001E /* storeagent.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = storeagent.h; sourceTree = "<group>"; };
+		A1000001000000000000001F /* storeagent.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = storeagent.c; sourceTree = "<group>"; };
+		A10000010000000000000020 /* IPAToolCore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IPAToolCore.swift; sourceTree = "<group>"; };
+		A10000010000000000000021 /* SAPSigner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SAPSigner.swift; sourceTree = "<group>"; };
+		A10000010000000000000022 /* AppStoreClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppStoreClient.swift; sourceTree = "<group>"; };
+		A10000010000000000000030 /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
+		A10000010000000000000040 /* IPAToolApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IPAToolApp.swift; sourceTree = "<group>"; };
+		A10000010000000000000041 /* IPAToolModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IPAToolModels.swift; sourceTree = "<group>"; };
+		A10000010000000000000042 /* IPAToolViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IPAToolViews.swift; sourceTree = "<group>"; };
+		A10000010000000000000050 /* IPAToolCore.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = IPAToolCore.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		A10000010000000000000051 /* ipatool */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = ipatool; sourceTree = BUILT_PRODUCTS_DIR; };
+		A10000010000000000000052 /* IPATool.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = IPATool.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		A100000100000000000000A3 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		A10000010000000000000070 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A10000010000000000000005 /* IPAToolCore.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A10000010000000000000071 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A10000010000000000000006 /* IPAToolCore.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A10000010000000000000072 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		A10000010000000000000080 /* CSAP */ = {
+			isa = PBXGroup;
+			children = (
+				A10000010000000000000011 /* csap.h */,
+				A10000010000000000000010 /* csap.c */,
+				A10000010000000000000012 /* unicorn.h */,
+				A10000010000000000000013 /* unicorn.c */,
+				A10000010000000000000014 /* machimage.h */,
+				A10000010000000000000015 /* machimage.c */,
+				A10000010000000000000016 /* shims.h */,
+				A10000010000000000000017 /* shims.c */,
+				A10000010000000000000019 /* shim_memory.c */,
+				A1000001000000000000001B /* shim_platform.c */,
+				A1000001000000000000001C /* machine.h */,
+				A1000001000000000000001D /* machine.c */,
+				A1000001000000000000001E /* storeagent.h */,
+				A1000001000000000000001F /* storeagent.c */,
+			);
+			path = CSAP;
+			sourceTree = "<group>";
+		};
+		A10000010000000000000081 /* IPAToolCore */ = {
+			isa = PBXGroup;
+			children = (
+				A10000010000000000000020 /* IPAToolCore.swift */,
+				A10000010000000000000021 /* SAPSigner.swift */,
+				A10000010000000000000022 /* AppStoreClient.swift */,
+			);
+			path = IPAToolCore;
+			sourceTree = "<group>";
+		};
+		A10000010000000000000082 /* IPAToolCLI */ = {
+			isa = PBXGroup;
+			children = (
+				A10000010000000000000030 /* main.swift */,
+			);
+			path = IPAToolCLI;
+			sourceTree = "<group>";
+		};
+		A10000010000000000000083 /* IPAToolGUI */ = {
+			isa = PBXGroup;
+			children = (
+				A10000010000000000000040 /* IPAToolApp.swift */,
+				A10000010000000000000041 /* IPAToolModels.swift */,
+				A10000010000000000000042 /* IPAToolViews.swift */,
+				A100000100000000000000A3 /* Assets.xcassets */,
+			);
+			path = IPAToolGUI;
+			sourceTree = "<group>";
+		};
+		A10000010000000000000084 /* Sources */ = {
+			isa = PBXGroup;
+			children = (
+				A10000010000000000000080 /* CSAP */,
+				A10000010000000000000081 /* IPAToolCore */,
+				A10000010000000000000082 /* IPAToolCLI */,
+				A10000010000000000000083 /* IPAToolGUI */,
+			);
+			path = Sources;
+			sourceTree = "<group>";
+		};
+		A10000010000000000000085 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				A10000010000000000000050 /* IPAToolCore.framework */,
+				A10000010000000000000051 /* ipatool */,
+				A10000010000000000000052 /* IPATool.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		A10000010000000000000200 /* IPAToolCore */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A10000010000000000000300 /* Build configuration list for PBXNativeTarget "IPAToolCore" */;
+			buildPhases = (
+				A10000010000000000000090 /* Sources */,
+				A10000010000000000000072 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = IPAToolCore;
+			productName = IPAToolCore;
+			productReference = A10000010000000000000050 /* IPAToolCore.framework */;
+			productType = "com.apple.product-type.framework";
+		};
+		A10000010000000000000201 /* ipatool */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A10000010000000000000301 /* Build configuration list for PBXNativeTarget "ipatool" */;
+			buildPhases = (
+				A10000010000000000000091 /* Sources */,
+				A10000010000000000000070 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				A10000010000000000000062 /* PBXTargetDependency */,
+			);
+			name = ipatool;
+			productName = ipatool;
+			productReference = A10000010000000000000051 /* ipatool */;
+			productType = "com.apple.product-type.tool";
+		};
+		A10000010000000000000202 /* IPATool */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A10000010000000000000302 /* Build configuration list for PBXNativeTarget "IPATool" */;
+			buildPhases = (
+				A10000010000000000000092 /* Sources */,
+				A10000010000000000000071 /* Frameworks */,
+				A10000010000000000000093 /* Copy Frameworks */,
+				A10000010000000000000094 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				A10000010000000000000063 /* PBXTargetDependency */,
+			);
+			name = IPATool;
+			productName = IPATool;
+			productReference = A10000010000000000000052 /* IPATool.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		A10000010000000000000100 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1500;
+				LastUpgradeCheck = 1500;
+				TargetAttributes = {
+					A10000010000000000000200 = {
+						CreatedOnToolsVersion = 15.0;
+					};
+					A10000010000000000000201 = {
+						CreatedOnToolsVersion = 15.0;
+					};
+					A10000010000000000000202 = {
+						CreatedOnToolsVersion = 15.0;
+					};
+				};
+			};
+			buildConfigurationList = A10000010000000000000310 /* Build configuration list for PBXProject "IPATool" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = A10000010000000000000084 /* Sources */;
+			productRefGroup = A10000010000000000000085 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				A10000010000000000000200 /* IPAToolCore */,
+				A10000010000000000000201 /* ipatool */,
+				A10000010000000000000202 /* IPATool */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		A10000010000000000000094 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A100000100000000000000A4 /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		A10000010000000000000090 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A10000010000000000000001 /* csap.c in Sources */,
+				A10000010000000000000007 /* unicorn.c in Sources */,
+				A10000010000000000000008 /* machimage.c in Sources */,
+				A10000010000000000000009 /* shims.c in Sources */,
+				A1000001000000000000000A /* shim_memory.c in Sources */,
+				A1000001000000000000000B /* shim_platform.c in Sources */,
+				A1000001000000000000000C /* machine.c in Sources */,
+				A1000001000000000000000D /* storeagent.c in Sources */,
+				A10000010000000000000002 /* IPAToolCore.swift in Sources */,
+				A1000001000000000000000E /* SAPSigner.swift in Sources */,
+				A1000001000000000000000F /* AppStoreClient.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A10000010000000000000091 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A10000010000000000000003 /* main.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A10000010000000000000092 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A10000010000000000000004 /* IPAToolApp.swift in Sources */,
+				A100000100000000000000A0 /* IPAToolModels.swift in Sources */,
+				A100000100000000000000A1 /* IPAToolViews.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		A10000010000000000000062 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = A10000010000000000000200 /* IPAToolCore */;
+			targetProxy = A10000010000000000000060 /* PBXContainerItemProxy */;
+		};
+		A10000010000000000000063 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = A10000010000000000000200 /* IPAToolCore */;
+			targetProxy = A10000010000000000000061 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		A10000010000000000000400 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		A10000010000000000000401 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = macosx;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		A10000010000000000000410 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_STYLE = Manual;
+				CURRENT_PROJECT_VERSION = 1;
+				DEFINES_MODULE = YES;
+				DEVELOPMENT_TEAM = "";
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				GENERATE_INFOPLIST_FILE = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(SRCROOT)/Sources/CSAP",
+				);
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				OTHER_LDFLAGS = "-ldl";
+				PRODUCT_BUNDLE_IDENTIFIER = com.dustink.IPAToolCore;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_INCLUDE_PATHS = "$(SRCROOT)/Sources/CSAP";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		A10000010000000000000411 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_STYLE = Manual;
+				CURRENT_PROJECT_VERSION = 1;
+				DEFINES_MODULE = YES;
+				DEVELOPMENT_TEAM = "";
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				GENERATE_INFOPLIST_FILE = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(SRCROOT)/Sources/CSAP",
+				);
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				OTHER_LDFLAGS = "-ldl";
+				PRODUCT_BUNDLE_IDENTIFIER = com.dustink.IPAToolCore;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_INCLUDE_PATHS = "$(SRCROOT)/Sources/CSAP";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+		A10000010000000000000420 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_STYLE = Manual;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = "";
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@executable_path",
+					"$(BUILT_PRODUCTS_DIR)",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.dustink.ipatool;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_INCLUDE_PATHS = "$(SRCROOT)/Sources/CSAP";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		A10000010000000000000421 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_STYLE = Manual;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = "";
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@executable_path",
+					"$(BUILT_PRODUCTS_DIR)",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.dustink.ipatool;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_INCLUDE_PATHS = "$(SRCROOT)/Sources/CSAP";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+		A10000010000000000000430 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_STYLE = Manual;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 26421;
+				DEVELOPMENT_TEAM = "";
+				ENABLE_HARDENED_RUNTIME = NO;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = IPATool;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				MARKETING_VERSION = 2.0;
+				PRODUCT_BUNDLE_IDENTIFIER = cn.ipatool;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_INCLUDE_PATHS = "$(SRCROOT)/Sources/CSAP";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		A10000010000000000000431 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_STYLE = Manual;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 26421;
+				DEVELOPMENT_TEAM = "";
+				ENABLE_HARDENED_RUNTIME = NO;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = IPATool;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				MARKETING_VERSION = 2.0;
+				PRODUCT_BUNDLE_IDENTIFIER = cn.ipatool;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_INCLUDE_PATHS = "$(SRCROOT)/Sources/CSAP";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		A10000010000000000000300 /* Build configuration list for PBXNativeTarget "IPAToolCore" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A10000010000000000000410 /* Debug */,
+				A10000010000000000000411 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		A10000010000000000000301 /* Build configuration list for PBXNativeTarget "ipatool" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A10000010000000000000420 /* Debug */,
+				A10000010000000000000421 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		A10000010000000000000302 /* Build configuration list for PBXNativeTarget "IPATool" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A10000010000000000000430 /* Debug */,
+				A10000010000000000000431 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		A10000010000000000000310 /* Build configuration list for PBXProject "IPATool" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A10000010000000000000400 /* Debug */,
+				A10000010000000000000401 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = A10000010000000000000100 /* Project object */;
+}

@@ -15,5 +15,10 @@ build/
 *.dSYM.zip
 *.dSYM
 
-# 内置 ipatool-go 二进制（从 ipatool-go 项目构建复制）
-Resources/bin/
+# 构建中间产物
+main.d
+main.dia
+main.swiftconstvalues
+
+# 旧版 ipatool-go 二进制（2.0 已原生实现，不再依赖）
+vendor/
