@@ -70,4 +70,4 @@ This project is licensed under a custom license. **Personal, educational, and no
 
 See [LICENSE](LICENSE) for the full terms.
 
-To apply for a commercial license, visit https://www.ipatool.cn or contact contact@ipatool.cn.
+To apply for a commercial license, visit https://www.ipatool.cn or contact dustink@qq.com.

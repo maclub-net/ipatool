@@ -70,4 +70,4 @@ Sources/
 
 전체 조항은 [LICENSE](LICENSE)에서 확인할 수 있습니다.
 
-상업 라이선스 신청은 https://www.ipatool.cn 또는 contact@ipatool.cn으로 문의하세요.
+상업 라이선스 신청은 https://www.ipatool.cn 또는 dustink@qq.com으로 문의하세요.

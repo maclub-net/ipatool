@@ -70,4 +70,4 @@ Sources/
 
 完整條款見 [LICENSE](LICENSE)。
 
-申請商業授權請造訪 https://www.ipatool.cn 或聯絡 contact@ipatool.cn。
+申請商業授權請造訪 https://www.ipatool.cn 或聯絡 dustink@qq.com。

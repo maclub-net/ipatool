@@ -70,4 +70,4 @@ Sources/
 
 詳細な条件は [LICENSE](LICENSE) をご覧ください。
 
-商用ライセンスの申請は https://www.ipatool.cn または contact@ipatool.cn までお問い合わせください。
+商用ライセンスの申請は https://www.ipatool.cn または dustink@qq.com までお問い合わせください。

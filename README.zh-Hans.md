@@ -70,4 +70,4 @@ Sources/
 
 完整条款见 [LICENSE](LICENSE)。
 
-申请商业授权请访问 https://www.ipatool.cn 或联系 contact@ipatool.cn。
+申请商业授权请访问 https://www.ipatool.cn 或联系 dustink@qq.com。
