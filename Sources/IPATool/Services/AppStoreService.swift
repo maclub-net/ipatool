@@ -72,7 +72,8 @@ final class AppStoreService: ObservableObject {
     /// Go 版已做兼容，这里保持一致。
     private func normalizedAuthEndpoint(_ endpoint: String) -> String {
         guard !endpoint.isEmpty else { return endpoint }
-        if endpoint.contains("/native/"), !endpoint.hasSuffix("/") {
+        // 与上游一致：认证路径必须以 / 结尾，否则 Apple 返回 301 Moved Permanently
+        if !endpoint.hasSuffix("/") {
             return endpoint + "/"
         }
         return endpoint
@@ -589,13 +590,14 @@ final class AppStoreService: ObservableObject {
             return (nil, nil, .rateLimited, delay)
         }
 
-        // 302 重定向 — 手动跟随，仅更换目标 URL，请求体（含 attempt 值）保持不变
-        if httpResponse.statusCode == 302 {
+        // 认证重定向（301/302/307/308）— 手动跟随，仅更换目标 URL，
+        // 请求体（含 attempt 值）保持不变。303 要求 GET，不属于此流程。
+        if [301, 302, 307, 308].contains(httpResponse.statusCode) {
             if let location = httpResponse.value(forHTTPHeaderField: "Location") {
-                log("收到 302 重定向: \(location)")
+                log("收到 \(httpResponse.statusCode) 重定向: \(location)")
                 return (nil, location, nil, nil)
             }
-            return (nil, nil, .unknownError("302 但无 Location 头"), nil)
+            return (nil, nil, .unknownError("\(httpResponse.statusCode) 但无 Location 头"), nil)
         }
 
         // 非 200 状态码
