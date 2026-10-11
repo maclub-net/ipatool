@@ -8,6 +8,8 @@
 
 IPATool 是一款原生 macOS 桌面應用，用於搜尋 App Store 中的應用、取得授權並下載 IPA 安裝包到本機。支援多地區 Apple ID 管理、雙重認證、已購應用瀏覽、歷史版本下載，以及 iOS / iPadOS / tvOS / visionOS / macOS 全平台包下載。
 
+![執行截圖](Screenshots/app.png)
+
 ## 下載
 
 - [App Store](https://apps.apple.com/cn/app/ipatool/id6774012874)

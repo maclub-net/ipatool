@@ -8,6 +8,8 @@
 
 IPATool is a native macOS desktop app for searching apps on the App Store, obtaining licenses, and downloading IPA packages locally. It supports multi-region Apple ID management, two-factor authentication, purchased app browsing, historical version downloads, and package downloads for iOS / iPadOS / tvOS / visionOS / macOS.
 
+![Screenshot](Screenshots/app.png)
+
 ## Download
 
 - [App Store](https://apps.apple.com/cn/app/ipatool/id6774012874)

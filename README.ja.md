@@ -8,6 +8,8 @@
 
 IPATool は、App Store のアプリを検索し、ライセンスを取得して IPA パッケージをローカルにダウンロードするためのネイティブ macOS デスクトップアプリです。複数地域の Apple ID 管理、二要素認証、購入済みアプリの閲覧、過去バージョンのダウンロード、iOS / iPadOS / tvOS / visionOS / macOS の全プラットフォームに対応しています。
 
+![スクリーンショット](Screenshots/app.png)
+
 ## ダウンロード
 
 - [App Store](https://apps.apple.com/cn/app/ipatool/id6774012874)
