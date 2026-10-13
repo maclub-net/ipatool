@@ -215,13 +215,29 @@ struct AppAccount: Identifiable, Equatable, Codable {
 
 // MARK: - Settings
 
+/// 展开路径中的 ~ 为真实用户主目录。
+/// 注意：沙盒下 NSHomeDirectory()/expandingTildeInPath 返回的是容器路径，
+/// 需通过 getpwuid 获取真实主目录（/Users/<name>）
+func expandTildeInPath(_ path: String) -> String {
+    guard path.hasPrefix("~") else { return path }
+    if let pw = getpwuid(getuid()), let dir = pw.pointee.pw_dir {
+        let home = String(cString: dir)
+        if path == "~" { return home }
+        if path.hasPrefix("~/") { return home + path.dropFirst(1) }
+    }
+    return (path as NSString).expandingTildeInPath
+}
+
 struct AppSettings: Equatable, Codable {
     var downloadDirectory: String
+    /// 安全作用域书签：沙盒下持久化用户选择目录的访问授权
+    var downloadBookmark: Data?
     var keepOriginal: Bool
     var autoImport: Bool
 
     static let `default` = AppSettings(
-        downloadDirectory: ("~/IPATool/downloads" as NSString).expandingTildeInPath,
+        downloadDirectory: expandTildeInPath("~/IPATool/downloads"),
+        downloadBookmark: nil,
         keepOriginal: false,
         autoImport: true
     )

@@ -568,7 +568,7 @@
 			repositoryURL = "https://github.com/maclub-net/IPAToolKit.git";
 			requirement = {
 				kind = upToNextMajorVersion;
-				minimumVersion = 1.2.0;
+				minimumVersion = 1.2.8;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */

@@ -96,9 +96,15 @@ final class AppModel: ObservableObject {
 
         if let data = defaults.data(forKey: StorageKey.settings),
            let decoded = try? JSONDecoder().decode(AppSettings.self, from: data) {
-            // 兼容旧数据：展开 ~ 为用户主目录
+            // 兼容旧数据：展开 ~ 为真实用户主目录
             var fixed = decoded
-            fixed.downloadDirectory = (decoded.downloadDirectory as NSString).expandingTildeInPath
+            fixed.downloadDirectory = expandTildeInPath(decoded.downloadDirectory)
+            // 迁移：旧版本在沙盒下把默认目录展开到了容器内，改回真实主目录
+            let containerDefault = ("~/IPATool/downloads" as NSString).expandingTildeInPath
+            if fixed.downloadDirectory == containerDefault,
+               containerDefault.contains("/Library/Containers/") {
+                fixed.downloadDirectory = AppSettings.default.downloadDirectory
+            }
             settings = fixed
         }
 
@@ -313,7 +319,7 @@ final class AppModel: ObservableObject {
             sellerName: "",
             version: owned.version,
             price: nil,
-            artworkUrl: nil,
+            artworkUrl: owned.artworkUrl,
             platforms: owned.platforms
         )
         await downloadApp(app)
@@ -339,6 +345,7 @@ final class AppModel: ObservableObject {
         var task = DownloadTask(app: app, status: .downloading)
         task.startedAt = Date()
         downloadTasks.insert(task, at: 0)
+        showMessage("已加入下载队列：\(app.trackName) (\(versionLabel))", success: true)
 
         print("[download] starting: \(app.trackName) (\(versionLabel)), appID=\(app.trackId)")
 
@@ -364,9 +371,33 @@ final class AppModel: ObservableObject {
             }
             print("[download] download URL: \(url.absoluteString)")
 
-            // 4. 确定输出路径（展开 ~ 为用户主目录）
-            let expandedDir = (settings.downloadDirectory as NSString).expandingTildeInPath
-            let dir = URL(fileURLWithPath: expandedDir, isDirectory: true)
+            // 4. 确定输出路径（展开 ~ 为真实用户主目录；沙盒下优先用安全作用域书签恢复授权）
+            let expandedDir = expandTildeInPath(settings.downloadDirectory)
+            var dir = URL(fileURLWithPath: expandedDir, isDirectory: true)
+            var scopedURL: URL?
+            if let bookmark = settings.downloadBookmark {
+                var stale = false
+                if let url = try? URL(resolvingBookmarkData: bookmark,
+                                      options: .withSecurityScope,
+                                      bookmarkDataIsStale: &stale) {
+                    dir = url
+                    if url.startAccessingSecurityScopedResource() {
+                        scopedURL = url
+                    }
+                }
+            }
+            defer { scopedURL?.stopAccessingSecurityScopedResource() }
+
+            // 下载前探测目录可写性（沙盒对容器外路径需用户授权），
+            // 避免大文件下载完成后才因无权限失败
+            do {
+                try FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
+                let probe = dir.appendingPathComponent(".ipatool-write-test")
+                try Data().write(to: probe)
+                try FileManager.default.removeItem(at: probe)
+            } catch {
+                throw AppStoreError.downloadFailed(message: "下载目录无写入权限：\(dir.path)，请在设置页通过「选择目录」重新选择并授权")
+            }
 
             // 文件名：应用名_版本号(版本序号兜底)_下载账号.ipa
             let safeName = app.trackName.replacingOccurrences(of: "/", with: "-")
@@ -720,6 +751,46 @@ final class AppModel: ObservableObject {
 
     // MARK: - Settings
 
+    /// 沙盒（App Store/Release）版本首次启动时引导用户授权下载目录。
+    /// 沙盒对容器外路径无默认写权限，必须通过「选择目录」获得安全作用域授权；
+    /// LocalRelease 无沙盒，默认目录直接可写，无需提示。
+    func promptForDownloadDirectoryAuthorizationIfNeeded() {
+        let promptedKey = "hasPromptedDownloadDirectoryAuth"
+        guard !UserDefaults.standard.bool(forKey: promptedKey) else { return }
+        // 运行期判断是否沙盒：沙盒应用的主目录被重定向到容器
+        guard NSHomeDirectory().contains("/Library/Containers/"),
+              settings.downloadBookmark == nil else { return }
+        UserDefaults.standard.set(true, forKey: promptedKey)
+
+        let alert = NSAlert()
+        alert.messageText = "请选择下载目录"
+        alert.informativeText = "当前版本受系统沙盒限制，需要先选择一个目录并授权，下载的 IPA 文件才能正常保存。"
+        alert.addButton(withTitle: "选择目录")
+        alert.addButton(withTitle: "稍后")
+        guard alert.runModal() == .alertFirstButtonReturn else { return }
+
+        let panel = NSOpenPanel()
+        panel.canChooseFiles = false
+        panel.canChooseDirectories = true
+        panel.allowsMultipleSelection = false
+        panel.canCreateDirectories = true
+        panel.prompt = "选择"
+        panel.message = "请选择 IPA 下载保存目录"
+        panel.directoryURL = URL(fileURLWithPath: expandTildeInPath(settings.downloadDirectory), isDirectory: true)
+        guard panel.runModal() == .OK, let url = panel.url else { return }
+
+        var updated = settings
+        updated.downloadDirectory = url.path
+        updated.downloadBookmark = try? url.bookmarkData(
+            options: .withSecurityScope,
+            includingResourceValuesForKeys: nil,
+            relativeTo: nil
+        )
+        settings = updated
+        settingsDraft = updated
+        saveSettings()
+    }
+
     func saveSettings(_ newSettings: AppSettings) async -> BasicMessage {
         settings = newSettings
         settingsDraft = newSettings
@@ -767,6 +838,7 @@ final class AppModel: ObservableObject {
             // 失败时清理，确保可以重试
             signer = nil
             sapStatus = .failed
+            print("[SAP] setup failed: \(error)")
             showMessage("SAP 初始化失败：\(error.localizedDescription)", success: false)
         }
     }

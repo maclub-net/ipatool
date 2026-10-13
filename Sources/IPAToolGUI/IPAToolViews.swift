@@ -52,6 +52,12 @@ struct RootView: View {
         }
         .navigationTitle(section.title)
         .toolbar(removing: .sidebarToggle)
+        .onAppear {
+            // 沙盒版本首次启动引导用户授权下载目录（LocalRelease 内部自动跳过）
+            DispatchQueue.main.async {
+                model.promptForDownloadDirectoryAuthorizationIfNeeded()
+            }
+        }
         .onChange(of: section) { _, newSection in
             if newSection == .purchased && model.purchasedApps.isEmpty && !model.isLoadingPurchased {
                 Task { await model.loadPurchasedApps() }
@@ -1318,16 +1324,6 @@ private struct DownloadTaskRowCard: View {
                     .font(.caption)
                     .foregroundStyle(.secondary)
                     .textSelection(.enabled)
-
-                if task.status == .downloading {
-                    VStack(alignment: .leading, spacing: 4) {
-                        ProgressView(value: task.progress)
-                            .progressViewStyle(.linear)
-                        Text("\(Int(task.progress * 100))%")
-                            .font(.caption2)
-                            .foregroundStyle(.secondary)
-                    }
-                }
             }
 
             Spacer(minLength: 0)
@@ -1350,9 +1346,22 @@ private struct DownloadTaskRowCard: View {
         .padding(16)
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(
-            RoundedRectangle(cornerRadius: 18, style: .continuous)
-                .fill(Color.primary.opacity(0.035))
+            GeometryReader { geo in
+                ZStack(alignment: .leading) {
+                    RoundedRectangle(cornerRadius: 18, style: .continuous)
+                        .fill(Color.primary.opacity(0.035))
+
+                    // 下载进度以「冲水」效果作为卡片背景从左向右填充，
+                    // 不占用布局空间，卡片内容不会因进度条出现/消失而变化
+                    if task.status == .downloading {
+                        RoundedRectangle(cornerRadius: 18, style: .continuous)
+                            .fill(statusTint.opacity(0.16))
+                            .frame(width: geo.size.width * min(max(task.progress, 0), 1))
+                    }
+                }
+            }
         )
+        .animation(.easeOut(duration: 0.25), value: task.progress)
         .overlay(
             RoundedRectangle(cornerRadius: 18, style: .continuous)
                 .strokeBorder(Color.primary.opacity(0.06), lineWidth: 1)
@@ -1378,7 +1387,9 @@ private struct DownloadTaskRowCard: View {
     }
 
     private var statusBadge: some View {
-        Text(task.status.rawValue)
+        Text(task.status == .downloading
+             ? "\(task.status.rawValue) \(Int(task.progress * 100))%"
+             : task.status.rawValue)
             .font(.caption.weight(.semibold))
             .foregroundStyle(statusTint)
             .padding(.horizontal, 8)
@@ -1565,7 +1576,8 @@ struct SettingsView: View {
                     caption: "下载的 IPA 文件将保存到此目录。",
                     placeholder: "~/IPATool/downloads",
                     defaultValue: "~/IPATool/downloads",
-                    text: $model.settingsDraft.downloadDirectory
+                    text: $model.settingsDraft.downloadDirectory,
+                    bookmark: $model.settingsDraft.downloadBookmark
                 )
             }
         }
@@ -2341,6 +2353,8 @@ private struct DirectoryPickerField: View {
     let placeholder: String
     let defaultValue: String
     @Binding var text: String
+    /// 可选：选择目录后同步生成安全作用域书签（沙盒持久授权），恢复默认时清除
+    var bookmark: Binding<Data?>?
 
     var body: some View {
         FieldBlock(title: title, caption: caption) {
@@ -2356,6 +2370,7 @@ private struct DirectoryPickerField: View {
 
                 Button {
                     text = defaultValue
+                    bookmark?.wrappedValue = nil
                 } label: {
                     ToolbarActionLabel(title: "恢复默认", systemImage: "arrow.counterclockwise")
                 }
@@ -2373,13 +2388,20 @@ private struct DirectoryPickerField: View {
         panel.prompt = "选择"
 
         let initialPath = text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? defaultValue : text
-        let expandedPath = (initialPath as NSString).expandingTildeInPath
+        let expandedPath = expandTildeInPath(initialPath)
         if FileManager.default.fileExists(atPath: expandedPath) {
             panel.directoryURL = URL(fileURLWithPath: expandedPath, isDirectory: true)
         }
 
         if panel.runModal() == .OK, let url = panel.url {
             text = url.path
+            if let bookmark {
+                bookmark.wrappedValue = try? url.bookmarkData(
+                    options: .withSecurityScope,
+                    includingResourceValuesForKeys: nil,
+                    relativeTo: nil
+                )
+            }
         }
     }
 }
