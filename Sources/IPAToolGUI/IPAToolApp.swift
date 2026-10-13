@@ -85,15 +85,14 @@ final class AppModel: ObservableObject {
         if let data = KeychainStore.load(forKey: StorageKey.accounts),
            let decoded = try? JSONDecoder().decode([AppAccount].self, from: data) {
             accounts = decoded
-            activeAccount = accounts.first { $0.isActive }
         } else if let data = defaults.data(forKey: StorageKey.accounts),
                   let decoded = try? JSONDecoder().decode([AppAccount].self, from: data) {
             accounts = decoded
-            activeAccount = accounts.first { $0.isActive }
             // 迁移到 Keychain 后清除 UserDefaults 中的明文
             saveAccounts()
             defaults.removeObject(forKey: StorageKey.accounts)
         }
+        activateDefaultAccountIfNeeded()
 
         if let data = defaults.data(forKey: StorageKey.settings),
            let decoded = try? JSONDecoder().decode(AppSettings.self, from: data) {
@@ -144,6 +143,26 @@ final class AppModel: ObservableObject {
     }
 
     // MARK: - Computed
+
+    /// 默认账号策略：始终以「最早添加且凭据有效」的账号为默认执行账号。
+    /// 新添加的账号不会自动成为默认账号，仅在没有任何可用账号时兜底激活。
+    /// 用户仍可通过账号列表的「切换」按钮手动指定当前账号。
+    private func activateDefaultAccountIfNeeded() {
+        // 清理异常状态：isActive 标记落在不存在或需重新登录的账号上
+        if let active = accounts.first(where: { $0.isActive }), !active.needsReauth {
+            activeAccount = active
+            return
+        }
+        // 无可用激活账号时，回退到最早添加的有效账号
+        let fallback = accounts
+            .filter { !$0.needsReauth && !$0.passwordToken.isEmpty }
+            .sorted { $0.createdAt < $1.createdAt }
+            .first
+        for i in accounts.indices {
+            accounts[i].isActive = (accounts[i].id == fallback?.id)
+        }
+        activeAccount = fallback
+    }
 
     var configuredRegions: [RegionOption] {
         RegionOption.all.filter { region in
@@ -210,14 +229,18 @@ final class AppModel: ObservableObject {
 
     // MARK: - Purchased Apps
 
-    /// 执行需要鉴权的操作，失败时自动尝试刷新 token 并重试一次
+    /// 执行需要鉴权的操作，失败时自动尝试刷新 token 并重试一次。
+    /// 仅对未登录（token 过期）错误触发刷新；下载/购买等业务错误不重试。
     /// - Parameter operation: 需要执行的异步操作
     /// - Returns: 操作结果
     private func withTokenRefresh<T>(_ operation: () async throws -> T) async throws -> T {
         do {
             return try await operation()
         } catch {
-            // 操作失败，尝试用存储的密码自动刷新 token
+            guard case AppStoreError.notAuthenticated = error else {
+                throw error
+            }
+            // token 过期，尝试用存储的密码自动刷新 token
             guard let account = activeAccount, !account.password.isEmpty, !account.needsReauth else {
                 throw error
             }
@@ -320,20 +343,28 @@ final class AppModel: ObservableObject {
         print("[download] starting: \(app.trackName) (\(versionLabel)), appID=\(app.trackId)")
 
         do {
-            // 1. 请求下载产品信息（token 失效时自动刷新重试）
+            // 1. 先自动执行购买，确保当前账号已获得该应用授权
+            // 已购买的应用会返回 license already exists，IPAToolKit 内部视为成功，可安全重复调用
+            // 历史版本下载同样需要授权，统一在此处处理
+            print("[download] purchasing first: appID=\(app.trackId)")
+            try await withTokenRefresh {
+                try await client.purchase(appID: app.trackId)
+            }
+
+            // 2. 请求下载产品信息（token 失效时自动刷新重试）
             print("[download] requesting downloadProduct...")
             let dict = try await withTokenRefresh {
                 try await client.downloadProduct(appID: app.trackId, externalVersionID: externalVersionID)
             }
             print("[download] downloadProduct response keys: \(dict.keys.sorted())")
 
-            // 2. 提取下载 URL
+            // 3. 提取下载 URL
             guard let url = client.extractDownloadURL(from: dict) else {
                 throw AppStoreError.downloadFailed(message: "响应中没有下载链接")
             }
             print("[download] download URL: \(url.absoluteString)")
 
-            // 3. 确定输出路径（展开 ~ 为用户主目录）
+            // 4. 确定输出路径（展开 ~ 为用户主目录）
             let expandedDir = (settings.downloadDirectory as NSString).expandingTildeInPath
             let dir = URL(fileURLWithPath: expandedDir, isDirectory: true)
 
@@ -359,7 +390,7 @@ final class AppModel: ObservableObject {
             let destination = dir.appendingPathComponent(fileName)
             print("[download] output: \(destination.path)")
 
-            // 4. 下载文件（macOS 包需要解密）
+            // 5. 下载文件（macOS 包需要解密）
             let dpInfo = client.extractDPInfo(from: dict)
             if let dpInfo = dpInfo {
                 // macOS 加密包：下载后解密
@@ -389,9 +420,18 @@ final class AppModel: ObservableObject {
                         }
                     }
                 }
+
+                // 注入 FairPlay sinf 和 iTunesMetadata.plist（对齐 ipadecrypt 的 applyPatches）
+                // Apple CDN 返回的 IPA 不含 sinf，侧载安装后 SpringBoard 会因缺少 FairPlay 解密密钥拒绝启动
+                if let patchInfo = client.extractSinfPatchInfo(from: dict) {
+                    print("[download] injecting FairPlay sinf...")
+                    try await SinfInjector.inject(into: destination, patchInfo: patchInfo)
+                } else {
+                    print("[download] no sinf found in response, skipping injection")
+                }
             }
 
-            // 5. 完成
+            // 6. 完成
             if let idx = downloadTasks.firstIndex(where: { $0.id == task.id }) {
                 downloadTasks[idx].status = .completed
                 downloadTasks[idx].progress = 1.0
@@ -410,6 +450,23 @@ final class AppModel: ObservableObject {
             showMessage("下载失败：\(error.localizedDescription)", success: false)
         }
         saveDownloadTasks()
+    }
+
+    /// 购买（获取）应用，使当前账号获得该应用的下载授权
+    func purchaseApp(_ app: AppStoreApp) async {
+        guard activeAccount != nil else {
+            showMessage("请先登录一个 Apple ID 账号", success: false)
+            selectedSection = .accounts
+            return
+        }
+        do {
+            try await withTokenRefresh {
+                try await client.purchase(appID: app.trackId)
+            }
+            showMessage("已获取 \(app.trackName)，可以开始下载", success: true)
+        } catch {
+            showMessage("购买失败：\(error.localizedDescription)", success: false)
+        }
     }
 
     /// 打开应用详情页并加载历史版本
@@ -446,6 +503,17 @@ final class AppModel: ObservableObject {
         isLoadingVersions = true
         defer { isLoadingVersions = false }
         do {
+            // 历史版本接口要求账号已持有该应用许可证，先自动购买获取授权
+            // 已购买的应用会返回 license already exists，视为成功；购买失败不阻断，继续尝试拉取版本列表
+            if activeAccount != nil {
+                do {
+                    try await withTokenRefresh {
+                        try await client.purchase(appID: app.trackId)
+                    }
+                } catch {
+                    print("[versions] purchase failed (continuing): \(error.localizedDescription)")
+                }
+            }
             let versionIDs = try await client.listVersions(appID: app.trackId)
             // 第一个是最新版本
             appVersions = versionIDs.enumerated().map { index, id in
@@ -546,7 +614,9 @@ final class AppModel: ObservableObject {
                 dsid: info.directoryServicesID,
                 name: info.name,
                 region: region,
-                isActive: accounts.isEmpty,
+                // 新账号默认不激活：仅在当前没有任何可用账号时才成为默认账号，
+                // 避免新添加的账号静默顶替用户正在使用的账号
+                isActive: false,
                 createdAt: Date(),
                 storeFront: info.storeFront,
                 passwordToken: info.passwordToken,
@@ -554,10 +624,8 @@ final class AppModel: ObservableObject {
                 password: password
             )
             accounts.append(account)
-            if account.isActive {
-                activeAccount = account
-                syncClientAccount()
-            }
+            activateDefaultAccountIfNeeded()
+            syncClientAccount()
             saveAccounts()
             return BasicMessage(success: true, message: "账号 \(email) 登录成功")
         } catch AppStoreError.requires2FA {
@@ -570,10 +638,7 @@ final class AppModel: ObservableObject {
 
     func deleteAccount(_ account: AppAccount) {
         accounts.removeAll { $0.id == account.id }
-        if activeAccount?.id == account.id {
-            activeAccount = accounts.first
-            accounts.indices.forEach { accounts[$0].isActive = (accounts[$0].id == activeAccount?.id) }
-        }
+        activateDefaultAccountIfNeeded()
         syncClientAccount()
         saveAccounts()
         showMessage("已删除账号 \(account.email)", success: true)
@@ -771,4 +836,102 @@ struct AccountEditorState {
     var password: String = ""
     var code: String = ""
     var awaiting2FA: Bool = false
+}
+
+// MARK: - Sinf 注入器
+
+/// 使用系统 zip 命令向 IPA 注入 FairPlay sinf 和 iTunesMetadata.plist。
+///
+/// 对齐 ipadecrypt 的 `applyPatches`（internal/appstore/download.go）：
+/// 1. 解压 IPA 到临时目录
+/// 2. 读取 SC_Info/Manifest.plist 获取 sinf 目标路径
+/// 3. 若无 Manifest 则回退到 SC_Info/<可执行文件名>.sinf
+/// 4. 写入 sinf 文件和 iTunesMetadata.plist
+/// 5. 重新打包为 IPA
+enum SinfInjector {
+    static func inject(into ipaPath: URL, patchInfo: AppStoreClient.SinfPatchInfo) async throws {
+        let fm = FileManager.default
+        let workDir = ipaPath.deletingLastPathComponent()
+            .appendingPathComponent("_sinf_inject_\(UUID().uuidString.prefix(8))")
+
+        defer { try? fm.removeItem(at: workDir) }
+
+        // 1. 解压 IPA
+        try fm.createDirectory(at: workDir, withIntermediateDirectories: true)
+        try await runProcess(launchPath: "/usr/bin/unzip", arguments: ["-o", ipaPath.path, "-d", workDir.path])
+
+        // 2. 找到 .app 目录
+        let payloadDir = workDir.appendingPathComponent("Payload")
+        guard let appDirs = try? fm.contentsOfDirectory(at: payloadDir, includingPropertiesForKeys: nil),
+              let appDir = appDirs.first(where: { $0.pathExtension == "app" }) else {
+            throw AppStoreError.downloadFailed(message: "IPA 中未找到 .app 目录")
+        }
+
+        // 3. 读取 Manifest.plist 和 Info.plist
+        let manifestPath = appDir.appendingPathComponent("SC_Info/Manifest.plist")
+        let infoPath = appDir.appendingPathComponent("Info.plist")
+
+        var sinfPaths: [String]? = nil
+        var bundleExecutable: String? = nil
+
+        if let data = try? Data(contentsOf: manifestPath),
+           let plist = try? PropertyListSerialization.propertyList(from: data, format: nil) as? [String: Any] {
+            sinfPaths = plist["SinfPaths"] as? [String]
+        }
+
+        if let data = try? Data(contentsOf: infoPath),
+           let plist = try? PropertyListSerialization.propertyList(from: data, format: nil) as? [String: Any] {
+            bundleExecutable = plist["CFBundleExecutable"] as? String
+        }
+
+        // 4. 写入 sinf 文件
+        let sinfs = patchInfo.sinfs
+        if let paths = sinfPaths, paths.count == sinfs.count {
+            // 有 Manifest.plist，按指定路径写入
+            for (i, path) in paths.enumerated() {
+                let dest = appDir.appendingPathComponent(path)
+                try fm.createDirectory(at: dest.deletingLastPathComponent(), withIntermediateDirectories: true)
+                try sinfs[i].data.write(to: dest)
+            }
+        } else {
+            // 回退到 SC_Info/<executable>.sinf
+            let execName = bundleExecutable ?? appDir.lastPathComponent.replacingOccurrences(of: ".app", with: "")
+            let scInfoDir = appDir.appendingPathComponent("SC_Info")
+            try fm.createDirectory(at: scInfoDir, withIntermediateDirectories: true)
+            try sinfs[0].data.write(to: scInfoDir.appendingPathComponent("\(execName).sinf"))
+        }
+
+        // 5. 写入 iTunesMetadata.plist
+        var meta = patchInfo.metadata ?? [:]
+        meta["apple-id"] = patchInfo.account.email
+        meta["userName"] = patchInfo.account.email
+        let metaPlistData = try PropertyListSerialization.data(fromPropertyList: meta, format: .binary, options: 0)
+        try metaPlistData.write(to: workDir.appendingPathComponent("iTunesMetadata.plist"))
+
+        // 6. 重新打包 IPA
+        let tmpIPA = ipaPath.appendingPathExtension("sinf-tmp")
+        defer { try? fm.removeItem(at: tmpIPA) }
+        try await runProcess(launchPath: "/usr/bin/zip", arguments: ["-r", "-X", tmpIPA.path, "Payload", "iTunesMetadata.plist"], currentDirectory: workDir)
+
+        try fm.removeItem(at: ipaPath)
+        try fm.moveItem(at: tmpIPA, to: ipaPath)
+    }
+
+    private static func runProcess(launchPath: String, arguments: [String], currentDirectory: URL? = nil) async throws {
+        let process = Process()
+        process.executableURL = URL(fileURLWithPath: launchPath)
+        process.arguments = arguments
+        if let cwd = currentDirectory {
+            process.currentDirectoryURL = cwd
+        }
+        let stderr = Pipe()
+        process.standardError = stderr
+        try process.run()
+        process.waitUntilExit()
+        guard process.terminationStatus == 0 else {
+            let errData = try stderr.fileHandleForReading.readToEnd() ?? Data()
+            let errMsg = String(data: errData, encoding: .utf8) ?? "unknown"
+            throw AppStoreError.downloadFailed(message: "\(launchPath) exit \(process.terminationStatus): \(errMsg)")
+        }
+    }
 }

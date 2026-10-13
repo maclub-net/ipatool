@@ -202,6 +202,40 @@ struct SidebarView: View {
                     }
                     .buttonStyle(.plain)
                 }
+
+                Button {
+                    openDecryptDownload()
+                } label: {
+                    HStack(spacing: 12) {
+                        ZStack {
+                            RoundedRectangle(cornerRadius: 8, style: .continuous)
+                                .fill(Color.secondary.opacity(0.08))
+                            Image(systemName: "hammer.fill")
+                                .font(.system(size: 14, weight: .semibold))
+                                .foregroundStyle(.secondary)
+                        }
+                        .frame(width: 32, height: 32)
+
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text("砸壳包下载")
+                                .font(.system(size: 14, weight: .semibold))
+                            Text("Mac俱乐部")
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                        }
+
+                        Spacer(minLength: 0)
+
+                        Image(systemName: "arrow.up.right")
+                            .font(.system(size: 11, weight: .semibold))
+                            .foregroundStyle(.tertiary)
+                    }
+                    .padding(.horizontal, 12)
+                    .padding(.vertical, 10)
+                    .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
+                    .contentShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
+                }
+                .buttonStyle(.plain)
             }
 
             Spacer(minLength: 0)
@@ -211,6 +245,20 @@ struct SidebarView: View {
         .padding(18)
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
         .background(.thinMaterial)
+    }
+
+    /// 打开砸壳包下载入口：已安装 MaClub 客户端则直接打开，否则跳转官网下载页
+    private func openDecryptDownload() {
+        // 通过 bundle ID 判断客户端是否已安装，避免硬编码路径（应用可安装在非 /Applications 目录）
+        if let appURL = NSWorkspace.shared.urlForApplication(withBundleIdentifier: "net.maclub.mac") {
+            NSWorkspace.shared.openApplication(at: appURL, configuration: NSWorkspace.OpenConfiguration()) { _, error in
+                if let error {
+                    print("[sidebar] open MaClub failed: \(error.localizedDescription)")
+                }
+            }
+        } else if let url = URL(string: "https://www.maclub.net") {
+            NSWorkspace.shared.open(url)
+        }
     }
 
     private var sidebarHeader: some View {
@@ -901,138 +949,126 @@ private struct AppDetailView: View {
     @Environment(\.dismiss) private var dismiss
 
     var body: some View {
-        NavigationStack {
-            ScrollView {
-                if let app = model.selectedApp {
-                    VStack(alignment: .leading, spacing: 24) {
-                        heroHeader(app)
-                        versionsSection(app)
+        VStack(alignment: .leading, spacing: 0) {
+            if let app = model.selectedApp {
+                // ── Header ──
+                HStack(alignment: .top, spacing: 16) {
+                    AppIconView(urlString: app.artworkUrl, size: 56)
+                        .clipShape(RoundedRectangle(cornerRadius: 13, style: .continuous))
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 13, style: .continuous)
+                                .strokeBorder(Color.primary.opacity(0.08), lineWidth: 1)
+                        )
+
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text(app.trackName)
+                            .font(.system(size: 18, weight: .bold))
+                            .lineLimit(2)
+                        if !app.sellerName.isEmpty {
+                            Text(app.sellerName)
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                        }
+                        HStack(spacing: 8) {
+                            DetailBadge(text: priceText(app), tint: (app.price ?? 0) == 0 ? .green : .orange)
+                            if !app.version.isEmpty {
+                                DetailBadge(text: "v\(app.version)", tint: .brandSecondary)
+                            }
+                        }
                     }
-                    .padding(28)
-                }
-            }
-            .navigationTitle("应用详情")
-            .toolbar {
-                ToolbarItem(placement: .cancellationAction) {
-                    Button("关闭") { dismiss() }
-                }
-            }
-        }
-        .frame(minWidth: 620, idealWidth: 680, minHeight: 640, idealHeight: 720)
-    }
 
-    // MARK: Hero Header
+                    Spacer()
 
-    private func heroHeader(_ app: AppStoreApp) -> some View {
-        VStack(alignment: .leading, spacing: 18) {
-            HStack(alignment: .top, spacing: 20) {
-                AppIconView(urlString: app.artworkUrl, size: 112)
-
-                VStack(alignment: .leading, spacing: 8) {
-                    Text(app.trackName)
-                        .font(.system(size: 24, weight: .bold))
-                        .lineLimit(2)
-                        .fixedSize(horizontal: false, vertical: true)
-
-                    if !app.sellerName.isEmpty {
-                        Text(app.sellerName)
-                            .font(.system(size: 15))
+                    Button { dismiss() } label: {
+                        Image(systemName: "xmark.circle.fill")
+                            .font(.system(size: 18))
                             .foregroundStyle(.secondary)
                     }
+                    .buttonStyle(.plain)
+                    .help("关闭")
+                }
+                .padding(.horizontal, 24)
+                .padding(.top, 20)
 
-                    HStack(spacing: 8) {
-                        if !app.version.isEmpty {
-                            Label("v\(app.version)", systemImage: "sparkles")
-                                .font(.caption.weight(.semibold))
-                                .foregroundStyle(.blue)
-                                .padding(.horizontal, 10)
-                                .padding(.vertical, 4)
-                                .background(Color.blue.opacity(0.10), in: Capsule())
-                        }
+                Divider()
+                    .padding(.top, 16)
 
-                        if let price = app.price {
-                            Text(price == 0 ? "免费" : String(format: "¥%.2f", price))
-                                .font(.caption.weight(.bold))
-                                .foregroundStyle(.green)
-                                .padding(.horizontal, 10)
-                                .padding(.vertical, 4)
-                                .background(Color.green.opacity(0.10), in: Capsule())
-                        }
+                // ── Body ──
+                ScrollView {
+                    VStack(alignment: .leading, spacing: 18) {
+                        versionsSection(app)
+                        infoSection(app)
                     }
-
-                    Text(app.bundleId)
-                        .font(.system(size: 12, design: .monospaced))
-                        .foregroundStyle(.tertiary)
-                        .textSelection(.enabled)
+                    .padding(.horizontal, 24)
+                    .padding(.vertical, 16)
                 }
 
-                Spacer(minLength: 0)
-            }
+                Divider()
 
-            HStack(spacing: 12) {
-                Button {
-                    Task { await model.downloadApp(app) }
-                    dismiss()
-                } label: {
-                    ActionButtonLabel(title: "下载最新版", systemImage: "arrow.down.circle.fill")
+                // ── Footer ──
+                HStack(spacing: 10) {
+                    Button {
+                        Task { await model.purchaseApp(app) }
+                    } label: {
+                        ActionButtonLabel(title: "购买应用", systemImage: "bag.fill")
+                    }
+                    .buttonStyle(SecondaryActionButtonStyle())
+
+                    Spacer()
+
+                    Button {
+                        Task { await model.downloadApp(app) }
+                        dismiss()
+                    } label: {
+                        ActionButtonLabel(title: "下载最新版", systemImage: "arrow.down.to.line")
+                    }
+                    .buttonStyle(PrimaryActionButtonStyle())
                 }
-                .buttonStyle(PrimaryActionButtonStyle())
-
-                Text("点击下方历史版本可下载指定版本")
-                    .font(.caption)
-                    .foregroundStyle(.tertiary)
+                .padding(.horizontal, 24)
+                .padding(.vertical, 16)
             }
         }
-        .padding(22)
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .background(
-            RoundedRectangle(cornerRadius: 22, style: .continuous)
-                .fill(Color.primary.opacity(0.04))
-        )
-        .overlay(
-            RoundedRectangle(cornerRadius: 22, style: .continuous)
-                .strokeBorder(Color.primary.opacity(0.06), lineWidth: 1)
-        )
+        .frame(minWidth: 520, idealWidth: 560, minHeight: 560, idealHeight: 640)
     }
 
-    private func infoCell(title: String, value: String, icon: String) -> some View {
-        VStack(alignment: .leading, spacing: 6) {
-            HStack(spacing: 5) {
-                Image(systemName: icon)
-                    .font(.system(size: 11, weight: .semibold))
-                    .foregroundStyle(.secondary)
-                Text(title)
-                    .font(.system(size: 11, weight: .semibold))
-                    .foregroundStyle(.secondary)
+    private func priceText(_ app: AppStoreApp) -> String {
+        guard let price = app.price, price > 0 else { return "免费" }
+        return String(format: "¥%.2f", price)
+    }
+
+    // MARK: 基本信息
+
+    private func infoSection(_ app: AppStoreApp) -> some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Label("基本信息", systemImage: "info.circle")
+                .font(.system(size: 13, weight: .semibold))
+                .foregroundStyle(.secondary)
+            DetailInfoRow(label: "Bundle ID", value: app.bundleId)
+            DetailInfoRow(label: "Apple ID", value: "\(app.trackId)")
+            DetailInfoRow(label: "价格", value: priceText(app))
+            if !app.version.isEmpty {
+                DetailInfoRow(label: "当前版本", value: app.version)
             }
-            Text(value)
-                .font(.system(size: 13, weight: .medium))
-                .lineLimit(2)
-                .textSelection(.enabled)
+            if !app.sellerName.isEmpty {
+                DetailInfoRow(label: "开发商", value: app.sellerName)
+            }
+            if !app.platforms.isEmpty {
+                DetailInfoRow(label: "平台", value: app.platforms.map(\.displayName).joined(separator: "、"))
+            }
         }
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(14)
-        .background(
-            RoundedRectangle(cornerRadius: 14, style: .continuous)
-                .fill(Color.primary.opacity(0.035))
-        )
     }
 
     // MARK: Versions Section
 
     private func versionsSection(_ app: AppStoreApp) -> some View {
-        VStack(alignment: .leading, spacing: 14) {
+        VStack(alignment: .leading, spacing: 10) {
             HStack {
                 Label("历史版本", systemImage: "clock.arrow.circlepath")
-                    .font(.system(size: 17, weight: .bold))
+                    .font(.system(size: 13, weight: .semibold))
+                    .foregroundStyle(.secondary)
                 Spacer()
                 if !model.isLoadingVersions && !model.appVersions.isEmpty {
-                    Text("\(model.appVersions.count) 个版本")
-                        .font(.caption.weight(.semibold))
-                        .foregroundStyle(.secondary)
-                        .padding(.horizontal, 10)
-                        .padding(.vertical, 4)
-                        .background(Color.secondary.opacity(0.10), in: Capsule())
+                    DetailBadge(text: "\(model.appVersions.count) 个版本", tint: .secondary)
                 }
             }
 
@@ -1127,6 +1163,45 @@ private struct AppDetailView: View {
         )
         .onAppear {
             Task { await model.fetchVersionMetadataIfNeeded(versionID: version.id, appID: app.trackId) }
+        }
+    }
+}
+
+// MARK: - 详情页徽标
+
+private struct DetailBadge: View {
+    let text: String
+    let tint: Color
+
+    var body: some View {
+        Text(text)
+            .font(.system(size: 11, weight: .semibold))
+            .foregroundStyle(tint)
+            .padding(.horizontal, 8)
+            .padding(.vertical, 3)
+            .background(
+                RoundedRectangle(cornerRadius: 6, style: .continuous)
+                    .fill(tint.opacity(0.12))
+            )
+    }
+}
+
+// MARK: - 详情页信息行
+
+private struct DetailInfoRow: View {
+    let label: String
+    let value: String
+
+    var body: some View {
+        HStack(alignment: .top, spacing: 8) {
+            Text(label)
+                .font(.system(size: 12, weight: .medium))
+                .foregroundStyle(.secondary)
+                .frame(width: 64, alignment: .leading)
+            Text(value)
+                .font(.system(size: 13))
+                .textSelection(.enabled)
+                .frame(maxWidth: .infinity, alignment: .leading)
         }
     }
 }
