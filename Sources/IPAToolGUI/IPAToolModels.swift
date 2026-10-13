@@ -40,21 +40,21 @@ enum AppSection: String, CaseIterable, Identifiable {
 
     var title: String {
         switch self {
-        case .search: return "搜索"
-        case .purchased: return "已购"
-        case .library: return "应用库"
-        case .accounts: return "账号"
-        case .settings: return "设置"
+        case .search: return String(localized: "Search")
+        case .purchased: return String(localized: "Purchased")
+        case .library: return String(localized: "Library")
+        case .accounts: return String(localized: "Accounts")
+        case .settings: return String(localized: "Settings")
         }
     }
 
     var subtitle: String {
         switch self {
-        case .search: return "查找并下载应用"
-        case .purchased: return "当前账号已购应用"
-        case .library: return "管理已下载 IPA"
-        case .accounts: return "维护 Apple ID"
-        case .settings: return "路径与偏好"
+        case .search: return String(localized: "Find and download apps")
+        case .purchased: return String(localized: "Apps owned by the current account")
+        case .library: return String(localized: "Manage downloaded IPAs")
+        case .accounts: return String(localized: "Manage Apple IDs")
+        case .settings: return String(localized: "Paths and preferences")
         }
     }
 
@@ -113,6 +113,16 @@ enum DownloadStatus: String, Codable {
     case downloading = "下载中"
     case completed = "已完成"
     case failed = "失败"
+
+    /// 用于 UI 显示的本地化名称（rawValue 保持不变以保证持久化数据兼容）
+    var displayName: String {
+        switch self {
+        case .pending: return String(localized: "Pending")
+        case .downloading: return String(localized: "Downloading")
+        case .completed: return String(localized: "Completed")
+        case .failed: return String(localized: "Failed")
+        }
+    }
 }
 
 struct DownloadTask: Identifiable, Equatable, Codable {
@@ -161,8 +171,8 @@ enum DownloadRemovalRequest: Identifiable {
 
     var title: String {
         switch self {
-        case .single: return "移除此下载记录？"
-        case .clearCompleted: return "清空已完成的下载记录？"
+        case .single: return String(localized: "Remove this download record?")
+        case .clearCompleted: return String(localized: "Clear all completed download records?")
         }
     }
 }
@@ -267,7 +277,7 @@ struct BasicMessage: Equatable {
 
 struct MetricItem: Identifiable {
     let id = UUID()
-    let title: String
+    let title: LocalizedStringKey
     let value: String
     let icon: String
     let tint: Color
@@ -288,81 +298,81 @@ struct RegionOption: Identifiable, Equatable {
     static let all: [RegionOption] = {
         var list: [RegionOption] = [
             // —— 热门地区 ——
-            .init(code: "cn", displayName: "中国大陆", flag: "🇨🇳"),
-            .init(code: "hk", displayName: "中国香港", flag: "🇭🇰"),
-            .init(code: "tw", displayName: "中国台湾", flag: "🇨🇳"),
-            .init(code: "mo", displayName: "中国澳门", flag: "🇲🇴"),
-            .init(code: "us", displayName: "美国", flag: "🇺🇸"),
-            .init(code: "jp", displayName: "日本", flag: "🇯🇵"),
-            .init(code: "kr", displayName: "韩国", flag: "🇰🇷"),
-            .init(code: "gb", displayName: "英国", flag: "🇬🇧"),
-            .init(code: "au", displayName: "澳大利亚", flag: "🇦🇺"),
-            .init(code: "ca", displayName: "加拿大", flag: "🇨🇦"),
-            .init(code: "de", displayName: "德国", flag: "🇩🇪"),
-            .init(code: "fr", displayName: "法国", flag: "🇫🇷"),
-            .init(code: "sg", displayName: "新加坡", flag: "🇸🇬"),
+            .init(code: "cn", displayName: String(localized: "Mainland China", table: "Regions"), flag: "🇨🇳"),
+            .init(code: "hk", displayName: String(localized: "Hong Kong, China", table: "Regions"), flag: "🇭🇰"),
+            .init(code: "tw", displayName: String(localized: "Taiwan, China", table: "Regions"), flag: "🇨🇳"),
+            .init(code: "mo", displayName: String(localized: "Macao, China", table: "Regions"), flag: "🇲🇴"),
+            .init(code: "us", displayName: String(localized: "United States", table: "Regions"), flag: "🇺🇸"),
+            .init(code: "jp", displayName: String(localized: "Japan", table: "Regions"), flag: "🇯🇵"),
+            .init(code: "kr", displayName: String(localized: "South Korea", table: "Regions"), flag: "🇰🇷"),
+            .init(code: "gb", displayName: String(localized: "United Kingdom", table: "Regions"), flag: "🇬🇧"),
+            .init(code: "au", displayName: String(localized: "Australia", table: "Regions"), flag: "🇦🇺"),
+            .init(code: "ca", displayName: String(localized: "Canada", table: "Regions"), flag: "🇨🇦"),
+            .init(code: "de", displayName: String(localized: "Germany", table: "Regions"), flag: "🇩🇪"),
+            .init(code: "fr", displayName: String(localized: "France", table: "Regions"), flag: "🇫🇷"),
+            .init(code: "sg", displayName: String(localized: "Singapore", table: "Regions"), flag: "🇸🇬"),
             // —— 其他地区 ——
-            .init(code: "ae", displayName: "阿联酋", flag: "🇦🇪"),
-            .init(code: "ar", displayName: "阿根廷", flag: "🇦🇷"),
-            .init(code: "at", displayName: "奥地利", flag: "🇦🇹"),
-            .init(code: "be", displayName: "比利时", flag: "🇧🇪"),
-            .init(code: "bg", displayName: "保加利亚", flag: "🇧🇬"),
-            .init(code: "bh", displayName: "巴林", flag: "🇧🇭"),
-            .init(code: "br", displayName: "巴西", flag: "🇧🇷"),
-            .init(code: "by", displayName: "白俄罗斯", flag: "🇧🇾"),
-            .init(code: "ch", displayName: "瑞士", flag: "🇨🇭"),
-            .init(code: "cl", displayName: "智利", flag: "🇨🇱"),
-            .init(code: "co", displayName: "哥伦比亚", flag: "🇨🇴"),
-            .init(code: "cr", displayName: "哥斯达黎加", flag: "🇨🇷"),
-            .init(code: "cy", displayName: "塞浦路斯", flag: "🇨🇾"),
-            .init(code: "cz", displayName: "捷克", flag: "🇨🇿"),
-            .init(code: "dk", displayName: "丹麦", flag: "🇩🇰"),
-            .init(code: "ee", displayName: "爱沙尼亚", flag: "🇪🇪"),
-            .init(code: "eg", displayName: "埃及", flag: "🇪🇬"),
-            .init(code: "es", displayName: "西班牙", flag: "🇪🇸"),
-            .init(code: "fi", displayName: "芬兰", flag: "🇫🇮"),
-            .init(code: "gr", displayName: "希腊", flag: "🇬🇷"),
-            .init(code: "hr", displayName: "克罗地亚", flag: "🇭🇷"),
-            .init(code: "hu", displayName: "匈牙利", flag: "🇭🇺"),
-            .init(code: "id", displayName: "印度尼西亚", flag: "🇮🇩"),
-            .init(code: "ie", displayName: "爱尔兰", flag: "🇮🇪"),
-            .init(code: "il", displayName: "以色列", flag: "🇮🇱"),
-            .init(code: "in", displayName: "印度", flag: "🇮🇳"),
-            .init(code: "is", displayName: "冰岛", flag: "🇮🇸"),
-            .init(code: "it", displayName: "意大利", flag: "🇮🇹"),
-            .init(code: "jo", displayName: "约旦", flag: "🇯🇴"),
-            .init(code: "kz", displayName: "哈萨克斯坦", flag: "🇰🇿"),
-            .init(code: "lb", displayName: "黎巴嫩", flag: "🇱🇧"),
-            .init(code: "lt", displayName: "立陶宛", flag: "🇱🇹"),
-            .init(code: "lu", displayName: "卢森堡", flag: "🇱🇺"),
-            .init(code: "lv", displayName: "拉脱维亚", flag: "🇱🇻"),
-            .init(code: "mt", displayName: "马耳他", flag: "🇲🇹"),
-            .init(code: "mx", displayName: "墨西哥", flag: "🇲🇽"),
-            .init(code: "my", displayName: "马来西亚", flag: "🇲🇾"),
-            .init(code: "nl", displayName: "荷兰", flag: "🇳🇱"),
-            .init(code: "no", displayName: "挪威", flag: "🇳🇴"),
-            .init(code: "nz", displayName: "新西兰", flag: "🇳🇿"),
-            .init(code: "om", displayName: "阿曼", flag: "🇴🇲"),
-            .init(code: "pe", displayName: "秘鲁", flag: "🇵🇪"),
-            .init(code: "ph", displayName: "菲律宾", flag: "🇵🇭"),
-            .init(code: "pk", displayName: "巴基斯坦", flag: "🇵🇰"),
-            .init(code: "pl", displayName: "波兰", flag: "🇵🇱"),
-            .init(code: "pt", displayName: "葡萄牙", flag: "🇵🇹"),
-            .init(code: "qa", displayName: "卡塔尔", flag: "🇶🇦"),
-            .init(code: "ro", displayName: "罗马尼亚", flag: "🇷🇴"),
-            .init(code: "rs", displayName: "塞尔维亚", flag: "🇷🇸"),
-            .init(code: "ru", displayName: "俄罗斯", flag: "🇷🇺"),
-            .init(code: "sa", displayName: "沙特阿拉伯", flag: "🇸🇦"),
-            .init(code: "se", displayName: "瑞典", flag: "🇸🇪"),
-            .init(code: "si", displayName: "斯洛文尼亚", flag: "🇸🇮"),
-            .init(code: "sk", displayName: "斯洛伐克", flag: "🇸🇰"),
-            .init(code: "th", displayName: "泰国", flag: "🇹🇭"),
-            .init(code: "tr", displayName: "土耳其", flag: "🇹🇷"),
-            .init(code: "ua", displayName: "乌克兰", flag: "🇺🇦"),
-            .init(code: "uy", displayName: "乌拉圭", flag: "🇺🇾"),
-            .init(code: "ve", displayName: "委内瑞拉", flag: "🇻🇪"),
-            .init(code: "vn", displayName: "越南", flag: "🇻🇳"),
-            .init(code: "za", displayName: "南非", flag: "🇿🇦"),
+            .init(code: "ae", displayName: String(localized: "United Arab Emirates", table: "Regions"), flag: "🇦🇪"),
+            .init(code: "ar", displayName: String(localized: "Argentina", table: "Regions"), flag: "🇦🇷"),
+            .init(code: "at", displayName: String(localized: "Austria", table: "Regions"), flag: "🇦🇹"),
+            .init(code: "be", displayName: String(localized: "Belgium", table: "Regions"), flag: "🇧🇪"),
+            .init(code: "bg", displayName: String(localized: "Bulgaria", table: "Regions"), flag: "🇧🇬"),
+            .init(code: "bh", displayName: String(localized: "Bahrain", table: "Regions"), flag: "🇧🇭"),
+            .init(code: "br", displayName: String(localized: "Brazil", table: "Regions"), flag: "🇧🇷"),
+            .init(code: "by", displayName: String(localized: "Belarus", table: "Regions"), flag: "🇧🇾"),
+            .init(code: "ch", displayName: String(localized: "Switzerland", table: "Regions"), flag: "🇨🇭"),
+            .init(code: "cl", displayName: String(localized: "Chile", table: "Regions"), flag: "🇨🇱"),
+            .init(code: "co", displayName: String(localized: "Colombia", table: "Regions"), flag: "🇨🇴"),
+            .init(code: "cr", displayName: String(localized: "Costa Rica", table: "Regions"), flag: "🇨🇷"),
+            .init(code: "cy", displayName: String(localized: "Cyprus", table: "Regions"), flag: "🇨🇾"),
+            .init(code: "cz", displayName: String(localized: "Czechia", table: "Regions"), flag: "🇨🇿"),
+            .init(code: "dk", displayName: String(localized: "Denmark", table: "Regions"), flag: "🇩🇰"),
+            .init(code: "ee", displayName: String(localized: "Estonia", table: "Regions"), flag: "🇪🇪"),
+            .init(code: "eg", displayName: String(localized: "Egypt", table: "Regions"), flag: "🇪🇬"),
+            .init(code: "es", displayName: String(localized: "Spain", table: "Regions"), flag: "🇪🇸"),
+            .init(code: "fi", displayName: String(localized: "Finland", table: "Regions"), flag: "🇫🇮"),
+            .init(code: "gr", displayName: String(localized: "Greece", table: "Regions"), flag: "🇬🇷"),
+            .init(code: "hr", displayName: String(localized: "Croatia", table: "Regions"), flag: "🇭🇷"),
+            .init(code: "hu", displayName: String(localized: "Hungary", table: "Regions"), flag: "🇭🇺"),
+            .init(code: "id", displayName: String(localized: "Indonesia", table: "Regions"), flag: "🇮🇩"),
+            .init(code: "ie", displayName: String(localized: "Ireland", table: "Regions"), flag: "🇮🇪"),
+            .init(code: "il", displayName: String(localized: "Israel", table: "Regions"), flag: "🇮🇱"),
+            .init(code: "in", displayName: String(localized: "India", table: "Regions"), flag: "🇮🇳"),
+            .init(code: "is", displayName: String(localized: "Iceland", table: "Regions"), flag: "🇮🇸"),
+            .init(code: "it", displayName: String(localized: "Italy", table: "Regions"), flag: "🇮🇹"),
+            .init(code: "jo", displayName: String(localized: "Jordan", table: "Regions"), flag: "🇯🇴"),
+            .init(code: "kz", displayName: String(localized: "Kazakhstan", table: "Regions"), flag: "🇰🇿"),
+            .init(code: "lb", displayName: String(localized: "Lebanon", table: "Regions"), flag: "🇱🇧"),
+            .init(code: "lt", displayName: String(localized: "Lithuania", table: "Regions"), flag: "🇱🇹"),
+            .init(code: "lu", displayName: String(localized: "Luxembourg", table: "Regions"), flag: "🇱🇺"),
+            .init(code: "lv", displayName: String(localized: "Latvia", table: "Regions"), flag: "🇱🇻"),
+            .init(code: "mt", displayName: String(localized: "Malta", table: "Regions"), flag: "🇲🇹"),
+            .init(code: "mx", displayName: String(localized: "Mexico", table: "Regions"), flag: "🇲🇽"),
+            .init(code: "my", displayName: String(localized: "Malaysia", table: "Regions"), flag: "🇲🇾"),
+            .init(code: "nl", displayName: String(localized: "Netherlands", table: "Regions"), flag: "🇳🇱"),
+            .init(code: "no", displayName: String(localized: "Norway", table: "Regions"), flag: "🇳🇴"),
+            .init(code: "nz", displayName: String(localized: "New Zealand", table: "Regions"), flag: "🇳🇿"),
+            .init(code: "om", displayName: String(localized: "Oman", table: "Regions"), flag: "🇴🇲"),
+            .init(code: "pe", displayName: String(localized: "Peru", table: "Regions"), flag: "🇵🇪"),
+            .init(code: "ph", displayName: String(localized: "Philippines", table: "Regions"), flag: "🇵🇭"),
+            .init(code: "pk", displayName: String(localized: "Pakistan", table: "Regions"), flag: "🇵🇰"),
+            .init(code: "pl", displayName: String(localized: "Poland", table: "Regions"), flag: "🇵🇱"),
+            .init(code: "pt", displayName: String(localized: "Portugal", table: "Regions"), flag: "🇵🇹"),
+            .init(code: "qa", displayName: String(localized: "Qatar", table: "Regions"), flag: "🇶🇦"),
+            .init(code: "ro", displayName: String(localized: "Romania", table: "Regions"), flag: "🇷🇴"),
+            .init(code: "rs", displayName: String(localized: "Serbia", table: "Regions"), flag: "🇷🇸"),
+            .init(code: "ru", displayName: String(localized: "Russia", table: "Regions"), flag: "🇷🇺"),
+            .init(code: "sa", displayName: String(localized: "Saudi Arabia", table: "Regions"), flag: "🇸🇦"),
+            .init(code: "se", displayName: String(localized: "Sweden", table: "Regions"), flag: "🇸🇪"),
+            .init(code: "si", displayName: String(localized: "Slovenia", table: "Regions"), flag: "🇸🇮"),
+            .init(code: "sk", displayName: String(localized: "Slovakia", table: "Regions"), flag: "🇸🇰"),
+            .init(code: "th", displayName: String(localized: "Thailand", table: "Regions"), flag: "🇹🇭"),
+            .init(code: "tr", displayName: String(localized: "Türkiye", table: "Regions"), flag: "🇹🇷"),
+            .init(code: "ua", displayName: String(localized: "Ukraine", table: "Regions"), flag: "🇺🇦"),
+            .init(code: "uy", displayName: String(localized: "Uruguay", table: "Regions"), flag: "🇺🇾"),
+            .init(code: "ve", displayName: String(localized: "Venezuela", table: "Regions"), flag: "🇻🇪"),
+            .init(code: "vn", displayName: String(localized: "Vietnam", table: "Regions"), flag: "🇻🇳"),
+            .init(code: "za", displayName: String(localized: "South Africa", table: "Regions"), flag: "🇿🇦"),
         ]
         return list
     }()

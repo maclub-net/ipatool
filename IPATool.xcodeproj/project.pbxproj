@@ -12,6 +12,9 @@
 		A100000100000000000000A0 /* IPAToolModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000010000000000000041 /* IPAToolModels.swift */; };
 		A100000100000000000000A1 /* IPAToolViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000010000000000000042 /* IPAToolViews.swift */; };
 		A100000100000000000000A4 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A100000100000000000000A3 /* Assets.xcassets */; };
+		A100000100000000000000E1 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = A100000100000000000000C1 /* Localizable.strings */; };
+		A100000100000000000000E2 /* Messages.strings in Resources */ = {isa = PBXBuildFile; fileRef = A100000100000000000000C2 /* Messages.strings */; };
+		A100000100000000000000E3 /* Regions.strings in Resources */ = {isa = PBXBuildFile; fileRef = A100000100000000000000C3 /* Regions.strings */; };
 		A100000100000000000000B0 /* IPAToolCore in Frameworks */ = {isa = PBXBuildFile; productRef = A100000100000000000000C0 /* IPAToolCore */; };
 		A100000100000000000000B1 /* IPAToolCore in Frameworks */ = {isa = PBXBuildFile; productRef = A100000100000000000000C0 /* IPAToolCore */; };
 /* End PBXBuildFile section */
@@ -26,6 +29,21 @@
 		A10000010000000000000051 /* ipatool */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = ipatool; sourceTree = BUILT_PRODUCTS_DIR; };
 		A10000010000000000000052 /* IPATool.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = IPATool.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A100000100000000000000A3 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		A100000100000000000000D1 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = "en.lproj/Localizable.strings"; sourceTree = "<group>"; };
+		A100000100000000000000D2 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/Localizable.strings"; sourceTree = "<group>"; };
+		A100000100000000000000D3 /* zh-Hant */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hant"; path = "zh-Hant.lproj/Localizable.strings"; sourceTree = "<group>"; };
+		A100000100000000000000D4 /* ja */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ja; path = "ja.lproj/Localizable.strings"; sourceTree = "<group>"; };
+		A100000100000000000000D5 /* ko */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ko; path = "ko.lproj/Localizable.strings"; sourceTree = "<group>"; };
+		A100000100000000000000D6 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = "en.lproj/Messages.strings"; sourceTree = "<group>"; };
+		A100000100000000000000D7 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/Messages.strings"; sourceTree = "<group>"; };
+		A100000100000000000000D8 /* zh-Hant */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hant"; path = "zh-Hant.lproj/Messages.strings"; sourceTree = "<group>"; };
+		A100000100000000000000D9 /* ja */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ja; path = "ja.lproj/Messages.strings"; sourceTree = "<group>"; };
+		A100000100000000000000DA /* ko */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ko; path = "ko.lproj/Messages.strings"; sourceTree = "<group>"; };
+		A100000100000000000000DB /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = "en.lproj/Regions.strings"; sourceTree = "<group>"; };
+		A100000100000000000000DC /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/Regions.strings"; sourceTree = "<group>"; };
+		A100000100000000000000DD /* zh-Hant */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hant"; path = "zh-Hant.lproj/Regions.strings"; sourceTree = "<group>"; };
+		A100000100000000000000DE /* ja */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ja; path = "ja.lproj/Regions.strings"; sourceTree = "<group>"; };
+		A100000100000000000000DF /* ko */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ko; path = "ko.lproj/Regions.strings"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -65,6 +83,9 @@
 				A10000010000000000000043 /* IPATool.entitlements */,
 				A10000010000000000000044 /* IPATool.Local.entitlements */,
 				A100000100000000000000A3 /* Assets.xcassets */,
+				A100000100000000000000C1 /* Localizable.strings */,
+				A100000100000000000000C2 /* Messages.strings */,
+				A100000100000000000000C3 /* Regions.strings */,
 			);
 			path = IPAToolGUI;
 			sourceTree = "<group>";
@@ -154,6 +175,10 @@
 			knownRegions = (
 				en,
 				Base,
+				"zh-Hans",
+				"zh-Hant",
+				ja,
+				ko,
 			);
 			mainGroup = A10000010000000000000084 /* Sources */;
 			packageReferences = (
@@ -175,6 +200,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				A100000100000000000000A4 /* Assets.xcassets in Resources */,
+				A100000100000000000000E1 /* Localizable.strings in Resources */,
+				A100000100000000000000E2 /* Messages.strings in Resources */,
+				A100000100000000000000E3 /* Regions.strings in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -200,6 +228,45 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXVariantGroup section */
+		A100000100000000000000C1 /* Localizable.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				A100000100000000000000D1 /* en */,
+				A100000100000000000000D2 /* zh-Hans */,
+				A100000100000000000000D3 /* zh-Hant */,
+				A100000100000000000000D4 /* ja */,
+				A100000100000000000000D5 /* ko */,
+			);
+			name = Localizable.strings;
+			sourceTree = "<group>";
+		};
+		A100000100000000000000C2 /* Messages.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				A100000100000000000000D6 /* en */,
+				A100000100000000000000D7 /* zh-Hans */,
+				A100000100000000000000D8 /* zh-Hant */,
+				A100000100000000000000D9 /* ja */,
+				A100000100000000000000DA /* ko */,
+			);
+			name = Messages.strings;
+			sourceTree = "<group>";
+		};
+		A100000100000000000000C3 /* Regions.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				A100000100000000000000DB /* en */,
+				A100000100000000000000DC /* zh-Hans */,
+				A100000100000000000000DD /* zh-Hant */,
+				A100000100000000000000DE /* ja */,
+				A100000100000000000000DF /* ko */,
+			);
+			name = Regions.strings;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
 		A10000010000000000000400 /* Debug */ = {
@@ -460,7 +527,7 @@
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 14.0;
-				MARKETING_VERSION = 2.0.1;
+				MARKETING_VERSION = 2.1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = cn.ipatool;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -489,7 +556,7 @@
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 14.0;
-				MARKETING_VERSION = 2.0.1;
+				MARKETING_VERSION = 2.1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = cn.ipatool;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -518,7 +585,7 @@
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 14.0;
-				MARKETING_VERSION = 2.0.1;
+				MARKETING_VERSION = 2.1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = cn.ipatool;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";

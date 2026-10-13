@@ -103,7 +103,7 @@ struct RootView: View {
                 Button {
                     Task { await model.loadPurchasedApps() }
                 } label: {
-                    ToolbarActionLabel(title: "刷新", systemImage: "arrow.clockwise")
+                    ToolbarActionLabel(title: "Refresh", systemImage: "arrow.clockwise")
                 }
                 .buttonStyle(ToolbarActionButtonStyle())
                 .disabled(model.isLoadingPurchased)
@@ -113,7 +113,7 @@ struct RootView: View {
                 Button {
                     model.clearCompletedDownloads()
                 } label: {
-                    ToolbarActionLabel(title: "清空已完成", systemImage: "trash")
+                    ToolbarActionLabel(title: "Clear Completed", systemImage: "trash")
                 }
                 .buttonStyle(ToolbarActionButtonStyle())
                 .disabled(model.downloadTasks.filter({ $0.status == .completed }).isEmpty)
@@ -124,7 +124,7 @@ struct RootView: View {
                     model.prepareAccountEditor()
                     isAddAccountSheetPresented = true
                 } label: {
-                    ToolbarActionLabel(title: "添加账号", systemImage: "plus")
+                    ToolbarActionLabel(title: "Add Account", systemImage: "plus")
                 }
                 .buttonStyle(ToolbarActionButtonStyle(emphasized: true))
             }
@@ -136,7 +136,7 @@ struct RootView: View {
                         model.showMessage(result.message, success: result.success)
                     }
                 } label: {
-                    ToolbarActionLabel(title: "重置", systemImage: "arrow.counterclockwise")
+                    ToolbarActionLabel(title: "Reset", systemImage: "arrow.counterclockwise")
                 }
                 .buttonStyle(ToolbarActionButtonStyle())
 
@@ -146,7 +146,7 @@ struct RootView: View {
                         model.showMessage(result.message, success: result.success)
                     }
                 } label: {
-                    ToolbarActionLabel(title: "保存", systemImage: "checkmark")
+                    ToolbarActionLabel(title: "Save", systemImage: "checkmark")
                 }
                 .buttonStyle(ToolbarActionButtonStyle(emphasized: true))
             }
@@ -223,7 +223,7 @@ struct SidebarView: View {
                         .frame(width: 32, height: 32)
 
                         VStack(alignment: .leading, spacing: 2) {
-                            Text("砸壳包下载")
+                            Text("Decrypted IPA Downloads")
                                 .font(.system(size: 14, weight: .semibold))
                             Text("Mac俱乐部")
                                 .font(.caption)
@@ -285,13 +285,13 @@ struct SidebarView: View {
                 VStack(alignment: .leading, spacing: 3) {
                     Text("IPATool")
                         .font(.system(size: 18, weight: .bold))
-                    Text("macOS App Store 工具")
+                    Text("macOS App Store Tool")
                         .font(.caption)
                         .foregroundStyle(.secondary)
                 }
             }
 
-            Text("搜索、下载和管理 App Store 应用。")
+            Text("Search, download, and manage App Store apps.")
                 .font(.caption)
                 .foregroundStyle(.secondary)
         }
@@ -324,7 +324,7 @@ struct SidebarView: View {
                     Button {
                         model.selectedSection = .accounts
                     } label: {
-                        Label("管理账号", systemImage: "person.2.fill")
+                        Label("Manage Accounts", systemImage: "person.2.fill")
                     }
                 } label: {
                     HStack(alignment: .center, spacing: 10) {
@@ -354,7 +354,7 @@ struct SidebarView: View {
                                 Circle()
                                     .fill(account.needsReauth ? Color.orange : Color.green)
                                     .frame(width: 6, height: 6)
-                                Text(account.needsReauth ? "需重新登录" : "已登录")
+                                Text(account.needsReauth ? String(localized: "Sign-in Required") : String(localized: "Signed In"))
                                     .font(.system(size: 11))
                                     .foregroundStyle(account.needsReauth ? Color.orange : .secondary)
                             }
@@ -385,10 +385,10 @@ struct SidebarView: View {
                             )
 
                         VStack(alignment: .leading, spacing: 2) {
-                            Text("未登录")
+                            Text("Not Signed In")
                                 .font(.system(size: 13, weight: .semibold))
                                 .foregroundStyle(.primary)
-                            Text("点击登录 Apple ID")
+                            Text("Click to sign in with an Apple ID")
                                 .font(.system(size: 11))
                                 .foregroundStyle(.secondary)
                         }
@@ -443,7 +443,7 @@ struct SearchView: View {
                 VStack(spacing: 6) {
                     Text("IPATool")
                         .font(.system(size: 30, weight: .bold, design: .rounded))
-                    Text("搜索并下载 App Store 应用的 IPA 安装包文件")
+                    Text("Search the App Store and download IPA files")
                         .font(.system(size: 14))
                         .foregroundStyle(.secondary)
                 }
@@ -452,7 +452,7 @@ struct SearchView: View {
                 HStack(spacing: 10) {
                     Image(systemName: "magnifyingglass")
                         .foregroundStyle(.secondary)
-                    TextField("搜索 App Store", text: $model.searchTerm)
+                    TextField("Search App Store", text: $model.searchTerm)
                         .textFieldStyle(.plain)
                         .font(.system(size: 15))
                         .onSubmit { Task { await model.performSearch() } }
@@ -492,7 +492,7 @@ struct SearchView: View {
 
                 // 平台筛选（换行布局，避免水平滚动截断）
                 VStack(alignment: .leading, spacing: 10) {
-                    Text("平台")
+                    Text("Platform")
                         .font(.system(size: 12, weight: .medium))
                         .foregroundStyle(.secondary)
                     PlatformFilterChips(selected: $model.searchPlatform)
@@ -527,7 +527,7 @@ struct SearchView: View {
                     } label: {
                         HStack(spacing: 6) {
                             Image(systemName: "person.crop.circle.badge.plus")
-                            Text("登录 Apple ID")
+                            Text("Sign in with Apple ID")
                         }
                         .font(.system(size: 12, weight: .medium))
                     }
@@ -538,7 +538,7 @@ struct SearchView: View {
                 if model.isSearching {
                     HStack(spacing: 8) {
                         ProgressView().controlSize(.small)
-                        Text("正在搜索...").font(.system(size: 12)).foregroundStyle(.secondary)
+                        Text("Searching...").font(.system(size: 12)).foregroundStyle(.secondary)
                     }
                 }
             }
@@ -557,7 +557,7 @@ struct SearchView: View {
                 HStack(spacing: 10) {
                     Image(systemName: "magnifyingglass")
                         .foregroundStyle(.secondary)
-                    TextField("搜索 App Store", text: $model.searchTerm)
+                    TextField("Search App Store", text: $model.searchTerm)
                         .textFieldStyle(.plain)
                         .onSubmit { Task { await model.performSearch() } }
 
@@ -604,18 +604,18 @@ struct SearchView: View {
 
                 // 结果统计
                 HStack {
-                    Text(model.isSearching ? "搜索中..." : "共 \(model.searchResults.count) 个结果")
+                    Text(model.isSearching ? String(localized: "Searching...") : String(localized: "\(model.searchResults.count) results"))
                         .font(.system(size: 12, weight: .medium))
                         .foregroundStyle(.secondary)
                     Spacer()
                 }
 
                 if model.isSearching && model.searchResults.isEmpty {
-                    ContentUnavailableView("搜索中", systemImage: "magnifyingglass", description: Text("正在查询 App Store..."))
+                    ContentUnavailableView("Searching", systemImage: "magnifyingglass", description: Text("Querying the App Store..."))
                         .frame(maxWidth: .infinity)
                         .frame(minHeight: 300)
                 } else if model.searchResults.isEmpty {
-                    ContentUnavailableView("暂无结果", systemImage: "magnifyingglass", description: Text("换个关键词试试。"))
+                    ContentUnavailableView("No Results", systemImage: "magnifyingglass", description: Text("Try a different keyword."))
                         .frame(maxWidth: .infinity)
                         .frame(minHeight: 300)
                 } else {
@@ -650,7 +650,7 @@ private struct PlatformFilterChips: View {
 
     var body: some View {
         LazyVGrid(columns: columns, alignment: .leading, spacing: 8) {
-            PlatformChip(label: "全部", icon: "square.grid.2x2.fill", isSelected: selected == nil) {
+            PlatformChip(label: String(localized: "All"), icon: "square.grid.2x2.fill", isSelected: selected == nil) {
                 selected = nil
             }
             ForEach(Platform.allCases, id: \.self) { platform in
@@ -775,7 +775,7 @@ struct PurchasedView: View {
                         VStack(alignment: .leading, spacing: 2) {
                             Text(account.email)
                                 .font(.system(size: 15, weight: .semibold))
-                            Text("已购应用 · \(account.regionDisplayName)")
+                            Text("Purchased Apps · \(account.regionDisplayName)")
                                 .font(.system(size: 12))
                                 .foregroundStyle(.secondary)
                         }
@@ -797,18 +797,18 @@ struct PurchasedView: View {
 
                 // 结果统计
                 HStack {
-                    Text(model.isLoadingPurchased ? "加载中..." : "共 \(filteredApps.count) 个已购应用")
+                    Text(model.isLoadingPurchased ? String(localized: "Loading...") : String(localized: "\(filteredApps.count) purchased apps"))
                         .font(.system(size: 12, weight: .medium))
                         .foregroundStyle(.secondary)
                     Spacer()
                 }
 
                 if model.isLoadingPurchased {
-                    ContentUnavailableView("正在加载已购应用", systemImage: "bag.fill", description: Text("请稍候..."))
+                    ContentUnavailableView("Loading Purchased Apps", systemImage: "bag.fill", description: Text("Please wait..."))
                         .frame(maxWidth: .infinity)
                         .frame(minHeight: 320)
                 } else if filteredApps.isEmpty {
-                    ContentUnavailableView("暂无已购应用", systemImage: "bag", description: Text("点击右上角刷新，或切换平台筛选。"))
+                    ContentUnavailableView("No Purchased Apps", systemImage: "bag", description: Text("Click Refresh in the top-right corner, or change the platform filter."))
                         .frame(maxWidth: .infinity)
                         .frame(minHeight: 320)
                 } else {
@@ -991,7 +991,7 @@ private struct AppDetailView: View {
                             .foregroundStyle(.secondary)
                     }
                     .buttonStyle(.plain)
-                    .help("关闭")
+                    .help("Close")
                 }
                 .padding(.horizontal, 24)
                 .padding(.top, 20)
@@ -1016,7 +1016,7 @@ private struct AppDetailView: View {
                     Button {
                         Task { await model.purchaseApp(app) }
                     } label: {
-                        ActionButtonLabel(title: "购买应用", systemImage: "bag.fill")
+                        ActionButtonLabel(title: "Purchase App", systemImage: "bag.fill")
                     }
                     .buttonStyle(SecondaryActionButtonStyle())
 
@@ -1026,7 +1026,7 @@ private struct AppDetailView: View {
                         Task { await model.downloadApp(app) }
                         dismiss()
                     } label: {
-                        ActionButtonLabel(title: "下载最新版", systemImage: "arrow.down.to.line")
+                        ActionButtonLabel(title: "Download Latest", systemImage: "arrow.down.to.line")
                     }
                     .buttonStyle(PrimaryActionButtonStyle())
                 }
@@ -1038,7 +1038,7 @@ private struct AppDetailView: View {
     }
 
     private func priceText(_ app: AppStoreApp) -> String {
-        guard let price = app.price, price > 0 else { return "免费" }
+        guard let price = app.price, price > 0 else { return String(localized: "Free") }
         return String(format: "¥%.2f", price)
     }
 
@@ -1046,20 +1046,20 @@ private struct AppDetailView: View {
 
     private func infoSection(_ app: AppStoreApp) -> some View {
         VStack(alignment: .leading, spacing: 8) {
-            Label("基本信息", systemImage: "info.circle")
+            Label("Basic Information", systemImage: "info.circle")
                 .font(.system(size: 13, weight: .semibold))
                 .foregroundStyle(.secondary)
             DetailInfoRow(label: "Bundle ID", value: app.bundleId)
             DetailInfoRow(label: "Apple ID", value: "\(app.trackId)")
-            DetailInfoRow(label: "价格", value: priceText(app))
+            DetailInfoRow(label: "Price", value: priceText(app))
             if !app.version.isEmpty {
-                DetailInfoRow(label: "当前版本", value: app.version)
+                DetailInfoRow(label: "Version", value: app.version)
             }
             if !app.sellerName.isEmpty {
-                DetailInfoRow(label: "开发商", value: app.sellerName)
+                DetailInfoRow(label: "Developer", value: app.sellerName)
             }
             if !app.platforms.isEmpty {
-                DetailInfoRow(label: "平台", value: app.platforms.map(\.displayName).joined(separator: "、"))
+                DetailInfoRow(label: "Platform", value: app.platforms.map(\.displayName).joined(separator: String(localized: ", ")))
             }
         }
     }
@@ -1069,26 +1069,26 @@ private struct AppDetailView: View {
     private func versionsSection(_ app: AppStoreApp) -> some View {
         VStack(alignment: .leading, spacing: 10) {
             HStack {
-                Label("历史版本", systemImage: "clock.arrow.circlepath")
+                Label("Version History", systemImage: "clock.arrow.circlepath")
                     .font(.system(size: 13, weight: .semibold))
                     .foregroundStyle(.secondary)
                 Spacer()
                 if !model.isLoadingVersions && !model.appVersions.isEmpty {
-                    DetailBadge(text: "\(model.appVersions.count) 个版本", tint: .secondary)
+                    DetailBadge(text: String(localized: "\(model.appVersions.count) versions"), tint: .secondary)
                 }
             }
 
             if model.isLoadingVersions {
                 HStack(spacing: 10) {
                     ProgressView().controlSize(.small)
-                    Text("正在加载版本列表...")
+                    Text("Loading version list...")
                         .font(.subheadline)
                         .foregroundStyle(.secondary)
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .padding(.vertical, 24)
             } else if model.appVersions.isEmpty {
-                ContentUnavailableView("暂无版本信息", systemImage: "square.stack.3d.up.slash", description: Text("该应用可能尚未购买，或无法获取版本列表。"))
+                ContentUnavailableView("No Version Information", systemImage: "square.stack.3d.up.slash", description: Text("The app may not have been purchased yet, or the version list is unavailable."))
                     .frame(maxWidth: .infinity)
                     .frame(minHeight: 140)
             } else {
@@ -1115,10 +1115,10 @@ private struct AppDetailView: View {
             VStack(alignment: .leading, spacing: 3) {
                 HStack(spacing: 8) {
                     if version.version != nil {
-                        Text("版本 \(version.displayName)")
+                        Text("Version \(version.displayName)")
                             .font(.system(size: 15, weight: .semibold))
                     } else {
-                        Text("版本 \(version.externalVersionID)")
+                        Text("Version \(version.externalVersionID)")
                             .font(.system(size: 15, weight: .semibold))
                         ProgressView().controlSize(.small)
                     }
@@ -1142,7 +1142,7 @@ private struct AppDetailView: View {
             Spacer(minLength: 0)
 
             if version.isLatest {
-                Text("最新")
+                Text("Latest")
                     .font(.system(size: 11, weight: .bold))
                     .foregroundStyle(.white)
                     .padding(.horizontal, 10)
@@ -1154,7 +1154,7 @@ private struct AppDetailView: View {
                 Task { await model.downloadApp(app, externalVersionID: version.externalVersionID) }
                 dismiss()
             } label: {
-                ActionButtonLabel(title: "下载", systemImage: "arrow.down.circle.fill")
+                ActionButtonLabel(title: "Download", systemImage: "arrow.down.circle.fill")
             }
             .buttonStyle(SecondaryActionButtonStyle())
         }
@@ -1195,7 +1195,7 @@ private struct DetailBadge: View {
 // MARK: - 详情页信息行
 
 private struct DetailInfoRow: View {
-    let label: String
+    let label: LocalizedStringKey
     let value: String
 
     var body: some View {
@@ -1220,9 +1220,9 @@ struct LibraryView: View {
     var body: some View {
         PageScaffold {
             MetricsGrid(items: [
-                .init(title: "全部任务", value: "\(model.downloadTasks.count)", icon: "tray.full.fill", tint: .blue),
-                .init(title: "下载中", value: "\(model.activeDownloads)", icon: "arrow.down.circle.fill", tint: .orange),
-                .init(title: "已完成", value: "\(model.completedDownloads)", icon: "checkmark.circle.fill", tint: .green)
+                .init(title: "All Tasks", value: "\(model.downloadTasks.count)", icon: "tray.full.fill", tint: .blue),
+                .init(title: "Downloading", value: "\(model.activeDownloads)", icon: "arrow.down.circle.fill", tint: .orange),
+                .init(title: "Completed", value: "\(model.completedDownloads)", icon: "checkmark.circle.fill", tint: .green)
             ])
 
             libraryCard
@@ -1237,34 +1237,34 @@ struct LibraryView: View {
         ) {
             if let request = model.removalRequest {
                 if request.hasDeletableFiles {
-                    Button("同时删除文件", role: .destructive) {
+                    Button("Delete Files Too", role: .destructive) {
                         model.confirmRemoval(deleteFiles: true)
                     }
-                    Button("仅移除记录", role: .destructive) {
+                    Button("Remove Records Only", role: .destructive) {
                         model.confirmRemoval(deleteFiles: false)
                     }
                 } else {
-                    Button("移除记录", role: .destructive) {
+                    Button("Remove Records", role: .destructive) {
                         model.confirmRemoval(deleteFiles: false)
                     }
                 }
-                Button("取消", role: .cancel) {
+                Button("Cancel", role: .cancel) {
                     model.cancelRemoval()
                 }
             }
         } message: {
             if let request = model.removalRequest, request.hasDeletableFiles {
-                Text("选中的下载记录中包含已下载的文件，是否同时删除本地文件？")
+                Text("The selected download records include downloaded files. Delete the local files as well?")
             } else {
-                Text("此操作仅移除下载记录，不会删除本地文件。")
+                Text("This only removes the download records and will not delete local files.")
             }
         }
     }
 
     private var libraryCard: some View {
-        SectionCard(title: "下载列表", subtitle: "展示搜索下载的应用及其状态。") {
+        SectionCard(title: "Downloads", subtitle: "Shows downloaded apps and their status.") {
             if model.downloadTasks.isEmpty {
-                ContentUnavailableView("暂无下载", systemImage: "square.and.arrow.down", description: Text("在「搜索」中找到应用并开始下载。"))
+                ContentUnavailableView("No Downloads", systemImage: "square.and.arrow.down", description: Text("Find apps in Search and start downloading."))
                     .frame(maxWidth: .infinity)
                     .frame(minHeight: 320)
             } else {
@@ -1331,14 +1331,14 @@ private struct DownloadTaskRowCard: View {
             HStack(spacing: 8) {
                 if task.status == .completed {
                     Button(action: onReveal) {
-                        ToolbarActionLabel(title: "显示", systemImage: "folder")
+                        ToolbarActionLabel(title: "Reveal", systemImage: "folder")
                     }
                     .buttonStyle(ToolbarActionButtonStyle())
                     .disabled(task.outputURL == nil)
                 }
 
                 Button(role: .destructive, action: onRemove) {
-                    ToolbarActionLabel(title: "移除", systemImage: "trash")
+                    ToolbarActionLabel(title: "Remove", systemImage: "trash")
                 }
                 .buttonStyle(ToolbarActionButtonStyle())
             }
@@ -1388,8 +1388,8 @@ private struct DownloadTaskRowCard: View {
 
     private var statusBadge: some View {
         Text(task.status == .downloading
-             ? "\(task.status.rawValue) \(Int(task.progress * 100))%"
-             : task.status.rawValue)
+             ? "\(task.status.displayName) \(Int(task.progress * 100))%"
+             : task.status.displayName)
             .font(.caption.weight(.semibold))
             .foregroundStyle(statusTint)
             .padding(.horizontal, 8)
@@ -1406,9 +1406,9 @@ struct AccountsView: View {
     var body: some View {
         PageScaffold {
             MetricsGrid(items: [
-                .init(title: "已配置账号", value: "\(model.accounts.count)", icon: "person.2.fill", tint: .blue),
-                .init(title: "已覆盖地区", value: "\(Set(model.accounts.map { $0.region }).count)", icon: "globe.asia.australia.fill", tint: .green),
-                .init(title: "当前账号", value: model.activeAccount?.email ?? "无", icon: "person.crop.circle.fill", tint: .purple)
+                .init(title: "Configured Accounts", value: "\(model.accounts.count)", icon: "person.2.fill", tint: .blue),
+                .init(title: "Regions Covered", value: "\(Set(model.accounts.map { $0.region }).count)", icon: "globe.asia.australia.fill", tint: .green),
+                .init(title: "Current Account", value: model.activeAccount?.email ?? String(localized: "None"), icon: "person.crop.circle.fill", tint: .purple)
             ])
 
             VStack(alignment: .leading, spacing: 20) {
@@ -1422,9 +1422,9 @@ struct AccountsView: View {
     }
 
     private var accountsListCard: some View {
-        SectionCard(title: "已配置账号", subtitle: "账号密码交给 App Store 登录流程管理。") {
+        SectionCard(title: "Configured Accounts", subtitle: "Account credentials are managed through the App Store sign-in flow.") {
             if model.accounts.isEmpty {
-                ContentUnavailableView("暂无账号", systemImage: "person.2", description: Text("点击右上角「添加账号」开始。"))
+                ContentUnavailableView("No Accounts", systemImage: "person.2", description: Text("Click \"Add Account\" in the top-right corner to get started."))
                     .frame(maxWidth: .infinity)
                     .frame(minHeight: 320)
             } else {
@@ -1443,10 +1443,10 @@ struct AccountsView: View {
     }
 
     private var accountsGuideCard: some View {
-        SectionCard(title: "添加账号", subtitle: "点击顶部右侧的「添加账号」按钮。") {
+        SectionCard(title: "Add Account", subtitle: "Click the \"Add Account\" button at the top right.") {
             VStack(alignment: .leading, spacing: 14) {
-                SelectableValueBlock(text: "1. 点击右上角「添加账号」\n2. 选择地区并填写 Apple ID\n3. 提交后会通过 App Store 登录接口验证")
-                Text("支持多个地区账号，可随时切换当前活跃账号。")
+                SelectableValueBlock(text: "1. Click \"Add Account\" in the top-right corner\n2. Choose a region and enter your Apple ID\n3. Your credentials will be verified through the App Store sign-in service")
+                Text("Multiple regional accounts are supported, and you can switch the active account at any time.")
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
             }
@@ -1482,7 +1482,7 @@ private struct AccountRowCard: View {
                         .background(Color.blue.opacity(0.12), in: Capsule())
 
                     if account.isActive {
-                        Text("当前")
+                        Text("Current")
                             .font(.caption.weight(.semibold))
                             .foregroundStyle(.green)
                             .padding(.horizontal, 8)
@@ -1491,7 +1491,7 @@ private struct AccountRowCard: View {
                     }
 
                     if account.needsReauth {
-                        Text("需重新登录")
+                        Text("Sign-in Required")
                             .font(.caption.weight(.semibold))
                             .foregroundStyle(.orange)
                             .padding(.horizontal, 8)
@@ -1517,13 +1517,13 @@ private struct AccountRowCard: View {
             HStack(spacing: 8) {
                 if !account.isActive {
                     Button(action: onActivate) {
-                        ToolbarActionLabel(title: "切换", systemImage: "arrow.left.arrow.right")
+                        ToolbarActionLabel(title: "Switch", systemImage: "arrow.left.arrow.right")
                     }
                     .buttonStyle(ToolbarActionButtonStyle())
                 }
 
                 Button(role: .destructive, action: onDelete) {
-                    ToolbarActionLabel(title: "删除", systemImage: "trash")
+                    ToolbarActionLabel(title: "Delete", systemImage: "trash")
                 }
                 .buttonStyle(ToolbarActionButtonStyle())
             }
@@ -1569,11 +1569,11 @@ struct SettingsView: View {
     }
 
     private var directorySettingsCard: some View {
-        SectionCard(title: "目录设置", subtitle: "指定 IPA 文件的下载目录。") {
+        SectionCard(title: "Folder", subtitle: "Choose where IPA files are saved.") {
             VStack(alignment: .leading, spacing: 18) {
                 DirectoryPickerField(
-                    title: "下载目录",
-                    caption: "下载的 IPA 文件将保存到此目录。",
+                    title: "Download Folder",
+                    caption: "Downloaded IPA files will be saved to this folder.",
                     placeholder: "~/IPATool/downloads",
                     defaultValue: "~/IPATool/downloads",
                     text: $model.settingsDraft.downloadDirectory,
@@ -1584,19 +1584,19 @@ struct SettingsView: View {
     }
 
     private var behaviorSettingsCard: some View {
-        SectionCard(title: "下载行为", subtitle: "控制下载完成后的处理方式。") {
+        SectionCard(title: "Download Behavior", subtitle: "Control what happens after downloads complete.") {
             VStack(alignment: .leading, spacing: 14) {
-                Toggle("保留原始文件", isOn: $model.settingsDraft.keepOriginal)
+                Toggle("Keep Original Files", isOn: $model.settingsDraft.keepOriginal)
                     .toggleStyle(.switch)
 
-                Toggle("下载后自动在 Finder 中显示", isOn: $model.settingsDraft.autoImport)
+                Toggle("Reveal in Finder after download", isOn: $model.settingsDraft.autoImport)
                     .toggleStyle(.switch)
             }
         }
     }
 
     private var sapSettingsCard: some View {
-        SectionCard(title: "SAP 签名引擎", subtitle: "FairPlay 签名服务状态。") {
+        SectionCard(title: "SAP Signing Engine", subtitle: "FairPlay signing service status.") {
             VStack(alignment: .leading, spacing: 14) {
                 HStack {
                     Label(model.sapStatus.label, systemImage: model.sapStatus == .ready ? "checkmark.circle.fill" : "circle")
@@ -1608,13 +1608,13 @@ struct SettingsView: View {
                     Button {
                         Task { await model.setupSAP() }
                     } label: {
-                        ActionButtonLabel(title: model.sapStatus == .loading ? "初始化中" : (model.sapStatus == .failed ? "重试" : "初始化"), systemImage: "bolt.fill")
+                        ActionButtonLabel(title: model.sapStatus == .loading ? "Initializing" : (model.sapStatus == .failed ? "Retry" : "Initialize"), systemImage: "bolt.fill")
                     }
                     .buttonStyle(PrimaryActionButtonStyle())
                     .disabled(model.sapStatus == .loading || model.sapStatus == .ready)
                 }
 
-                Text("SAP 引擎用于对 App Store 请求进行 FairPlay 签名，是下载应用的前提。")
+                Text("The SAP engine signs App Store requests with FairPlay and is required before downloading apps.")
                     .font(.caption)
                     .foregroundStyle(.secondary)
             }
@@ -1658,9 +1658,9 @@ private struct AddAccountSheetView: View {
                     .foregroundStyle(Color.brandSecondary)
 
                 VStack(spacing: 6) {
-                    Text("双重认证")
+                    Text("Two-Factor Authentication")
                         .font(.system(size: 22, weight: .bold, design: .rounded))
-                    Text("请输入发送到您设备上的 6 位验证码")
+                    Text("Enter the 6-digit code sent to your devices")
                         .font(.subheadline)
                         .foregroundStyle(.secondary)
                 }
@@ -1672,11 +1672,11 @@ private struct AddAccountSheetView: View {
                 if isLoading {
                     HStack(spacing: 8) {
                         ProgressView().controlSize(.small)
-                        Text("验证中...").font(.caption).foregroundStyle(.secondary)
+                        Text("Verifying...").font(.caption).foregroundStyle(.secondary)
                     }
                 }
 
-                Button("返回") {
+                Button("Back") {
                     model.accountEditor.awaiting2FA = false
                     model.accountEditor.code = ""
                 }
@@ -1715,9 +1715,9 @@ private struct AddAccountSheetView: View {
             VStack(alignment: .leading, spacing: 18) {
                 HStack(alignment: .top) {
                     VStack(alignment: .leading, spacing: 4) {
-                        Text("添加账号")
+                        Text("Add Account")
                             .font(.system(size: 22, weight: .bold, design: .rounded))
-                        Text("输入 Apple ID 凭据并登录")
+                        Text("Enter your Apple ID credentials and sign in")
                             .font(.subheadline)
                             .foregroundStyle(.secondary)
                     }
@@ -1736,21 +1736,21 @@ private struct AddAccountSheetView: View {
                 }
 
                 VStack(alignment: .leading, spacing: 14) {
-                    FieldBlock(title: "地区") {
+                    FieldBlock(title: "Region") {
                         RegionPickerField(selection: $model.accountEditor.region)
                     }
 
-                    FieldBlock(title: "Apple ID 邮箱") {
+                    FieldBlock(title: "Apple ID Email") {
                         AppTextField("name@example.com", text: $model.accountEditor.email)
                     }
 
-                    FieldBlock(title: "密码") {
-                        AppSecureField("输入密码", text: $model.accountEditor.password)
+                    FieldBlock(title: "Password") {
+                        AppSecureField("Enter password", text: $model.accountEditor.password)
                     }
                 }
 
                 HStack(spacing: 10) {
-                    Button("取消") {
+                    Button("Cancel") {
                         isPresented = false
                     }
                     .buttonStyle(SecondaryActionButtonStyle())
@@ -1767,7 +1767,7 @@ private struct AddAccountSheetView: View {
                             isLoading = false
                         }
                     } label: {
-                        ActionButtonLabel(title: isLoading ? "登录中" : "登录并保存", systemImage: "person.badge.key.fill")
+                        ActionButtonLabel(title: isLoading ? "Signing In" : "Sign In & Save", systemImage: "person.badge.key.fill")
                     }
                     .buttonStyle(PrimaryActionButtonStyle())
                     .disabled(isLoading || model.accountEditor.region.isEmpty || model.accountEditor.email.isEmpty || model.accountEditor.password.isEmpty)
@@ -1869,7 +1869,7 @@ private struct RegionPickerField: View {
                             .font(.system(size: 14, weight: .medium))
                             .foregroundStyle(.primary)
                     } else {
-                        Text("请选择地区")
+                        Text("Select a region")
                             .font(.system(size: 14, weight: .medium))
                             .foregroundStyle(.secondary)
                     }
@@ -1910,7 +1910,7 @@ private struct RegionPickerPopover: View {
                 Image(systemName: "magnifyingglass")
                     .font(.system(size: 12))
                     .foregroundStyle(.secondary)
-                TextField("搜索国家代码或名称", text: $searchText)
+                TextField("Search country code or name", text: $searchText)
                     .textFieldStyle(.plain)
                     .font(.system(size: 13))
                 if !searchText.isEmpty {
@@ -1960,7 +1960,7 @@ private struct RegionPickerPopover: View {
                     }
 
                     if filteredRegions.isEmpty {
-                        Text("未找到匹配的地区")
+                        Text("No matching regions")
                             .font(.caption)
                             .foregroundStyle(.secondary)
                             .padding(.vertical, 24)
@@ -1986,7 +1986,7 @@ private struct HeaderActionGroup<Content: View>: View {
 }
 
 private struct ToolbarActionLabel: View {
-    let title: String
+    let title: LocalizedStringKey
     let systemImage: String
 
     var body: some View {
@@ -1997,7 +1997,7 @@ private struct ToolbarActionLabel: View {
 }
 
 private struct ActionButtonLabel: View {
-    let title: String
+    let title: LocalizedStringKey
     let systemImage: String
 
     var body: some View {
@@ -2172,11 +2172,11 @@ private struct PageScaffold<Content: View>: View {
 }
 
 private struct SectionCard<Content: View>: View {
-    let title: String
-    let subtitle: String?
+    let title: LocalizedStringKey
+    let subtitle: LocalizedStringKey?
     @ViewBuilder var content: () -> Content
 
-    init(title: String, subtitle: String? = nil, @ViewBuilder content: @escaping () -> Content) {
+    init(title: LocalizedStringKey, subtitle: LocalizedStringKey? = nil, @ViewBuilder content: @escaping () -> Content) {
         self.title = title
         self.subtitle = subtitle
         self.content = content
@@ -2187,7 +2187,7 @@ private struct SectionCard<Content: View>: View {
             VStack(alignment: .leading, spacing: 4) {
                 Text(title)
                     .font(.system(size: 18, weight: .bold))
-                if let subtitle, !subtitle.isEmpty {
+                if let subtitle {
                     Text(subtitle)
                         .font(.subheadline)
                         .foregroundStyle(.secondary)
@@ -2268,11 +2268,11 @@ private struct MetricCard: View {
 }
 
 private struct FieldBlock<Content: View>: View {
-    let title: String
-    let caption: String?
+    let title: LocalizedStringKey
+    let caption: LocalizedStringKey?
     @ViewBuilder var content: () -> Content
 
-    init(title: String, caption: String? = nil, @ViewBuilder content: @escaping () -> Content) {
+    init(title: LocalizedStringKey, caption: LocalizedStringKey? = nil, @ViewBuilder content: @escaping () -> Content) {
         self.title = title
         self.caption = caption
         self.content = content
@@ -2282,7 +2282,7 @@ private struct FieldBlock<Content: View>: View {
         VStack(alignment: .leading, spacing: 8) {
             Text(title)
                 .font(.system(size: 13, weight: .semibold))
-            if let caption, !caption.isEmpty {
+            if let caption {
                 Text(caption)
                     .font(.caption)
                     .foregroundStyle(.secondary)
@@ -2312,10 +2312,10 @@ private struct InputSurface<Content: View>: View {
 }
 
 private struct AppTextField: View {
-    let placeholder: String
+    let placeholder: LocalizedStringKey
     @Binding var text: String
 
-    init(_ placeholder: String, text: Binding<String>) {
+    init(_ placeholder: LocalizedStringKey, text: Binding<String>) {
         self.placeholder = placeholder
         self._text = text
     }
@@ -2330,10 +2330,10 @@ private struct AppTextField: View {
 }
 
 private struct AppSecureField: View {
-    let placeholder: String
+    let placeholder: LocalizedStringKey
     @Binding var text: String
 
-    init(_ placeholder: String, text: Binding<String>) {
+    init(_ placeholder: LocalizedStringKey, text: Binding<String>) {
         self.placeholder = placeholder
         self._text = text
     }
@@ -2348,9 +2348,9 @@ private struct AppSecureField: View {
 }
 
 private struct DirectoryPickerField: View {
-    let title: String
-    let caption: String?
-    let placeholder: String
+    let title: LocalizedStringKey
+    let caption: LocalizedStringKey?
+    let placeholder: LocalizedStringKey
     let defaultValue: String
     @Binding var text: String
     /// 可选：选择目录后同步生成安全作用域书签（沙盒持久授权），恢复默认时清除
@@ -2364,7 +2364,7 @@ private struct DirectoryPickerField: View {
                 Button {
                     chooseDirectory()
                 } label: {
-                    ToolbarActionLabel(title: "选择目录", systemImage: "folder")
+                    ToolbarActionLabel(title: "Choose Folder", systemImage: "folder")
                 }
                 .buttonStyle(ToolbarActionButtonStyle())
 
@@ -2372,7 +2372,7 @@ private struct DirectoryPickerField: View {
                     text = defaultValue
                     bookmark?.wrappedValue = nil
                 } label: {
-                    ToolbarActionLabel(title: "恢复默认", systemImage: "arrow.counterclockwise")
+                    ToolbarActionLabel(title: "Reset to Default", systemImage: "arrow.counterclockwise")
                 }
                 .buttonStyle(ToolbarActionButtonStyle())
             }
@@ -2385,7 +2385,7 @@ private struct DirectoryPickerField: View {
         panel.canChooseDirectories = true
         panel.allowsMultipleSelection = false
         panel.canCreateDirectories = true
-        panel.prompt = "选择"
+        panel.prompt = String(localized: "Choose")
 
         let initialPath = text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? defaultValue : text
         let expandedPath = expandTildeInPath(initialPath)
@@ -2462,7 +2462,7 @@ private struct MenuOptionRow: View {
 }
 
 private struct SelectableValueBlock: View {
-    let text: String
+    let text: LocalizedStringKey
     var tint: Color = .accentColor
 
     var body: some View {

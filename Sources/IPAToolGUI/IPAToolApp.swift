@@ -195,7 +195,7 @@ final class AppModel: ObservableObject {
         loadPersistedData()
         syncClientAccount()
         settingsDraft = settings
-        showMessage("欢迎使用 IPATool", success: true)
+        showMessage(String(localized: "Welcome to IPATool", table: "Messages"), success: true)
         // 自动初始化 SAP 签名引擎
         await setupSAP()
     }
@@ -205,7 +205,7 @@ final class AppModel: ObservableObject {
     func performSearch() async {
         let term = searchTerm.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !term.isEmpty else {
-            showMessage("请输入搜索关键词", success: false)
+            showMessage(String(localized: "Please enter a search keyword", table: "Messages"), success: false)
             return
         }
 
@@ -217,10 +217,10 @@ final class AppModel: ObservableObject {
             let results = try await client.search(term: term, platform: searchPlatform)
             searchResults = results
             if results.isEmpty {
-                showMessage("未找到匹配的应用", success: false)
+                showMessage(String(localized: "No matching apps found", table: "Messages"), success: false)
             }
         } catch {
-            showMessage("搜索失败：\(error.localizedDescription)", success: false)
+            showMessage(String(localized: "Search failed: \(error.localizedDescription)", table: "Messages"), success: false)
         }
 
         isSearching = false
@@ -264,11 +264,11 @@ final class AppModel: ObservableObject {
 
     func loadPurchasedApps() async {
         guard let signer = signer, let guid = machineGUID else {
-            showMessage("SAP 引擎未就绪，请稍候重试", success: false)
+            showMessage(String(localized: "The SAP engine is not ready. Please try again later.", table: "Messages"), success: false)
             return
         }
         guard activeAccount != nil else {
-            showMessage("请先登录一个 Apple ID 账号", success: false)
+            showMessage(String(localized: "Please sign in with an Apple ID first", table: "Messages"), success: false)
             return
         }
 
@@ -282,7 +282,7 @@ final class AppModel: ObservableObject {
             }
             purchasedApps = apps
             if purchasedApps.isEmpty {
-                showMessage("未找到已购应用", success: false)
+                showMessage(String(localized: "No purchased apps found", table: "Messages"), success: false)
             } else {
                 // 批量补全 artwork URL 与完整详情
                 let ids = apps.map { $0.id }
@@ -297,7 +297,7 @@ final class AppModel: ObservableObject {
                 }
             }
         } catch {
-            showMessage("获取已购应用失败：\(error.localizedDescription)", success: false)
+            showMessage(String(localized: "Failed to load purchased apps: \(error.localizedDescription)", table: "Messages"), success: false)
         }
 
         isLoadingPurchased = false
@@ -306,7 +306,7 @@ final class AppModel: ObservableObject {
     /// 下载已购应用（通过 trackId）
     func downloadOwnedApp(_ owned: OwnedApp) async {
         guard accounts.contains(where: { $0.isActive }) else {
-            showMessage("请先登录一个 Apple ID 账号", success: false)
+            showMessage(String(localized: "Please sign in with an Apple ID first", table: "Messages"), success: false)
             selectedSection = .accounts
             return
         }
@@ -329,23 +329,23 @@ final class AppModel: ObservableObject {
 
     func downloadApp(_ app: AppStoreApp, externalVersionID: String? = nil) async {
         guard accounts.contains(where: { $0.isActive }) else {
-            showMessage("请先登录一个 Apple ID 账号", success: false)
+            showMessage(String(localized: "Please sign in with an Apple ID first", table: "Messages"), success: false)
             selectedSection = .accounts
             return
         }
 
-        let versionLabel = externalVersionID.map { "v\($0)" } ?? "最新版"
+        let versionLabel = externalVersionID.map { "v\($0)" } ?? String(localized: "Latest", table: "Messages")
 
         // 避免重复下载
         if downloadTasks.contains(where: { $0.app.trackId == app.trackId && $0.status != .failed }) {
-            showMessage("该应用已在下载队列中", success: false)
+            showMessage(String(localized: "This app is already in the download queue", table: "Messages"), success: false)
             return
         }
 
         var task = DownloadTask(app: app, status: .downloading)
         task.startedAt = Date()
         downloadTasks.insert(task, at: 0)
-        showMessage("已加入下载队列：\(app.trackName) (\(versionLabel))", success: true)
+        showMessage(String(localized: "Added to download queue: \(app.trackName) (\(versionLabel))", table: "Messages"), success: true)
 
         print("[download] starting: \(app.trackName) (\(versionLabel)), appID=\(app.trackId)")
 
@@ -367,7 +367,7 @@ final class AppModel: ObservableObject {
 
             // 3. 提取下载 URL
             guard let url = client.extractDownloadURL(from: dict) else {
-                throw AppStoreError.downloadFailed(message: "响应中没有下载链接")
+                throw AppStoreError.downloadFailed(message: String(localized: "No download URL in the response", table: "Messages"))
             }
             print("[download] download URL: \(url.absoluteString)")
 
@@ -396,7 +396,7 @@ final class AppModel: ObservableObject {
                 try Data().write(to: probe)
                 try FileManager.default.removeItem(at: probe)
             } catch {
-                throw AppStoreError.downloadFailed(message: "下载目录无写入权限：\(dir.path)，请在设置页通过「选择目录」重新选择并授权")
+                throw AppStoreError.downloadFailed(message: String(localized: "The download folder is not writable: \(dir.path). Please choose and authorize it again via \"Choose Folder\" in Settings.", table: "Messages"))
             }
 
             // 文件名：应用名_版本号(版本序号兜底)_下载账号.ipa
@@ -408,7 +408,7 @@ final class AppModel: ObservableObject {
                 if let vid = externalVersionID {
                     return "v\(vid)"
                 }
-                return "最新版"
+                return String(localized: "Latest", table: "Messages")
             }()
             let accountPart: String = {
                 if let acc = activeAccount {
@@ -426,7 +426,7 @@ final class AppModel: ObservableObject {
             if let dpInfo = dpInfo {
                 // macOS 加密包：下载后解密
                 guard let assets = sapAssets else {
-                    throw AppStoreError.downloadFailed(message: "SAP 引擎未就绪，无法解密 macOS 包")
+                    throw AppStoreError.downloadFailed(message: String(localized: "The SAP engine is not ready; cannot decrypt the macOS package", table: "Messages"))
                 }
                 let identity = try currentMachineIdentity()
                 print("[download] macOS package detected, decrypting with dpInfo (\(dpInfo.count) bytes)")
@@ -469,7 +469,7 @@ final class AppModel: ObservableObject {
                 downloadTasks[idx].outputURL = destination
                 downloadTasks[idx].completedAt = Date()
             }
-            showMessage("\(app.trackName) (\(versionLabel)) 下载完成", success: true)
+            showMessage(String(localized: "Download completed: \(app.trackName) (\(versionLabel))", table: "Messages"), success: true)
             print("[download] complete: \(destination.path)")
 
         } catch {
@@ -478,7 +478,7 @@ final class AppModel: ObservableObject {
                 downloadTasks[idx].status = .failed
                 downloadTasks[idx].errorMessage = error.localizedDescription
             }
-            showMessage("下载失败：\(error.localizedDescription)", success: false)
+            showMessage(String(localized: "Download failed: \(error.localizedDescription)", table: "Messages"), success: false)
         }
         saveDownloadTasks()
     }
@@ -486,7 +486,7 @@ final class AppModel: ObservableObject {
     /// 购买（获取）应用，使当前账号获得该应用的下载授权
     func purchaseApp(_ app: AppStoreApp) async {
         guard activeAccount != nil else {
-            showMessage("请先登录一个 Apple ID 账号", success: false)
+            showMessage(String(localized: "Please sign in with an Apple ID first", table: "Messages"), success: false)
             selectedSection = .accounts
             return
         }
@@ -494,9 +494,9 @@ final class AppModel: ObservableObject {
             try await withTokenRefresh {
                 try await client.purchase(appID: app.trackId)
             }
-            showMessage("已获取 \(app.trackName)，可以开始下载", success: true)
+            showMessage(String(localized: "Acquired \(app.trackName). You can start downloading now.", table: "Messages"), success: true)
         } catch {
-            showMessage("购买失败：\(error.localizedDescription)", success: false)
+            showMessage(String(localized: "Purchase failed: \(error.localizedDescription)", table: "Messages"), success: false)
         }
     }
 
@@ -601,8 +601,11 @@ final class AppModel: ObservableObject {
         saveDownloadTasks()
 
         let count = tasks.count
-        let fileMsg = deleteFiles ? "并已删除对应文件" : "已保留本地文件"
-        showMessage("已移除 \(count) 条下载记录，\(fileMsg)", success: true)
+        if deleteFiles {
+            showMessage(String(localized: "Removed \(count) download records and deleted the corresponding files", table: "Messages"), success: true)
+        } else {
+            showMessage(String(localized: "Removed \(count) download records; local files were kept", table: "Messages"), success: true)
+        }
         removalRequest = nil
     }
 
@@ -624,11 +627,11 @@ final class AppModel: ObservableObject {
         let code = accountEditor.code.isEmpty ? nil : accountEditor.code
 
         guard !region.isEmpty, !email.isEmpty, !password.isEmpty else {
-            return BasicMessage(success: false, message: "请填写地区、邮箱和密码")
+            return BasicMessage(success: false, message: String(localized: "Please fill in region, email, and password", table: "Messages"))
         }
 
         guard let signer = signer, let sapConfig = sapConfig, let guid = machineGUID else {
-            return BasicMessage(success: false, message: "SAP 引擎未就绪，请稍候重试")
+            return BasicMessage(success: false, message: String(localized: "The SAP engine is not ready. Please try again later.", table: "Messages"))
         }
 
         do {
@@ -658,12 +661,12 @@ final class AppModel: ObservableObject {
             activateDefaultAccountIfNeeded()
             syncClientAccount()
             saveAccounts()
-            return BasicMessage(success: true, message: "账号 \(email) 登录成功")
+            return BasicMessage(success: true, message: String(localized: "Signed in as \(email)", table: "Messages"))
         } catch AppStoreError.requires2FA {
             accountEditor.awaiting2FA = true
-            return BasicMessage(success: false, message: "请输入双重认证验证码")
+            return BasicMessage(success: false, message: String(localized: "Please enter the two-factor authentication code", table: "Messages"))
         } catch {
-            return BasicMessage(success: false, message: "登录失败：\(error.localizedDescription)")
+            return BasicMessage(success: false, message: String(localized: "Sign-in failed: \(error.localizedDescription)", table: "Messages"))
         }
     }
 
@@ -672,7 +675,7 @@ final class AppModel: ObservableObject {
         activateDefaultAccountIfNeeded()
         syncClientAccount()
         saveAccounts()
-        showMessage("已删除账号 \(account.email)", success: true)
+        showMessage(String(localized: "Deleted account \(account.email)", table: "Messages"), success: true)
     }
 
     func setActiveAccount(_ account: AppAccount) {
@@ -682,7 +685,7 @@ final class AppModel: ObservableObject {
         activeAccount = account
         syncClientAccount()
         saveAccounts()
-        showMessage("已切换到账号 \(account.email)", success: true)
+        showMessage(String(localized: "Switched to account \(account.email)", table: "Messages"), success: true)
         // 切换账号后自动刷新已购应用列表
         Task { await loadPurchasedApps() }
     }
@@ -719,7 +722,7 @@ final class AppModel: ObservableObject {
             // 自动重登遇到 2FA，无法自动完成，标记账号需要重新登录
             print("[refreshToken] requires 2FA for \(account.email), marking needsReauth")
             markAccountNeedsReauth(account)
-            showMessage("账号 \(account.email) 需要重新验证，请重新登录", success: false)
+            showMessage(String(localized: "Account \(account.email) requires re-authentication. Please sign in again.", table: "Messages"), success: false)
             return false
         } catch {
             print("[refreshToken] failed for \(account.email): \(error)")
@@ -763,10 +766,10 @@ final class AppModel: ObservableObject {
         UserDefaults.standard.set(true, forKey: promptedKey)
 
         let alert = NSAlert()
-        alert.messageText = "请选择下载目录"
-        alert.informativeText = "当前版本受系统沙盒限制，需要先选择一个目录并授权，下载的 IPA 文件才能正常保存。"
-        alert.addButton(withTitle: "选择目录")
-        alert.addButton(withTitle: "稍后")
+        alert.messageText = String(localized: "Choose a Download Folder", table: "Messages")
+        alert.informativeText = String(localized: "This version is restricted by the system sandbox. You need to choose and authorize a folder so downloaded IPA files can be saved properly.", table: "Messages")
+        alert.addButton(withTitle: String(localized: "Choose Folder", table: "Messages"))
+        alert.addButton(withTitle: String(localized: "Later", table: "Messages"))
         guard alert.runModal() == .alertFirstButtonReturn else { return }
 
         let panel = NSOpenPanel()
@@ -774,8 +777,8 @@ final class AppModel: ObservableObject {
         panel.canChooseDirectories = true
         panel.allowsMultipleSelection = false
         panel.canCreateDirectories = true
-        panel.prompt = "选择"
-        panel.message = "请选择 IPA 下载保存目录"
+        panel.prompt = String(localized: "Choose", table: "Messages")
+        panel.message = String(localized: "Choose a folder to save downloaded IPA files", table: "Messages")
         panel.directoryURL = URL(fileURLWithPath: expandTildeInPath(settings.downloadDirectory), isDirectory: true)
         guard panel.runModal() == .OK, let url = panel.url else { return }
 
@@ -795,14 +798,14 @@ final class AppModel: ObservableObject {
         settings = newSettings
         settingsDraft = newSettings
         saveSettings()
-        return BasicMessage(success: true, message: "设置已保存")
+        return BasicMessage(success: true, message: String(localized: "Settings saved", table: "Messages"))
     }
 
     func resetSettings() async -> BasicMessage {
         settings = .default
         settingsDraft = .default
         saveSettings()
-        return BasicMessage(success: true, message: "设置已重置")
+        return BasicMessage(success: true, message: String(localized: "Settings reset", table: "Messages"))
     }
 
     // MARK: - SAP
@@ -833,13 +836,13 @@ final class AppModel: ObservableObject {
             sapConfig = config
             machineGUID = identity.guid
             sapStatus = .ready
-            showMessage("SAP 签名引擎已就绪", success: true)
+            showMessage(String(localized: "SAP signing engine is ready", table: "Messages"), success: true)
         } catch {
             // 失败时清理，确保可以重试
             signer = nil
             sapStatus = .failed
             print("[SAP] setup failed: \(error)")
-            showMessage("SAP 初始化失败：\(error.localizedDescription)", success: false)
+            showMessage(String(localized: "SAP initialization failed: \(error.localizedDescription)", table: "Messages"), success: false)
         }
     }
 
@@ -857,7 +860,7 @@ final class AppModel: ObservableObject {
 
     func showMessage(_ message: String, success: Bool, duration: TimeInterval = 3.0) {
         let level: PopupLevel = success ? .success : .error
-        popup = AppPopup(level: level, title: success ? "操作成功" : "操作失败", message: message)
+        popup = AppPopup(level: level, title: success ? String(localized: "Success", table: "Messages") : String(localized: "Failed", table: "Messages"), message: message)
 
         popupDismissTask?.cancel()
         popupDismissTask = Task {
@@ -883,10 +886,10 @@ enum SAPStatus {
 
     var label: String {
         switch self {
-        case .notReady: return "未初始化"
-        case .loading: return "初始化中"
-        case .ready: return "已就绪"
-        case .failed: return "初始化失败"
+        case .notReady: return String(localized: "Not initialized", table: "Messages")
+        case .loading: return String(localized: "Initializing", table: "Messages")
+        case .ready: return String(localized: "Ready", table: "Messages")
+        case .failed: return String(localized: "Initialization failed", table: "Messages")
         }
     }
 
@@ -936,7 +939,7 @@ enum SinfInjector {
         let payloadDir = workDir.appendingPathComponent("Payload")
         guard let appDirs = try? fm.contentsOfDirectory(at: payloadDir, includingPropertiesForKeys: nil),
               let appDir = appDirs.first(where: { $0.pathExtension == "app" }) else {
-            throw AppStoreError.downloadFailed(message: "IPA 中未找到 .app 目录")
+            throw AppStoreError.downloadFailed(message: String(localized: "No .app directory found in the IPA", table: "Messages"))
         }
 
         // 3. 读取 Manifest.plist 和 Info.plist
