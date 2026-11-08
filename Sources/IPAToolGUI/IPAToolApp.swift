@@ -327,6 +327,17 @@ final class AppModel: ObservableObject {
 
     // MARK: - Downloads
 
+    /// 应用同时支持 iOS 与 macOS 时优先 iOS（IPA），避免下载到 macOS 包
+    private func preferredDownloadPlatform(for app: AppStoreApp) -> Platform? {
+        if app.platforms.contains(.iphone) {
+            return .iphone
+        }
+        if app.platforms.contains(.ipad) {
+            return .ipad
+        }
+        return nil
+    }
+
     func downloadApp(_ app: AppStoreApp, externalVersionID: String? = nil) async {
         guard accounts.contains(where: { $0.isActive }) else {
             showMessage(String(localized: "Please sign in with an Apple ID first", table: "Messages"), success: false)
@@ -359,9 +370,15 @@ final class AppModel: ObservableObject {
             }
 
             // 2. 请求下载产品信息（token 失效时自动刷新重试）
-            print("[download] requesting downloadProduct...")
+            // 同时提供 iOS 与 macOS 构建时优先取 IPA，避免拿到 macOS 包
+            let preferredPlatform = preferredDownloadPlatform(for: app)
+            print("[download] requesting downloadProduct... preferred platform: \(preferredPlatform?.rawValue ?? "default")")
             let dict = try await withTokenRefresh {
-                try await client.downloadProduct(appID: app.trackId, externalVersionID: externalVersionID)
+                try await client.downloadProduct(
+                    appID: app.trackId,
+                    externalVersionID: externalVersionID,
+                    preferPlatform: preferredPlatform
+                )
             }
             print("[download] downloadProduct response keys: \(dict.keys.sorted())")
 
@@ -545,7 +562,10 @@ final class AppModel: ObservableObject {
                     print("[versions] purchase failed (continuing): \(error.localizedDescription)")
                 }
             }
-            let versionIDs = try await client.listVersions(appID: app.trackId)
+            let versionIDs = try await client.listVersions(
+                appID: app.trackId,
+                preferPlatform: preferredDownloadPlatform(for: app)
+            )
             // 第一个是最新版本
             appVersions = versionIDs.enumerated().map { index, id in
                 AppVersion(externalVersionID: id, version: nil, releaseDate: nil, isLatest: index == 0)
