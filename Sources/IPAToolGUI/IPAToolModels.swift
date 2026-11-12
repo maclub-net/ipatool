@@ -244,6 +244,19 @@ struct AppSettings: Equatable, Codable {
     var downloadBookmark: Data?
     var keepOriginal: Bool
     var autoImport: Bool
+    /// 是否启用多连接下载加速（默认关闭，保持单连接）
+    var downloadAcceleration: Bool = false
+    /// 多连接下载的通道数
+    var downloadConcurrency: Int = 6
+
+    private enum CodingKeys: String, CodingKey {
+        case downloadDirectory
+        case downloadBookmark
+        case keepOriginal
+        case autoImport
+        case downloadAcceleration
+        case downloadConcurrency
+    }
 
     static let `default` = AppSettings(
         downloadDirectory: expandTildeInPath("~/IPATool/downloads"),
@@ -251,6 +264,19 @@ struct AppSettings: Equatable, Codable {
         keepOriginal: false,
         autoImport: true
     )
+}
+
+extension AppSettings {
+    /// 兼容旧版本设置文件：新增字段缺失时使用默认值。
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        downloadDirectory = try container.decode(String.self, forKey: .downloadDirectory)
+        downloadBookmark = try container.decodeIfPresent(Data.self, forKey: .downloadBookmark)
+        keepOriginal = try container.decodeIfPresent(Bool.self, forKey: .keepOriginal) ?? false
+        autoImport = try container.decodeIfPresent(Bool.self, forKey: .autoImport) ?? true
+        downloadAcceleration = try container.decodeIfPresent(Bool.self, forKey: .downloadAcceleration) ?? false
+        downloadConcurrency = try container.decodeIfPresent(Int.self, forKey: .downloadConcurrency) ?? 6
+    }
 }
 
 // MARK: - Popup

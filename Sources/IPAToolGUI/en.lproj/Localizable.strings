@@ -12,11 +12,13 @@
 "All Tasks" = "All Tasks";
 "Apple ID" = "Apple ID";
 "Apple ID Email" = "Apple ID Email";
+"Applies to the next download. More connections can speed up downloads but use more bandwidth." = "Applies to the next download. More connections can speed up downloads but use more bandwidth.";
 "Apps owned by the current account" = "Apps owned by the current account";
 "Back" = "Back";
 "Basic Information" = "Basic Information";
 "Bundle ID" = "Bundle ID";
 "Cancel" = "Cancel";
+"Channels" = "Channels";
 "Choose Folder" = "Choose Folder";
 "Choose where IPA files are saved." = "Choose where IPA files are saved.";
 "Clear Completed" = "Clear Completed";
@@ -36,12 +38,14 @@
 "Delete Files Too" = "Delete Files Too";
 "Developer" = "Developer";
 "Download" = "Download";
+"Download Acceleration" = "Download Acceleration";
 "Download Behavior" = "Download Behavior";
 "Download Folder" = "Download Folder";
 "Download Latest" = "Download Latest";
 "Downloaded IPA files will be saved to this folder." = "Downloaded IPA files will be saved to this folder.";
 "Downloading" = "Downloading";
 "Downloads" = "Downloads";
+"Enable multi-connection download" = "Enable multi-connection download";
 "Enter password" = "Enter password";
 "Enter the 6-digit code sent to your devices" = "Enter the 6-digit code sent to your devices";
 "Enter your Apple ID credentials and sign in" = "Enter your Apple ID credentials and sign in";
@@ -120,6 +124,7 @@
 "This only removes the download records and will not delete local files." = "This only removes the download records and will not delete local files.";
 "Try a different keyword." = "Try a different keyword.";
 "Two-Factor Authentication" = "Two-Factor Authentication";
+"Use multiple connections for faster downloads." = "Use multiple connections for faster downloads.";
 "Verifying..." = "Verifying...";
 "Version" = "Version";
 "Version %@" = "Version %@";

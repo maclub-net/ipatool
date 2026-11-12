@@ -438,6 +438,10 @@ final class AppModel: ObservableObject {
             let destination = dir.appendingPathComponent(fileName)
             print("[download] output: \(destination.path)")
 
+            // 多连接下载：默认关闭（单连接），开启后使用设置中的通道数
+            let downloadChannels = settings.downloadAcceleration ? max(2, settings.downloadConcurrency) : 1
+            print("[download] channels: \(downloadChannels)")
+
             // 5. 下载文件（macOS 包需要解密）
             let dpInfo = client.extractDPInfo(from: dict)
             if let dpInfo = dpInfo {
@@ -451,7 +455,8 @@ final class AppModel: ObservableObject {
                     from: url, to: destination,
                     hardwareID: identity.hardwareID,
                     dpInfo: dpInfo,
-                    assets: assets
+                    assets: assets,
+                    concurrency: downloadChannels
                 ) { p in
                     Task { @MainActor in
                         if let idx = self.downloadTasks.firstIndex(where: { $0.id == task.id }) {
@@ -461,7 +466,7 @@ final class AppModel: ObservableObject {
                 }
             } else {
                 // iOS 包：直接下载
-                try await client.downloadFile(from: url, to: destination) { p in
+                try await client.downloadFile(from: url, to: destination, concurrency: downloadChannels) { p in
                     Task { @MainActor in
                         if let idx = self.downloadTasks.firstIndex(where: { $0.id == task.id }) {
                             self.downloadTasks[idx].progress = p

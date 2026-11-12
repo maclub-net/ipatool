@@ -1553,6 +1553,7 @@ struct SettingsView: View {
                     VStack(alignment: .leading, spacing: 20) {
                         directorySettingsCard
                         behaviorSettingsCard
+                        accelerationSettingsCard
                     }
                     .frame(maxWidth: .infinity, alignment: .topLeading)
                     sapSettingsCard
@@ -1562,6 +1563,7 @@ struct SettingsView: View {
                 VStack(alignment: .leading, spacing: 20) {
                     directorySettingsCard
                     behaviorSettingsCard
+                    accelerationSettingsCard
                     sapSettingsCard
                 }
             }
@@ -1591,6 +1593,27 @@ struct SettingsView: View {
 
                 Toggle("Reveal in Finder after download", isOn: $model.settingsDraft.autoImport)
                     .toggleStyle(.switch)
+            }
+        }
+    }
+
+    private var accelerationSettingsCard: some View {
+        SectionCard(title: "Download Acceleration", subtitle: "Use multiple connections for faster downloads.") {
+            VStack(alignment: .leading, spacing: 14) {
+                Toggle("Enable multi-connection download", isOn: $model.settingsDraft.downloadAcceleration)
+                    .toggleStyle(.switch)
+
+                Picker("Channels", selection: $model.settingsDraft.downloadConcurrency) {
+                    ForEach([2, 4, 6, 8, 12], id: \.self) { count in
+                        Text("\(count)").tag(count)
+                    }
+                }
+                .pickerStyle(.segmented)
+                .disabled(!model.settingsDraft.downloadAcceleration)
+
+                Text("Applies to the next download. More connections can speed up downloads but use more bandwidth.")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
             }
         }
     }

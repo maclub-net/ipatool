@@ -118,3 +118,8 @@
 "Version %@" = "版本 %@";
 "Version History" = "历史版本";
 "macOS App Store Tool" = "macOS App Store 工具";
+"Download Acceleration" = "下载加速";
+"Use multiple connections for faster downloads." = "使用多连接加快下载速度。";
+"Enable multi-connection download" = "启用多连接下载";
+"Channels" = "通道数";
+"Applies to the next download. More connections can speed up downloads but use more bandwidth." = "对下一次下载生效。更多连接可提升速度，但会占用更多带宽。";
